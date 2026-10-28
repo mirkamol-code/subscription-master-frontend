@@ -1,130 +1,229 @@
-import type { ElementType } from 'react'
-import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Calendar, Pencil, Repeat2, Tag, Trash2, WalletCards } from 'lucide-react'
-import { toast } from 'sonner'
-import { getApiError } from '@/api/client'
+import { ArrowLeft, Pencil, Receipt, Trash2 } from 'lucide-react'
+import { CategoryIcon } from '@/components/common/category-icon'
 import { ErrorState } from '@/components/common/error-state'
+import { RenewalPill } from '@/components/common/renewal-pill'
 import { StatusBadge } from '@/components/common/status-badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useDeleteSubscription, useSubscription } from '@/hooks/use-subscriptions'
-import { formatDate, formatMoney, humanize } from '@/lib/utils'
+import { EmptyState } from '@/components/common/empty-state'
+import { useCurrency } from '@/features/currency/currency-context'
+import { STATUS_ACTION, STATUS_ACTION_UI } from '@/features/subscriptions/status-action'
+import { useSubscriptionActions } from '@/features/subscriptions/use-subscription-actions'
+import { useSubscription, useSubscriptionHistory } from '@/hooks/use-subscriptions'
+import { getCategoryMeta } from '@/lib/category-config'
+import { isRenewing } from '@/lib/renewals'
+import { FREQUENCY_LABEL, FREQUENCY_SUFFIX } from '@/lib/labels'
+import { formatDate, formatMoney, getAnnualizedCost, getMonthlyEquivalent } from '@/lib/utils'
+import type { Subscription } from '@/types/api'
+
+function BackLink() {
+  return (
+    <Button asChild variant="ghost" size="sm" className="-ml-3 text-slate-500">
+      <Link to="/subscriptions">
+        <ArrowLeft className="size-4" /> Subscriptions
+      </Link>
+    </Button>
+  )
+}
 
 export function SubscriptionDetailPage() {
   const id = Number(useParams().id)
   const navigate = useNavigate()
-  const [confirmOpen, setConfirmOpen] = useState(false)
   const query = useSubscription(id)
-  const remove = useDeleteSubscription()
+  const actions = useSubscriptionActions({ onDeleted: () => navigate('/subscriptions') })
 
-  if (query.isLoading)
+  if (query.isLoading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-10 w-52" />
-        <Skeleton className="h-80" />
+      <div className="space-y-6">
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-48 rounded-3xl" />
+        <div className="grid gap-6 lg:grid-cols-3">
+          <Skeleton className="h-64 rounded-2xl lg:col-span-2" />
+          <Skeleton className="h-64 rounded-2xl" />
+        </div>
       </div>
     )
-  if (query.isError || !query.data)
-    return <ErrorState error={query.error} onRetry={() => void query.refetch()} />
+  }
+
+  if (!query.data) {
+    return (
+      <div className="space-y-6">
+        <BackLink />
+        <ErrorState
+          title="Subscription not found"
+          error={query.error}
+          onRetry={Number.isFinite(id) ? () => void query.refetch() : undefined}
+        />
+      </div>
+    )
+  }
 
   const item = query.data
-
-  const handleDelete = async () => {
-    try {
-      await remove.mutateAsync(id)
-      toast.success(`${item.name} was deleted`)
-      navigate('/subscriptions')
-    } catch (error) {
-      toast.error(getApiError(error))
-    }
-  }
+  const statusAction = STATUS_ACTION[item.status]
+  const statusUi = statusAction && STATUS_ACTION_UI[statusAction]
 
   return (
     <div className="space-y-6">
-      <Button asChild variant="ghost" size="sm" className="-ml-2">
-        <Link to="/subscriptions">
-          <ArrowLeft className="size-4" /> Back to subscriptions
-        </Link>
-      </Button>
+      <BackLink />
 
-      {/* Header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-        <div>
-          <div className="flex flex-wrap items-center gap-3">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-950">{item.name}</h2>
-            <StatusBadge status={item.status} />
+      <Card className="overflow-hidden">
+        <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+          <div className="flex min-w-0 items-center gap-4">
+            <CategoryIcon category={item.category} size="lg" />
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="truncate text-2xl font-bold tracking-tight text-slate-900">{item.name}</h1>
+                <StatusBadge status={item.status} />
+              </div>
+              <p className="mt-1 text-sm text-slate-500">
+                {getCategoryMeta(item.category).label} · {FREQUENCY_LABEL[item.frequency]}
+              </p>
+            </div>
           </div>
-          <p className="mt-2 text-sm text-slate-500">Subscription #{item.id}</p>
+
+          <div className="flex flex-wrap gap-2">
+            {statusUi && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => actions.changeStatus(item)}
+                disabled={actions.isChangingStatus}
+              >
+                <statusUi.icon className="size-4" />
+                {actions.isChangingStatus ? statusUi.pendingLabel : statusUi.label}
+              </Button>
+            )}
+            <Button asChild variant="outline" size="sm">
+              <Link to={`/subscriptions/${item.id}/edit`}>
+                <Pencil className="size-4" /> Edit
+              </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => actions.requestDelete(item)}
+              className="text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+            >
+              <Trash2 className="size-4" /> Delete
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button asChild variant="outline">
-            <Link to={`/subscriptions/${id}/edit`}>
-              <Pencil className="size-4" /> Edit
-            </Link>
-          </Button>
-          <Button variant="destructive" onClick={() => setConfirmOpen(true)}>
-            <Trash2 className="size-4" /> Delete
-          </Button>
-        </div>
+
+        <dl className="grid grid-cols-2 gap-px border-t border-slate-100 bg-slate-100 sm:grid-cols-4">
+          <Stat label="Price" value={formatMoney(item.price, item.currency)} hint={FREQUENCY_SUFFIX[item.frequency]} />
+          <Stat
+            label="Per month"
+            value={formatMoney(getMonthlyEquivalent(item.price, item.frequency), item.currency)}
+          />
+          <Stat label="Per year" value={formatMoney(getAnnualizedCost(item.price, item.frequency), item.currency)} />
+          <Stat label="Since" value={formatDate(item.startDate)} />
+        </dl>
+      </Card>
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <PaymentHistory subscription={item} />
+        <NextPaymentCard subscription={item} />
       </div>
 
-      {/* Detail cards */}
-      <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <Card>
-          <CardHeader>
-            <h3 className="font-bold text-slate-950">Billing details</h3>
-          </CardHeader>
-          <CardContent className="grid gap-6 sm:grid-cols-2">
-            <Detail icon={WalletCards} label="Price" value={formatMoney(item.price, item.currency)} />
-            <Detail icon={Repeat2} label="Frequency" value={humanize(item.frequency)} />
-            <Detail icon={Tag} label="Category" value={humanize(item.category)} />
-            <Detail icon={Calendar} label="Started" value={formatDate(item.startDate)} />
-          </CardContent>
-        </Card>
-
-        <Card className="overflow-hidden">
-          <div className="bg-slate-950 p-6 text-white">
-            <p className="text-sm font-medium text-teal-300">Next payment</p>
-            <p className="mt-2 text-3xl font-bold tracking-tight">{formatDate(item.nextPaymentDate)}</p>
-            <p className="mt-2 text-sm text-slate-400">
-              {formatMoney(item.price, item.currency)} · {humanize(item.frequency)}
-            </p>
-          </div>
-          <CardContent>
-            <p className="text-sm leading-6 text-slate-500">
-              The next payment date is calculated by the backend from the subscription start date
-              and billing frequency.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      <ConfirmDialog
-        open={confirmOpen}
-        onOpenChange={setConfirmOpen}
-        title="Delete subscription?"
-        description={`This permanently deletes ${item.name}. This action cannot be undone.`}
-        confirmLabel="Delete"
-        onConfirm={() => void handleDelete()}
-        pending={remove.isPending}
-      />
+      <ConfirmDialog {...actions.deleteDialog} />
     </div>
   )
 }
 
-function Detail({ icon: Icon, label, value }: { icon: ElementType; label: string; value: string }) {
+function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="flex items-start gap-3">
-      <div className="grid size-10 place-items-center rounded-xl bg-slate-100 text-slate-600">
-        <Icon className="size-4" />
-      </div>
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</p>
-        <p className="mt-1 font-semibold text-slate-900">{value}</p>
-      </div>
+    <div className="bg-white px-6 py-5 sm:px-8">
+      <dt className="text-[13px] text-slate-500">{label}</dt>
+      <dd className="mt-1 truncate font-semibold tabular-nums text-slate-900">
+        {value}
+        {hint && <span className="ml-0.5 font-normal text-slate-400">{hint}</span>}
+      </dd>
     </div>
+  )
+}
+
+function NextPaymentCard({ subscription }: { subscription: Subscription }) {
+  const { displayCurrency, convertToDisplay } = useCurrency()
+  const showConverted = subscription.currency !== displayCurrency
+
+  return (
+    <Card className="relative overflow-hidden bg-ink p-6 text-white">
+      <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-teal-500/25 blur-3xl" />
+      <div className="relative">
+        <p className="text-sm text-slate-400">Next payment</p>
+        {isRenewing(subscription) ? (
+          <>
+            <p className="mt-2 text-3xl font-bold tracking-tight">{formatDate(subscription.nextPaymentDate)}</p>
+            <RenewalPill date={subscription.nextPaymentDate} className="mt-3" />
+            <div className="mt-6 border-t border-white/10 pt-4">
+              <p className="text-sm text-slate-400">Amount</p>
+              <p className="mt-1 text-xl font-semibold tabular-nums">
+                {formatMoney(subscription.price, subscription.currency)}
+              </p>
+              {showConverted && (
+                <p className="text-sm tabular-nums text-slate-400">
+                  ≈ {formatMoney(convertToDisplay(subscription.price, subscription.currency), displayCurrency)}
+                </p>
+              )}
+            </div>
+          </>
+        ) : (
+          <p className="mt-2 text-lg font-medium text-slate-200">
+            {subscription.status === 'PAUSED'
+              ? 'Paused — no payments until you resume it.'
+              : 'Cancelled — this won’t renew.'}
+          </p>
+        )}
+      </div>
+    </Card>
+  )
+}
+
+function PaymentHistory({ subscription }: { subscription: Subscription }) {
+  const history = useSubscriptionHistory(subscription.id)
+
+  return (
+    <Card className="lg:col-span-2">
+      <CardHeader>
+        <CardTitle>Payment history</CardTitle>
+      </CardHeader>
+      <CardContent className="px-3 pb-3 pt-3">
+        {history.isLoading ? (
+          <div className="space-y-2 px-3">
+            <Skeleton className="h-12" />
+            <Skeleton className="h-12" />
+          </div>
+        ) : history.isError ? (
+          <ErrorState bare error={history.error} onRetry={() => void history.refetch()} />
+        ) : !history.data?.length ? (
+          <EmptyState
+            icon={Receipt}
+            title="No payments yet"
+            description="Past payments for this subscription will show up here."
+          />
+        ) : (
+          <ul className="divide-y divide-slate-100">
+            {history.data.map((record) => (
+              <li key={record.id} className="flex items-center justify-between gap-4 px-3 py-3">
+                <span className="text-sm text-slate-600">{formatDate(record.chargedAt)}</span>
+                <span className="text-right">
+                  <span className="block font-medium tabular-nums text-slate-900">
+                    {formatMoney(record.amount, record.currency)}
+                  </span>
+                  {record.currency !== 'UZS' && record.amountUzs > 0 && (
+                    <span className="block text-xs tabular-nums text-slate-400">
+                      ≈ {formatMoney(record.amountUzs, 'UZS')}
+                    </span>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
   )
 }

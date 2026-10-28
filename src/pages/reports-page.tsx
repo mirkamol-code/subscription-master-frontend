@@ -1,87 +1,116 @@
-import { useState } from 'react'
-import { Download, FileSpreadsheet, FileText, ShieldCheck } from 'lucide-react'
-import type { ElementType } from 'react'
+import { useState, type ComponentType } from 'react'
+import { Download, FileSpreadsheet, FileText, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { downloadAnnualReport } from '@/api/endpoints/reports'
 import { getApiError } from '@/api/client'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import {
+  downloadAnnualReport,
+  ExchangeRatesUnavailableError,
+  type ReportFormat,
+} from '@/features/reports/annual-report'
+import { PageHeader } from '@/components/common/page-header'
+import { cn } from '@/lib/utils'
+
+interface ReportOption {
+  format: ReportFormat
+  title: string
+  description: string
+  worksWith: string
+  icon: ComponentType<{ className?: string }>
+  iconClass: string
+}
+
+const REPORT_OPTIONS: ReportOption[] = [
+  {
+    format: 'xlsx',
+    title: 'Excel spreadsheet',
+    description: 'Every subscription with its price, billing cycle, yearly cost and next payment date.',
+    worksWith: 'Excel, Numbers, Google Sheets',
+    icon: FileSpreadsheet,
+    iconClass: 'bg-emerald-50 text-emerald-600',
+  },
+  {
+    format: 'csv',
+    title: 'CSV file',
+    description: 'The same details as a simple text file you can open or import almost anywhere.',
+    worksWith: 'Budgeting apps, any spreadsheet',
+    icon: FileText,
+    iconClass: 'bg-sky-50 text-sky-600',
+  },
+]
+
+const INCLUDED = ['Service name & category', 'Status & billing cycle', 'Price & yearly cost', 'Start & next payment dates']
 
 export function ReportsPage() {
-  const [downloading, setDownloading] = useState<'csv' | 'xlsx' | null>(null)
+  const [downloading, setDownloading] = useState<ReportFormat | null>(null)
 
-  const download = async (format: 'csv' | 'xlsx') => {
+  const download = async (format: ReportFormat) => {
     setDownloading(format)
     try {
       await downloadAnnualReport(format)
-      toast.success(`Annual ${format.toUpperCase()} report downloaded`)
+      toast.success('Your report is downloading')
     } catch (error) {
-      toast.error(getApiError(error))
+      toast.error(error instanceof ExchangeRatesUnavailableError ? error.message : getApiError(error))
     } finally {
       setDownloading(null)
     }
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight text-slate-950">Annual reports</h2>
-        <p className="mt-1 text-sm text-slate-500">
-          Export the annual subscription data prepared for your account.
+    <div className="space-y-8">
+      <PageHeader
+        title="Reports"
+        description="Download a yearly summary of your subscriptions to keep, share or budget with."
+      />
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {REPORT_OPTIONS.map((option) => {
+          const Icon = option.icon
+          const isBusy = downloading === option.format
+          return (
+            <button
+              key={option.format}
+              type="button"
+              onClick={() => void download(option.format)}
+              disabled={downloading !== null}
+              aria-busy={isBusy}
+              className={cn(
+                'group flex flex-col rounded-2xl border border-slate-200/70 bg-white p-6 text-left shadow-[0_1px_2px_rgb(15_23_42/0.04)] outline-none transition-all duration-200',
+                'hover:-translate-y-0.5 hover:border-slate-300/80 hover:shadow-lg hover:shadow-slate-200/60 focus-visible:ring-2 focus-visible:ring-teal-500/60',
+                'disabled:translate-y-0 disabled:cursor-wait disabled:shadow-none',
+                downloading !== null && !isBusy && 'opacity-60',
+              )}
+            >
+                <span className="flex w-full items-start justify-between">
+                  <span className={cn('grid size-12 place-items-center rounded-2xl', option.iconClass)}>
+                    <Icon className="size-6" />
+                  </span>
+                  <span className="grid size-9 place-items-center rounded-full bg-slate-100 text-slate-500 transition-colors group-hover:bg-slate-900 group-hover:text-white">
+                    {isBusy ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
+                  </span>
+                </span>
+                <span className="mt-5 text-lg font-semibold text-slate-900">{option.title}</span>
+                <span className="mt-1.5 flex-1 text-sm leading-relaxed text-slate-500">{option.description}</span>
+                <span className="mt-5 text-[13px] text-slate-400">
+                  {isBusy ? 'Preparing your file…' : `Works with ${option.worksWith}`}
+                </span>
+            </button>
+          )
+        })}
+      </div>
+
+      <section>
+        <h2 className="text-sm font-medium text-slate-900">What’s included</h2>
+        <ul className="mt-3 flex flex-wrap gap-2">
+          {INCLUDED.map((item) => (
+            <li key={item} className="rounded-full bg-white px-3 py-1.5 text-[13px] text-slate-600 ring-1 ring-slate-200/70">
+              {item}
+            </li>
+          ))}
+        </ul>
+        <p className="mt-4 text-[13px] text-slate-400">
+          Amounts are shown in each subscription’s own currency, with a yearly total in Uzbek som.
         </p>
-      </div>
-      <div className="grid gap-5 md:grid-cols-2">
-        <ReportCard
-          icon={FileSpreadsheet}
-          title="Excel workbook"
-          description="Download the annual report as an XLSX file for analysis in spreadsheet software."
-          label="Download XLSX"
-          onClick={() => void download('xlsx')}
-          loading={downloading === 'xlsx'}
-        />
-        <ReportCard
-          icon={FileText}
-          title="CSV data"
-          description="Download a lightweight CSV file for imports, custom analysis, or archival."
-          label="Download CSV"
-          onClick={() => void download('csv')}
-          loading={downloading === 'csv'}
-        />
-      </div>
-      <div className="flex items-start gap-3 rounded-2xl border border-teal-200 bg-teal-50 p-4 text-sm text-teal-900">
-        <ShieldCheck className="mt-0.5 size-5 shrink-0" />
-        <p>
-          Reports are generated securely by the backend and contain data for the authenticated
-          account. This page does not fabricate or cache report content.
-        </p>
-      </div>
+      </section>
     </div>
-  )
-}
-
-interface ReportCardProps {
-  icon: ElementType
-  title: string
-  description: string
-  label: string
-  onClick: () => void
-  loading: boolean
-}
-
-function ReportCard({ icon: Icon, title, description, label, onClick, loading }: ReportCardProps) {
-  return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="grid size-12 place-items-center rounded-2xl bg-slate-100 text-slate-700">
-          <Icon className="size-5" />
-        </div>
-        <h3 className="mt-5 text-lg font-bold text-slate-950">{title}</h3>
-        <p className="mt-2 min-h-12 text-sm leading-6 text-slate-500">{description}</p>
-        <Button className="mt-6" variant="outline" onClick={onClick} disabled={loading}>
-          {loading ? 'Preparing…' : label}
-          {!loading && <Download className="size-4" />}
-        </Button>
-      </CardContent>
-    </Card>
   )
 }

@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { statisticsApi } from '@/api/endpoints/statistics'
+import { tokenStore } from '@/lib/token-store'
 
 export function useSummary() {
   return useQuery({
     queryKey: ['statistics', 'summary'],
     queryFn: statisticsApi.summary,
-    staleTime: 2 * 60_000, // Summary changes only when subscriptions are mutated
+    staleTime: 2 * 60_000,
   })
 }
 
@@ -13,7 +14,7 @@ export function useMonthlyDynamics(months = 6) {
   return useQuery({
     queryKey: ['statistics', 'monthly-dynamics', months],
     queryFn: () => statisticsApi.monthlyDynamics(months),
-    staleTime: 2 * 60_000, // Historical monthly data changes infrequently
+    staleTime: 2 * 60_000,
   })
 }
 
@@ -22,7 +23,7 @@ export function useAdminUsage() {
     queryKey: ['admin', 'service-usage'],
     queryFn: statisticsApi.adminUsage,
     retry: false,
-    staleTime: 5 * 60_000, // Admin aggregate data is low-churn
+    enabled: !!tokenStore.get()?.accessToken,
+    staleTime: 5 * 60_000,
   })
 }
-
