@@ -1,22 +1,61 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { subscriptionsApi } from '@/api/endpoints/subscriptions'
-import type { SubscriptionFilters, SubscriptionRequest } from '@/types/api'
+import type { Subscription, SubscriptionFilters, SubscriptionRequest } from '@/types/api'
 
 export const subscriptionKeys = {
   all: ['subscriptions'] as const,
   lists: () => [...subscriptionKeys.all, 'list'] as const,
   list: (filters: SubscriptionFilters) => [...subscriptionKeys.lists(), filters] as const,
+  allList: () => [...subscriptionKeys.all, 'all-items'] as const,
   detail: (id: number) => [...subscriptionKeys.all, 'detail', id] as const,
+  history: (id: number) => [...subscriptionKeys.detail(id), 'history'] as const,
 }
 
-/** Statistics depend on subscriptions; invalidate them after any mutation. */
 const statisticsKeys = { all: ['statistics'] as const }
+
+const FALLBACK_PAGE_SIZE = 100
+
+/** Any change to a subscription also changes the totals and charts built from it. */
+function refreshSubscriptionData(queryClient: QueryClient, updated?: Subscription) {
+  if (updated) queryClient.setQueryData(subscriptionKeys.detail(updated.id), updated)
+  void queryClient.invalidateQueries({ queryKey: subscriptionKeys.all })
+  void queryClient.invalidateQueries({ queryKey: statisticsKeys.all })
+}
+
+/** Every subscription; reads the paged list page by page if the unpaged list is unavailable. */
+export async function fetchAllSubscriptions(): Promise<Subscription[]> {
+  try {
+    return await subscriptionsApi.listAll()
+  } catch {
+    const items: Subscription[] = []
+    for (let page = 0; ; page++) {
+      const result = await subscriptionsApi.list({ page, size: FALLBACK_PAGE_SIZE })
+      items.push(...result.content)
+      if (result.last || result.content.length === 0) return items
+    }
+  }
+}
 
 export function useSubscriptions(filters: SubscriptionFilters) {
   return useQuery({
     queryKey: subscriptionKeys.list(filters),
     queryFn: () => subscriptionsApi.list(filters),
     placeholderData: (previous) => previous,
+  })
+}
+
+export function useAllSubscriptions() {
+  return useQuery({
+    queryKey: subscriptionKeys.allList(),
+    queryFn: fetchAllSubscriptions,
+  })
+}
+
+export function useSubscriptionHistory(id: number) {
+  return useQuery({
+    queryKey: subscriptionKeys.history(id),
+    queryFn: () => subscriptionsApi.getHistory(id),
+    enabled: Number.isFinite(id),
   })
 }
 
@@ -32,10 +71,7 @@ export function useCreateSubscription() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: subscriptionsApi.create,
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: subscriptionKeys.all })
-      void queryClient.invalidateQueries({ queryKey: statisticsKeys.all })
-    },
+    onSuccess: () => refreshSubscriptionData(queryClient),
   })
 }
 
@@ -43,21 +79,30 @@ export function useUpdateSubscription(id: number) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: (input: SubscriptionRequest) => subscriptionsApi.update(id, input),
-    onSuccess: (data) => {
-      queryClient.setQueryData(subscriptionKeys.detail(id), data)
-      void queryClient.invalidateQueries({ queryKey: subscriptionKeys.lists() })
-      void queryClient.invalidateQueries({ queryKey: statisticsKeys.all })
-    },
+    onSuccess: (data) => refreshSubscriptionData(queryClient, data),
   })
+}
+
+function useStatusChange(change: (id: number) => Promise<Subscription>) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: change,
+    onSuccess: (data) => refreshSubscriptionData(queryClient, data),
+  })
+}
+
+export function usePauseSubscription() {
+  return useStatusChange(subscriptionsApi.pause)
+}
+
+export function useResumeSubscription() {
+  return useStatusChange(subscriptionsApi.resume)
 }
 
 export function useDeleteSubscription() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: subscriptionsApi.remove,
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: subscriptionKeys.all })
-      void queryClient.invalidateQueries({ queryKey: statisticsKeys.all })
-    },
+    onSuccess: () => refreshSubscriptionData(queryClient),
   })
 }

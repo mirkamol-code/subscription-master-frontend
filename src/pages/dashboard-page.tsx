@@ -1,262 +1,367 @@
-import type { ElementType } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowUpRight, CalendarClock, CircleDollarSign, CreditCard, Plus, Sparkles } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { ArrowRight, CalendarCheck, PieChart, Plus, TrendingUp } from 'lucide-react'
+import { CategoryIcon } from '@/components/common/category-icon'
 import { EmptyState } from '@/components/common/empty-state'
 import { ErrorState } from '@/components/common/error-state'
+import { PageHeader } from '@/components/common/page-header'
+import { RenewalPill } from '@/components/common/renewal-pill'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useCurrency } from '@/features/currency/currency-context'
+import { CurrencyRateCard } from '@/features/currency/currency-rate-card'
 import { useMonthlyDynamics, useSummary } from '@/hooks/use-statistics'
 import { useSubscriptions } from '@/hooks/use-subscriptions'
-import { formatDate, formatMoney, humanize } from '@/lib/utils'
+import { getCategoryMeta } from '@/lib/category-config'
+import { cn, formatCompactMoney, formatDate, formatMonthLabel, formatMoney } from '@/lib/utils'
+import type { Currency, MonthlyCost, SpendingSummary, Subscription } from '@/types/api'
+
+const TREND_MONTHS = 6
+const UPCOMING_COUNT = 5
+
+function greeting() {
+  const hour = new Date().getHours()
+  if (hour < 12) return 'Good morning'
+  if (hour < 18) return 'Good afternoon'
+  return 'Good evening'
+}
 
 export function DashboardPage() {
   const summary = useSummary()
-  const dynamics = useMonthlyDynamics(6)
-  const upcoming = useSubscriptions({ status: 'ACTIVE', page: 0, size: 5, sort: ['nextPaymentDate,ASC'] })
-  const maxCost = Math.max(...(dynamics.data?.map((item) => item.costUzs) ?? [0]), 1)
-
-  if (summary.isError && dynamics.isError && upcoming.isError)
-    return (
-      <ErrorState
-        error={summary.error}
-        onRetry={() => {
-          void summary.refetch()
-          void dynamics.refetch()
-          void upcoming.refetch()
-        }}
-      />
-    )
+  const dynamics = useMonthlyDynamics(TREND_MONTHS)
+  const upcoming = useSubscriptions({
+    status: 'ACTIVE',
+    page: 0,
+    size: UPCOMING_COUNT,
+    sort: ['nextPaymentDate,ASC'],
+  })
 
   return (
     <div className="space-y-6">
-      {/* Page header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <p className="text-sm font-medium text-teal-700">Financial snapshot</p>
-          <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-950">
-            Your subscriptions at a glance
-          </h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Live totals and upcoming renewals from your account.
-          </p>
-        </div>
-        <Button asChild variant="accent">
-          <Link to="/subscriptions/new">
-            <Plus className="size-4" /> Add subscription
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        title={greeting()}
+        description={new Date().toLocaleDateString('en-US', {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+        })}
+        actions={
+          <Button asChild variant="accent">
+            <Link to="/subscriptions/new">
+              <Plus className="size-4" /> Add subscription
+            </Link>
+          </Button>
+        }
+      />
 
-      {/* KPI cards */}
-      <section className="grid gap-4 md:grid-cols-3" aria-label="Spending summary">
-        <MetricCard
-          label="Monthly spend"
-          icon={CircleDollarSign}
-          loading={summary.isLoading}
-          value={
-            summary.data
-              ? formatMoney(summary.data.monthlyTotalUzs, summary.data.baseCurrency || 'UZS')
-              : '—'
-          }
-          note={`Normalized in ${summary.data?.baseCurrency || 'UZS'}`}
-        />
-        <MetricCard
-          label="Active subscriptions"
-          icon={CreditCard}
-          loading={upcoming.isLoading}
-          value={upcoming.data ? String(upcoming.data.totalElements) : '—'}
-          note="Currently renewing"
-        />
-        <MetricCard
-          label="Highest monthly cost"
-          icon={Sparkles}
-          loading={summary.isLoading}
-          value={
-            summary.data?.mostExpensive
-              ? formatMoney(
-                  summary.data.mostExpensive.monthlyCostUzs,
-                  summary.data.baseCurrency || 'UZS',
-                )
-              : '—'
-          }
-          note={summary.data?.mostExpensive?.subscriptionName || 'No subscription yet'}
-        />
-      </section>
+      <SpendHero
+        summary={summary.data}
+        loading={summary.isLoading}
+        failed={summary.isError}
+        onRetry={() => void summary.refetch()}
+        activeCount={upcoming.data?.totalElements}
+        nextPayment={upcoming.data?.content[0]}
+      />
 
-      {/* Charts */}
-      <section className="grid gap-6 xl:grid-cols-[1.4fr_1fr]">
-        {/* Monthly spending bar chart */}
-        <Card>
-          <CardHeader className="flex-row items-center justify-between">
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader>
             <div>
-              <h3 className="font-bold text-slate-950">Monthly spending</h3>
-              <p className="mt-1 text-sm text-slate-500">
-                Normalized recurring cost over the last six months
-              </p>
+              <CardTitle>Spending trend</CardTitle>
+              <CardDescription>Last {TREND_MONTHS} months</CardDescription>
             </div>
           </CardHeader>
           <CardContent>
             {dynamics.isLoading ? (
-              <Skeleton className="h-64" />
+              <Skeleton className="h-56" />
             ) : dynamics.isError ? (
-              <ErrorState error={dynamics.error} onRetry={() => void dynamics.refetch()} />
-            ) : dynamics.data?.length ? (
-              <div className="flex h-64 items-end gap-3 border-b border-slate-200 pt-5">
-                {dynamics.data.map((item) => (
-                  <div key={item.month} className="flex h-full min-w-0 flex-1 flex-col justify-end gap-2">
-                    <div className="group relative flex flex-1 items-end">
-                      <div
-                        className="w-full rounded-t-lg bg-teal-500 transition-colors hover:bg-teal-600"
-                        style={{ height: `${Math.max((item.costUzs / maxCost) * 100, 3)}%` }}
-                      >
-                        <span className="sr-only">{formatMoney(item.costUzs, 'UZS')}</span>
-                      </div>
-                    </div>
-                    <span className="truncate text-center text-xs text-slate-500">{item.month}</span>
-                  </div>
-                ))}
-              </div>
+              <ErrorState bare error={dynamics.error} onRetry={() => void dynamics.refetch()} />
+            ) : dynamics.data?.some((month) => month.costUzs > 0) ? (
+              <TrendChart months={dynamics.data} />
             ) : (
               <EmptyState
-                title="No trend data yet"
-                description="Monthly spending will appear after subscriptions are added."
+                icon={TrendingUp}
+                title="No history yet"
+                description="Your monthly spending will chart here as payments go through."
               />
             )}
           </CardContent>
         </Card>
 
-        {/* Spend by category */}
         <Card>
           <CardHeader>
-            <h3 className="font-bold text-slate-950">Spend by category</h3>
-            <p className="mt-1 text-sm text-slate-500">
-              Monthly cost in {summary.data?.baseCurrency || 'UZS'}
-            </p>
+            <div>
+              <CardTitle>By category</CardTitle>
+              <CardDescription>Share of monthly spend</CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
             {summary.isLoading ? (
-              <div className="space-y-4">
-                {[1, 2, 3, 4].map((n) => (
+              <div className="space-y-3">
+                {[0, 1, 2, 3].map((n) => (
                   <Skeleton key={n} className="h-8" />
                 ))}
               </div>
-            ) : summary.data?.byCategory?.length ? (
-              <div className="space-y-4">
-                {summary.data.byCategory.map((item) => {
-                  const total = summary.data?.monthlyTotalUzs || 1
-                  return (
-                    <div key={item.category}>
-                      <div className="mb-1.5 flex items-center justify-between gap-3 text-sm">
-                        <span className="font-medium text-slate-700">{humanize(item.category)}</span>
-                        <span className="font-semibold text-slate-950">
-                          {formatMoney(item.monthlyCostUzs, summary.data?.baseCurrency || 'UZS')}
-                        </span>
-                      </div>
-                      <div className="h-2 overflow-hidden rounded-full bg-slate-100">
-                        <div
-                          className="h-full rounded-full bg-slate-800"
-                          style={{ width: `${Math.min((item.monthlyCostUzs / total) * 100, 100)}%` }}
-                        />
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
+            ) : summary.isError ? (
+              <ErrorState bare error={summary.error} onRetry={() => void summary.refetch()} />
+            ) : summary.data?.byCategory.length ? (
+              <CategoryBreakdown summary={summary.data} />
             ) : (
-              <EmptyState title="No category data" description="Category totals will appear here." />
+              <EmptyState
+                icon={PieChart}
+                title="Nothing to split yet"
+                description="Categories appear once you have active subscriptions."
+              />
             )}
           </CardContent>
         </Card>
-      </section>
+      </div>
 
-      {/* Upcoming renewals */}
-      <Card>
-        <CardHeader className="flex-row items-center justify-between">
-          <div>
-            <h3 className="font-bold text-slate-950">Upcoming renewals</h3>
-            <p className="mt-1 text-sm text-slate-500">Your next five active subscription payments</p>
-          </div>
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/subscriptions">
-              View all <ArrowUpRight className="size-4" />
-            </Link>
-          </Button>
-        </CardHeader>
-        <CardContent className="pt-4">
-          {upcoming.isLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map((n) => (
-                <Skeleton key={n} className="h-16" />
-              ))}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <div>
+              <CardTitle>Coming up</CardTitle>
+              <CardDescription>Your next payments</CardDescription>
             </div>
-          ) : upcoming.data?.content.length ? (
-            <div className="divide-y divide-slate-100">
-              {upcoming.data.content.map((item) => (
-                <Link
-                  to={`/subscriptions/${item.id}`}
-                  key={item.id}
-                  className="flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0 hover:text-teal-700"
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-600">
-                      <CalendarClock className="size-4" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-slate-900">{item.name}</p>
-                      <p className="text-xs text-slate-500">
-                        {humanize(item.category)} · {humanize(item.frequency)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-slate-950">
-                      {formatMoney(item.price, item.currency)}
-                    </p>
-                    <p className="text-xs text-slate-500">{formatDate(item.nextPaymentDate)}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              title="No active renewals"
-              description="Add an active subscription to see its next payment date."
-            />
-          )}
-        </CardContent>
-      </Card>
+            <Button asChild variant="ghost" size="sm" className="-mr-2 -mt-1 text-slate-500">
+              <Link to="/subscriptions">
+                View all <ArrowRight className="size-3.5" />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent className="px-3 pb-3 pt-4">
+            {upcoming.isLoading ? (
+              <div className="space-y-2 px-3">
+                {[0, 1, 2].map((n) => (
+                  <Skeleton key={n} className="h-14" />
+                ))}
+              </div>
+            ) : upcoming.isError ? (
+              <ErrorState bare error={upcoming.error} onRetry={() => void upcoming.refetch()} />
+            ) : upcoming.data?.content.length ? (
+              <ul>
+                {upcoming.data.content.map((item) => (
+                  <UpcomingRow key={item.id} item={item} />
+                ))}
+              </ul>
+            ) : (
+              <EmptyState
+                icon={CalendarCheck}
+                title="All clear"
+                description="No active subscriptions to renew. Add one to start tracking."
+                action={
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/subscriptions/new">
+                      <Plus className="size-4" /> Add subscription
+                    </Link>
+                  </Button>
+                }
+              />
+            )}
+          </CardContent>
+        </Card>
+
+        <CurrencyRateCard />
+      </div>
     </div>
   )
 }
 
-interface MetricCardProps {
-  label: string
-  value: string
-  note: string
-  icon: ElementType
+function SpendHero({
+  summary,
+  loading,
+  failed,
+  onRetry,
+  activeCount,
+  nextPayment,
+}: {
+  summary?: SpendingSummary
   loading: boolean
+  failed: boolean
+  onRetry: () => void
+  activeCount?: number
+  nextPayment?: Subscription
+}) {
+  const { displayCurrency, convertToDisplay } = useCurrency()
+  const baseCurrency = (summary?.baseCurrency || 'UZS') as Currency
+  const monthly = convertToDisplay(summary?.monthlyTotalUzs ?? 0, baseCurrency)
+  const topExpense = summary?.mostExpensive
+
+  return (
+    <section className="relative overflow-hidden rounded-3xl bg-ink p-6 text-white shadow-xl shadow-slate-900/10 sm:p-8">
+      <div aria-hidden className="pointer-events-none absolute -right-24 -top-32 size-96 rounded-full bg-teal-500/25 blur-3xl" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-40 left-1/3 size-80 rounded-full bg-emerald-400/10 blur-3xl" />
+
+      <div className="relative grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+        <div>
+          <p className="text-sm text-slate-400">You spend each month</p>
+          {loading ? (
+            <Skeleton className="mt-3 h-12 w-64 bg-white/10" />
+          ) : failed ? (
+            <div className="mt-3 flex items-center gap-3">
+              <p className="text-lg text-slate-300">Couldn’t load your totals.</p>
+              <Button variant="subtle" size="sm" onClick={onRetry}>
+                Retry
+              </Button>
+            </div>
+          ) : (
+            <p className="mt-2 text-4xl font-bold tracking-tight tabular-nums sm:text-5xl animate-fade-in">
+              {formatMoney(monthly, displayCurrency)}
+            </p>
+          )}
+          {!loading && !failed && (
+            <p className="mt-3 text-sm text-slate-400">
+              About{' '}
+              <span className="font-medium text-slate-200">
+                {formatMoney(monthly * 12, displayCurrency)}
+              </span>{' '}
+              a year
+            </p>
+          )}
+        </div>
+
+        <dl className="grid grid-cols-3 gap-4 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10 backdrop-blur-sm">
+          <HeroStat label="Active" value={activeCount === undefined ? '—' : String(activeCount)} />
+          <HeroStat
+            label="Next up"
+            value={nextPayment ? formatDate(nextPayment.nextPaymentDate).replace(/, \d{4}$/, '') : '—'}
+            hint={nextPayment?.name}
+          />
+          <HeroStat
+            label="Biggest"
+            value={
+              topExpense
+                ? formatCompactMoney(convertToDisplay(topExpense.monthlyCostUzs, baseCurrency), displayCurrency)
+                : '—'
+            }
+            hint={topExpense?.subscriptionName}
+          />
+        </dl>
+      </div>
+    </section>
+  )
 }
 
-function MetricCard({ label, value, note, icon: Icon, loading }: MetricCardProps) {
+function HeroStat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <Card>
-      <CardContent>
-        <div className="flex items-start justify-between">
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-slate-500">{label}</p>
-            {loading ? (
-              <Skeleton className="mt-3 h-8 w-32" />
-            ) : (
-              <p className="mt-2 truncate text-2xl font-bold tracking-tight text-slate-950">{value}</p>
-            )}
-            <p className="mt-2 truncate text-xs text-slate-400">{note}</p>
-          </div>
-          <div className="grid size-11 place-items-center rounded-2xl bg-teal-50 text-teal-700">
-            <Icon className="size-5" />
-          </div>
+    <div className="min-w-0">
+      <dt className="text-xs text-slate-400">{label}</dt>
+      <dd className="mt-1 truncate text-lg font-semibold tabular-nums">{value}</dd>
+      {hint && <dd className="truncate text-xs text-slate-500">{hint}</dd>}
+    </div>
+  )
+}
+
+function TrendChart({ months }: { months: MonthlyCost[] }) {
+  const { displayCurrency, convertToDisplay } = useCurrency()
+  const values = months.map((month) => convertToDisplay(month.costUzs, 'UZS'))
+  const max = Math.max(...values, 1)
+  const average = values.reduce((sum, value) => sum + value, 0) / values.length
+
+  return (
+    <div>
+      <div className="flex h-52 items-end gap-2 sm:gap-4" role="list" aria-label="Monthly spending">
+        {months.map((month, index) => {
+          const isLatest = index === months.length - 1
+          const label = formatMonthLabel(month.month)
+          return (
+            <div
+              key={month.month}
+              role="listitem"
+              aria-label={`${label}: ${formatMoney(values[index], displayCurrency)}`}
+              className="group relative flex h-full flex-1 flex-col items-center justify-end gap-2"
+            >
+              <span className="pointer-events-none absolute -top-1 z-10 whitespace-nowrap rounded-lg bg-slate-900 px-2 py-1 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+                {formatMoney(values[index], displayCurrency)}
+              </span>
+              <div className="flex w-full max-w-14 flex-1 items-end">
+                <div
+                  className={cn(
+                    'w-full rounded-lg transition-all duration-500',
+                    isLatest
+                      ? 'bg-linear-to-t from-teal-600 to-emerald-400'
+                      : 'bg-slate-200 group-hover:bg-slate-300',
+                  )}
+                  style={{ height: `${Math.max((values[index] / max) * 100, 3)}%` }}
+                />
+              </div>
+              <span className={cn('text-xs', isLatest ? 'font-semibold text-slate-900' : 'text-slate-400')}>
+                {label}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+      <p className="mt-5 border-t border-slate-100 pt-4 text-[13px] text-slate-500">
+        Monthly average{' '}
+        <span className="font-semibold tabular-nums text-slate-900">
+          {formatMoney(average, displayCurrency)}
+        </span>
+      </p>
+    </div>
+  )
+}
+
+function CategoryBreakdown({ summary }: { summary: SpendingSummary }) {
+  const { displayCurrency, convertToDisplay } = useCurrency()
+  const baseCurrency = (summary.baseCurrency || 'UZS') as Currency
+  const total = summary.byCategory.reduce((sum, item) => sum + item.monthlyCostUzs, 0) || 1
+
+  return (
+    <div className="space-y-5">
+      <div className="flex h-2.5 overflow-hidden rounded-full bg-slate-100">
+        {summary.byCategory.map((item) => (
+          <div
+            key={item.category}
+            className="h-full transition-all duration-500 first:rounded-l-full last:rounded-r-full"
+            style={{
+              width: `${(item.monthlyCostUzs / total) * 100}%`,
+              backgroundColor: getCategoryMeta(item.category).accentColor,
+            }}
+          />
+        ))}
+      </div>
+      <ul className="space-y-3">
+        {summary.byCategory.map((item) => (
+          <li key={item.category} className="flex items-center gap-3 text-sm">
+            <span
+              className="size-2.5 shrink-0 rounded-full"
+              style={{ backgroundColor: getCategoryMeta(item.category).accentColor }}
+            />
+            <span className="flex-1 truncate text-slate-600">{getCategoryMeta(item.category).label}</span>
+            <span className="font-medium tabular-nums text-slate-900">
+              {formatMoney(convertToDisplay(item.monthlyCostUzs, baseCurrency), displayCurrency)}
+            </span>
+            <span className="w-9 text-right text-xs tabular-nums text-slate-400">
+              {Math.round((item.monthlyCostUzs / total) * 100)}%
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+function UpcomingRow({ item }: { item: Subscription }) {
+  return (
+    <li>
+      <Link
+        to={`/subscriptions/${item.id}`}
+        className="flex items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-slate-50"
+      >
+        <CategoryIcon category={item.category} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-medium text-slate-900">{item.name}</p>
+          <p className="text-[13px] text-slate-400">{formatDate(item.nextPaymentDate)}</p>
         </div>
-      </CardContent>
-    </Card>
+        <div className="flex flex-col items-end gap-1">
+          <span className="font-semibold tabular-nums text-slate-900">
+            {formatMoney(item.price, item.currency)}
+          </span>
+          <RenewalPill date={item.nextPaymentDate} />
+        </div>
+      </Link>
+    </li>
   )
 }
