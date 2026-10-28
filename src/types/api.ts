@@ -87,6 +87,13 @@ export interface SpendingSummary {
   byCategory: Array<{ category: Category; monthlyCostUzs: number; currency?: string }>
 }
 
+export interface ExchangeRatesResponse {
+  baseCurrency: string
+  /** How many UZS one unit of each currency is worth. */
+  rates: Partial<Record<Currency, number>>
+  updatedAt: string
+}
+
 export interface MonthlyCost {
   month: string
   costUzs: number

@@ -1,23 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
+import { currenciesApi } from '@/api/endpoints/currencies'
+import { toConversionTable, type ExchangeRates } from '@/lib/exchange-rates'
 import type { Currency } from '@/types/api'
 
-export interface ExchangeRates {
-  USD: number
-  EUR: number
-  UZS: number
-}
+export type { ExchangeRates }
 
-// Fallback rates if network is offline or external rate API is unreachable
+// Used only while the server's rates can't be loaded; the UI then shows them as "Offline".
 export const FALLBACK_RATES: Record<Currency, ExchangeRates> = {
   USD: { USD: 1, EUR: 0.92, UZS: 12850 },
   EUR: { USD: 1.087, EUR: 1, UZS: 13967 },
   UZS: { USD: 1 / 12850, EUR: 1 / 13967, UZS: 1 },
-}
-
-interface OpenRateResponse {
-  result: string
-  rates: Record<string, number>
-  time_last_update_utc?: string
 }
 
 export const currencyRatesKey = ['currency-rates'] as const
@@ -31,41 +23,29 @@ export function toUzs(
   return amount * (rates[currency]?.UZS ?? FALLBACK_RATES[currency].UZS)
 }
 
+/** The same CBU rates the server uses for totals, reports and payments. */
 export async function fetchLiveExchangeRates(): Promise<{
   rates: Record<Currency, ExchangeRates>
   lastUpdated: string
   isLive: boolean
 }> {
   try {
-    const response = await fetch('https://open.er-api.com/v6/latest/USD')
-    if (!response.ok) throw new Error('Failed to fetch rates')
-    const data = (await response.json()) as OpenRateResponse
-
-    if (data.result === 'success' && data.rates.UZS && data.rates.EUR) {
-      const usdToUzs = data.rates.UZS
-      const usdToEur = data.rates.EUR
-
-      const rates: Record<Currency, ExchangeRates> = {
-        USD: { USD: 1, EUR: usdToEur, UZS: usdToUzs },
-        EUR: { USD: 1 / usdToEur, EUR: 1, UZS: usdToUzs / usdToEur },
-        UZS: { USD: 1 / usdToUzs, EUR: usdToEur / usdToUzs, UZS: 1 },
-      }
-
+    const response = await currenciesApi.rates()
+    const rates = toConversionTable(response.rates)
+    if (rates) {
       return {
         rates,
-        lastUpdated: data.time_last_update_utc
-          ? new Date(data.time_last_update_utc).toLocaleString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-            })
-          : 'Just now',
+        lastUpdated: new Date(response.updatedAt).toLocaleString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
         isLive: true,
       }
     }
   } catch {
-    // Silently fallback to built-in current rates
+    // Fall back to the built-in rates below.
   }
 
   return {
