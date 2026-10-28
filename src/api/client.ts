@@ -88,6 +88,8 @@ function extractServerMessage(data: unknown): string | null {
   if (!data || typeof data !== 'object' || data instanceof Blob) return null
 
   const record = data as Record<string, unknown>
+  // Field problems are shown next to each field (see getFieldErrors), not as one vague banner.
+  if (record.fields || record.fieldErrors) return null
   const direct = toFriendlyMessage(record.message) ?? toFriendlyMessage(record.detail)
   if (direct) return direct
 
@@ -117,6 +119,27 @@ function statusMessage(status: number, isAuthAttempt: boolean): string {
   if (status === 429) return 'Too many attempts. Please wait a moment and try again.'
   if (status === 503) return 'The service is temporarily unavailable. Please try again in a few minutes.'
   return 'Something went wrong on our side. Please try again in a moment.'
+}
+
+/** The server's per-field validation messages, e.g. { email: 'Must be a well-formed email address' }. */
+export function getFieldErrors(error: unknown): Record<string, string> {
+  if (!axios.isAxiosError(error) || error.response?.status !== 400) return {}
+  const data = error.response.data as
+    | { fields?: Record<string, unknown>; fieldErrors?: Array<{ field?: unknown; message?: unknown }> }
+    | null
+    | undefined
+  const entries: Array<[unknown, unknown]> = data?.fields
+    ? Object.entries(data.fields)
+    : (data?.fieldErrors ?? []).map((item) => [item.field, item.message])
+
+  const result: Record<string, string> = {}
+  for (const [field, message] of entries) {
+    const friendly = toFriendlyMessage(message)
+    if (typeof field === 'string' && friendly && !result[field]) {
+      result[field] = friendly.charAt(0).toUpperCase() + friendly.slice(1)
+    }
+  }
+  return result
 }
 
 export function getApiError(error: unknown): string {

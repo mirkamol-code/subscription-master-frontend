@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import axios from 'axios'
 import { useForm } from 'react-hook-form'
 import { ArrowRight, CalendarClock, Eye, EyeOff, Globe2, Loader2, Lock, PieChart } from 'lucide-react'
-import { getApiError } from '@/api/client'
+import { getApiError, getFieldErrors } from '@/api/client'
 import { BrandMark } from '@/components/common/brand-mark'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -85,6 +85,9 @@ export function AuthPage({ mode }: { mode: 'login' | 'register' }) {
         }
       }
       setServerError(getApiError(error))
+      for (const [field, message] of Object.entries(getFieldErrors(error))) {
+        if (field === 'email' || field === 'password') form.setError(field, { message })
+      }
     }
   })
 

@@ -21,7 +21,8 @@ import {
 
 interface SubscriptionFormProps {
   initialValues?: SubscriptionRequest
-  onSubmit: (values: SubscriptionValues) => Promise<void>
+  /** May resolve to the server's per-field messages, which are shown under each field. */
+  onSubmit: (values: SubscriptionValues) => Promise<Record<string, string> | void>
   pending: boolean
   submitLabel: string
   cancelHref: string
@@ -59,8 +60,15 @@ export function SubscriptionForm({
   const { errors } = form.formState
   const preview = useWatch({ control: form.control })
 
+  const submit = form.handleSubmit(async (values) => {
+    const fieldErrors = await onSubmit(values)
+    for (const [field, message] of Object.entries(fieldErrors ?? {})) {
+      if (field in values) form.setError(field as keyof SubscriptionValues, { message })
+    }
+  })
+
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="grid gap-6 lg:grid-cols-[1fr_320px]">
+    <form onSubmit={submit} noValidate className="grid gap-6 lg:grid-cols-[1fr_320px]">
       <Card className="divide-y divide-slate-100">
         {serverError && (
           <div role="alert" className="rounded-t-2xl bg-rose-50 px-6 py-4 text-sm text-rose-700">

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { toast } from 'sonner'
-import { getApiError } from '@/api/client'
+import { getApiError, getFieldErrors } from '@/api/client'
 import { ErrorState } from '@/components/common/error-state'
 import { PageHeader } from '@/components/common/page-header'
 import { Button } from '@/components/ui/button'
@@ -63,6 +63,7 @@ export function SubscriptionFormPage({ mode }: { mode: 'create' | 'edit' }) {
       navigate(`/subscriptions/${saved.id}`)
     } catch (error) {
       setServerError(getApiError(error))
+      return getFieldErrors(error)
     }
   }
 
