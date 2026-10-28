@@ -8,6 +8,14 @@ import type { Currency, Subscription } from '@/types/api'
 
 export type ReportFormat = 'xlsx' | 'csv'
 
+/** Thrown instead of building a report with made-up offline rates. */
+export class ExchangeRatesUnavailableError extends Error {
+  constructor() {
+    super('Exchange rates are temporarily unavailable, so the report can’t be created right now. Please try again in a few minutes.')
+    this.name = 'ExchangeRatesUnavailableError'
+  }
+}
+
 const REPORT_FILENAME = 'subscriptions-annual-report'
 
 const REPORT_HEADERS = [
@@ -56,14 +64,15 @@ function triggerBlobDownload(blob: Blob, filename: string) {
 }
 
 /**
- * Built in the browser rather than downloaded from the server, so the file always uses the
- * same readable labels and exchange rates the user sees in the app.
+ * Built in the browser rather than downloaded from the server, so the file keeps the app's
+ * readable labels and every subscription. Rates always come live from the server.
  */
 export async function downloadAnnualReport(format: ReportFormat) {
-  const [subscriptions, { rates }] = await Promise.all([
+  const [subscriptions, { rates, isLive }] = await Promise.all([
     fetchAllSubscriptions(),
     fetchLiveExchangeRates(),
   ])
+  if (!isLive) throw new ExchangeRatesUnavailableError()
   const rows = buildReportRows(subscriptions, rates)
   const blob =
     format === 'csv'

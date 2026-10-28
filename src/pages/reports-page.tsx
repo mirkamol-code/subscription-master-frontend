@@ -2,7 +2,11 @@ import { useState, type ComponentType } from 'react'
 import { Download, FileSpreadsheet, FileText, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { getApiError } from '@/api/client'
-import { downloadAnnualReport, type ReportFormat } from '@/features/reports/annual-report'
+import {
+  downloadAnnualReport,
+  ExchangeRatesUnavailableError,
+  type ReportFormat,
+} from '@/features/reports/annual-report'
 import { PageHeader } from '@/components/common/page-header'
 import { cn } from '@/lib/utils'
 
@@ -45,7 +49,7 @@ export function ReportsPage() {
       await downloadAnnualReport(format)
       toast.success('Your report is downloading')
     } catch (error) {
-      toast.error(getApiError(error))
+      toast.error(error instanceof ExchangeRatesUnavailableError ? error.message : getApiError(error))
     } finally {
       setDownloading(null)
     }
