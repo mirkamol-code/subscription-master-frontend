@@ -42,6 +42,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login: loginMutation,
       register: registerMutation,
       logout: () => {
+        const current = tokenStore.get()
+        if (current?.refreshToken) {
+          void authApi.logout(current.refreshToken).catch(() => {
+            // Ignore network error on logout; local session is cleared immediately
+          })
+        }
         tokenStore.clear()
         queryClient.clear()
       },
