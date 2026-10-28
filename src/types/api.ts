@@ -24,6 +24,8 @@ export interface SubscriptionRequest {
   status: SubscriptionStatus
   category: Category
   startDate: string
+  /** The version being edited; the server rejects the update with 409 if it has changed since. */
+  version?: number
 }
 
 export interface Subscription extends SubscriptionRequest {
@@ -47,11 +49,24 @@ export interface Page<T> {
 export interface SubscriptionFilters {
   status?: SubscriptionStatus
   currency?: Currency
+  category?: Category
+  name?: string
+  nextPaymentDateFrom?: string
+  nextPaymentDateTo?: string
   minPrice?: number
   maxPrice?: number
   page?: number
   size?: number
   sort?: string[]
+}
+
+export interface PaymentHistory {
+  id: number
+  chargedAt: string
+  amount: number
+  currency: Currency
+  amountUzs: number
+  exchangeRateToUzs?: number
 }
 
 export interface TokenResponse {
@@ -69,7 +84,7 @@ export interface SpendingSummary {
     subscriptionName: string
     monthlyCostUzs: number
   }
-  byCategory: Array<{ category: Category; monthlyCostUzs: number }>
+  byCategory: Array<{ category: Category; monthlyCostUzs: number; currency?: string }>
 }
 
 export interface MonthlyCost {
@@ -81,4 +96,3 @@ export interface AdminUsage {
   serviceName: string
   subscriptionCount: number
 }
-
