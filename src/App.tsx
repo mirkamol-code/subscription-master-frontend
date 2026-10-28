@@ -31,9 +31,9 @@ const SubscriptionsPage = lazy(() =>
 
 function PageFallback() {
   return (
-    <div className="mx-auto max-w-7xl space-y-4 p-8" aria-label="Loading page…">
-      <Skeleton className="h-10 w-56" />
-      <Skeleton className="h-72" />
+    <div className="mx-auto max-w-6xl space-y-6 px-4 py-10 sm:px-8" aria-busy="true" aria-label="Loading">
+      <Skeleton className="h-9 w-56" />
+      <Skeleton className="h-48 rounded-3xl" />
     </div>
   )
 }
@@ -43,8 +43,8 @@ export default function App() {
     <Suspense fallback={<PageFallback />}>
       <Routes>
         <Route element={<PublicOnlyRoute />}>
-          <Route path="/login" element={<AuthPage mode="login" />} />
-          <Route path="/register" element={<AuthPage mode="register" />} />
+          <Route path="/login" element={<AuthPage key="login" mode="login" />} />
+          <Route path="/register" element={<AuthPage key="register" mode="register" />} />
         </Route>
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>

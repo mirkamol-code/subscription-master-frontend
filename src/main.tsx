@@ -6,6 +6,7 @@ import { Toaster } from 'sonner'
 import './index.css'
 import App from './App.tsx'
 import { AuthProvider } from '@/features/auth/auth-context'
+import { CurrencyProvider } from '@/features/currency/currency-context'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,8 +26,13 @@ createRoot(root).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <App />
-          <Toaster position="top-right" richColors closeButton />
+          <CurrencyProvider>
+            <App />
+            <Toaster
+              position="bottom-right"
+              toastOptions={{ className: 'rounded-xl! font-sans! text-sm!' }}
+            />
+          </CurrencyProvider>
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
