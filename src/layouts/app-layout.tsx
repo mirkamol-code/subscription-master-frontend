@@ -16,7 +16,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { BrandMark } from '@/components/common/brand-mark'
 import { useAuth } from '@/features/auth/auth-context'
 import { CurrencySwitcherDropdown } from '@/features/currency/currency-switcher-dropdown'
-import { useIsAdmin } from '@/hooks/use-statistics'
+import { useIsAdmin } from '@/hooks/use-current-user'
 import { cn } from '@/lib/utils'
 
 interface NavItem {

@@ -9,8 +9,6 @@ export interface StoredSession extends TokenResponse {
 
 interface JwtPayload {
   sub?: string
-  roles?: string[]
-  permissions?: string[]
 }
 
 function parseJwtPayload(token?: string): JwtPayload | null {
@@ -47,12 +45,6 @@ export const tokenStore = {
     localStorage.setItem(TOKEN_KEY, JSON.stringify(session))
     window.dispatchEvent(new Event('auth-session-changed'))
     return session
-  },
-  hasAdminRole(): boolean | null {
-    const session = this.get()
-    const payload = parseJwtPayload(session?.accessToken)
-    if (!payload || !Array.isArray(payload.roles)) return null
-    return payload.roles.some((role) => role === 'ADMIN' || role === 'ROLE_ADMIN')
   },
   clear() {
     localStorage.removeItem(TOKEN_KEY)

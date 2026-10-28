@@ -87,6 +87,14 @@ export interface SpendingSummary {
   byCategory: Array<{ category: Category; monthlyCostUzs: number; currency?: string }>
 }
 
+export interface UserProfile {
+  id: number
+  email: string
+  roles: string[]
+  baseCurrency: string
+  createdAt: string
+}
+
 export interface ExchangeRatesResponse {
   baseCurrency: string
   /** How many UZS one unit of each currency is worth. */

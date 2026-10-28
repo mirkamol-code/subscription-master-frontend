@@ -18,28 +18,12 @@ export function useMonthlyDynamics(months = 6) {
   })
 }
 
-export function useAdminUsage(options?: { enabled?: boolean }) {
-  const hasToken = !!tokenStore.get()?.accessToken
-  const enabled = options?.enabled ?? hasToken
+export function useAdminUsage() {
   return useQuery({
     queryKey: ['admin', 'service-usage'],
     queryFn: statisticsApi.adminUsage,
     retry: false,
-    enabled: hasToken && enabled,
+    enabled: !!tokenStore.get()?.accessToken,
     staleTime: 5 * 60_000,
   })
-}
-
-export function useIsAdmin() {
-  const jwtAdmin = tokenStore.hasAdminRole()
-  const query = useAdminUsage({ enabled: jwtAdmin === null || jwtAdmin === true })
-
-  if (jwtAdmin === false) {
-    return { isAdmin: false, isLoading: false }
-  }
-
-  return {
-    isAdmin: jwtAdmin === true || (query.isSuccess && Array.isArray(query.data)),
-    isLoading: jwtAdmin === null ? query.isLoading : false,
-  }
 }
