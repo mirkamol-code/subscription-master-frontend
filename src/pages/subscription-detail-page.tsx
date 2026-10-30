@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Pencil, Receipt, Trash2 } from 'lucide-react'
+import { ArrowLeft, History, Pencil, Receipt, Trash2 } from 'lucide-react'
 import { CategoryIcon } from '@/components/common/category-icon'
 import { ErrorState } from '@/components/common/error-state'
 import { RenewalPill } from '@/components/common/renewal-pill'
@@ -10,13 +10,15 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/common/empty-state'
 import { useCurrency } from '@/features/currency/currency-context'
-import { STATUS_ACTION, STATUS_ACTION_UI } from '@/features/subscriptions/status-action'
+import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-action'
+import { describeStatusChange, type StatusChangeDescription } from '@/features/subscriptions/status-change-description'
+import { getStatusChoices } from '@/features/subscriptions/status-choices'
 import { useSubscriptionActions } from '@/features/subscriptions/use-subscription-actions'
-import { useSubscription, useSubscriptionHistory } from '@/hooks/use-subscriptions'
+import { useStatusHistory, useSubscription, useSubscriptionHistory } from '@/hooks/use-subscriptions'
 import { getCategoryMeta } from '@/lib/category-config'
 import { isRenewing } from '@/lib/renewals'
 import { FREQUENCY_LABEL, FREQUENCY_SUFFIX } from '@/lib/labels'
-import { formatDate, formatMoney, getAnnualizedCost, getMonthlyEquivalent } from '@/lib/utils'
+import { cn, formatDate, formatMoney, getAnnualizedCost, getMonthlyEquivalent, todayIsoDate } from '@/lib/utils'
 import type { Subscription } from '@/types/api'
 
 function BackLink() {
@@ -62,8 +64,6 @@ export function SubscriptionDetailPage() {
   }
 
   const item = query.data
-  const statusAction = STATUS_ACTION[item.status]
-  const statusUi = statusAction && STATUS_ACTION_UI[statusAction]
 
   return (
     <div className="space-y-6">
@@ -85,17 +85,21 @@ export function SubscriptionDetailPage() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {statusUi && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => actions.changeStatus(item)}
-                disabled={actions.isChangingStatus}
-              >
-                <statusUi.icon className="size-4" />
-                {actions.isChangingStatus ? statusUi.pendingLabel : statusUi.label}
-              </Button>
-            )}
+            {getStatusChoices(item.status).map((status) => {
+              const { icon: StatusIcon, label } = STATUS_CHOICE_UI[status]
+              return (
+                <Button
+                  key={status}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => actions.changeStatus(item, status)}
+                  disabled={actions.isChangingStatus}
+                >
+                  <StatusIcon className="size-4" />
+                  {label}
+                </Button>
+              )
+            })}
             <Button asChild variant="outline" size="sm">
               <Link to={`/subscriptions/${item.id}/edit`}>
                 <Pencil className="size-4" /> Edit
@@ -126,6 +130,7 @@ export function SubscriptionDetailPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <PaymentHistory subscription={item} />
         <NextPaymentCard subscription={item} />
+        <StatusHistory subscription={item} />
       </div>
 
       <ConfirmDialog {...actions.deleteDialog} />
@@ -171,13 +176,72 @@ function NextPaymentCard({ subscription }: { subscription: Subscription }) {
             </div>
           </>
         ) : (
-          <p className="mt-2 text-lg font-medium text-slate-200">
-            {subscription.status === 'PAUSED'
-              ? 'Paused — no payments until you resume it.'
-              : 'Cancelled — this won’t renew.'}
-          </p>
+          <p className="mt-2 text-lg font-medium text-slate-200">{describeNoNextPayment(subscription)}</p>
         )}
       </div>
+    </Card>
+  )
+}
+
+function describeNoNextPayment(subscription: Subscription) {
+  if (subscription.status === 'BILLING_REQUIRED') {
+    return `Billing required — check your latest payment to ${subscription.name}.`
+  }
+  if (subscription.endsOn && subscription.endsOn >= todayIsoDate()) {
+    return `Cancelled — access until ${formatDate(subscription.endsOn)}.`
+  }
+  return 'Cancelled — this won’t renew.'
+}
+
+const TONE_DOT: Record<StatusChangeDescription['tone'], string> = {
+  positive: 'bg-emerald-500',
+  neutral: 'bg-slate-400',
+  warning: 'bg-amber-500',
+  danger: 'bg-rose-500',
+}
+
+function StatusHistory({ subscription }: { subscription: Subscription }) {
+  const history = useStatusHistory(subscription.id)
+
+  return (
+    <Card className="lg:col-span-2">
+      <CardHeader>
+        <CardTitle>Status history</CardTitle>
+      </CardHeader>
+      <CardContent className="px-3 pb-3 pt-3">
+        {history.isLoading ? (
+          <div className="space-y-2 px-3">
+            <Skeleton className="h-12" />
+            <Skeleton className="h-12" />
+          </div>
+        ) : history.isError ? (
+          <ErrorState bare error={history.error} onRetry={() => void history.refetch()} />
+        ) : !history.data?.length ? (
+          <EmptyState
+            icon={History}
+            title="No status changes yet"
+            description="Receipts, cancellations and failed payments will show up here."
+          />
+        ) : (
+          <ul className="divide-y divide-slate-100">
+            {history.data.map((change) => {
+              const description = describeStatusChange(change, subscription)
+              return (
+                <li key={change.id} className="flex items-start gap-3 px-3 py-3">
+                  <span className={cn('mt-1.5 size-2 shrink-0 rounded-full', TONE_DOT[description.tone])} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm text-slate-700">{description.text}</span>
+                    {description.detail && (
+                      <span className="block truncate text-xs text-slate-400">{description.detail}</span>
+                    )}
+                  </span>
+                  <span className="shrink-0 text-xs text-slate-400">{formatDate(change.effectiveAt.slice(0, 10))}</span>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </CardContent>
     </Card>
   )
 }

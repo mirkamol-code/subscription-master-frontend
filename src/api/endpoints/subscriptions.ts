@@ -2,9 +2,11 @@ import { api } from '@/api/client'
 import type {
   Page,
   PaymentHistory,
+  StatusChange,
   Subscription,
   SubscriptionFilters,
   SubscriptionRequest,
+  SubscriptionStatus,
 } from '@/types/api'
 
 export const subscriptionsApi = {
@@ -19,10 +21,10 @@ export const subscriptionsApi = {
   remove: async (id: number) => {
     await api.delete(`/subscriptions/${id}`)
   },
-  pause: async (id: number) =>
-    (await api.post<Subscription>(`/subscriptions/${id}/pause`)).data,
-  resume: async (id: number) =>
-    (await api.post<Subscription>(`/subscriptions/${id}/resume`)).data,
+  changeStatus: async (id: number, status: SubscriptionStatus) =>
+    (await api.put<Subscription>(`/subscriptions/${id}/status`, { status })).data,
+  getStatusHistory: async (id: number) =>
+    (await api.get<StatusChange[]>(`/subscriptions/${id}/status-history`)).data,
   getHistory: async (id: number) =>
     (await api.get<PaymentHistory[]>(`/subscriptions/${id}/history`)).data,
 }

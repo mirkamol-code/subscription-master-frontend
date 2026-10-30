@@ -58,6 +58,10 @@ export function formatDate(value: string | undefined) {
   }).format(date)
 }
 
+export function formatShortDate(value: string) {
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(parseLocalDate(value))
+}
+
 /** Turns "2026-05" or "2026-05-01" into "May"; leaves anything else untouched. */
 export function formatMonthLabel(value: string) {
   if (!/^\d{4}-\d{2}/.test(value)) return value

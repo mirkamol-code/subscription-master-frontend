@@ -1,7 +1,7 @@
 import type { Subscription } from '@/types/api'
 import { parseLocalDate, toIsoDate } from '@/lib/utils'
 
-/** Only active subscriptions renew; paused and cancelled ones have no upcoming payment. */
+/** Only active subscriptions renew; cancelled and billing-required ones have no upcoming payment. */
 export function isRenewing(sub: Pick<Subscription, 'status'>): boolean {
   return sub.status === 'ACTIVE'
 }
