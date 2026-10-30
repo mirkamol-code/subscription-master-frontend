@@ -101,6 +101,25 @@ export function useChangeSubscriptionStatus() {
   })
 }
 
+/** Saving a subscription unchanged tells the backend its guessed details are right. */
+export function useConfirmSubscriptionReview() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, name, price, currency, frequency, status, category, startDate, version }: Subscription) =>
+      subscriptionsApi.update(id, { name, price, currency, frequency, status, category, startDate, version }),
+    onSuccess: (data) => refreshSubscriptionData(queryClient, data),
+  })
+}
+
+export function useSetSubscriptionHidden() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, hidden }: { id: number; hidden: boolean }) =>
+      hidden ? subscriptionsApi.hide(id) : subscriptionsApi.unhide(id),
+    onSuccess: (data) => refreshSubscriptionData(queryClient, data),
+  })
+}
+
 export function useDeleteSubscription() {
   const queryClient = useQueryClient()
   return useMutation({

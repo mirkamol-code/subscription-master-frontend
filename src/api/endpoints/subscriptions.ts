@@ -23,6 +23,8 @@ export const subscriptionsApi = {
   },
   changeStatus: async (id: number, status: SubscriptionStatus) =>
     (await api.put<Subscription>(`/subscriptions/${id}/status`, { status })).data,
+  hide: async (id: number) => (await api.post<Subscription>(`/subscriptions/${id}/hide`)).data,
+  unhide: async (id: number) => (await api.post<Subscription>(`/subscriptions/${id}/unhide`)).data,
   getStatusHistory: async (id: number) =>
     (await api.get<StatusChange[]>(`/subscriptions/${id}/status-history`)).data,
   getHistory: async (id: number) =>

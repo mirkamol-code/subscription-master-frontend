@@ -1,5 +1,5 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { Eye, EyeOff, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-action'
 import { getStatusChoices, type UserStatus } from '@/features/subscriptions/status-choices'
@@ -11,6 +11,7 @@ const itemClass =
 
 export interface SubscriptionItemActions {
   onChangeStatus: (item: Subscription, status: UserStatus) => void
+  onToggleHidden: (item: Subscription) => void
   onDelete: (item: Subscription) => void
 }
 
@@ -22,6 +23,7 @@ interface SubscriptionActionsMenuProps extends SubscriptionItemActions {
 export function SubscriptionActionsMenu({
   item,
   onChangeStatus,
+  onToggleHidden,
   onDelete,
   className,
 }: SubscriptionActionsMenuProps) {
@@ -58,6 +60,17 @@ export function SubscriptionActionsMenu({
               </DropdownMenu.Item>
             )
           })}
+          <DropdownMenu.Item onSelect={() => onToggleHidden(item)} className={itemClass}>
+            {item.hidden ? (
+              <>
+                <Eye className="size-4 text-slate-400" /> Unhide
+              </>
+            ) : (
+              <>
+                <EyeOff className="size-4 text-slate-400" /> Hide
+              </>
+            )}
+          </DropdownMenu.Item>
           <DropdownMenu.Separator className="my-1 h-px bg-slate-100" />
           <DropdownMenu.Item
             onSelect={() => onDelete(item)}
