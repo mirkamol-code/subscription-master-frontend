@@ -17,7 +17,7 @@ const statisticsKeys = { all: ['statistics'] as const }
 const FALLBACK_PAGE_SIZE = 100
 
 /** Any change to a subscription also changes the totals and charts built from it. */
-function refreshSubscriptionData(queryClient: QueryClient, updated?: Subscription) {
+export function refreshSubscriptionData(queryClient: QueryClient, updated?: Subscription) {
   if (updated) queryClient.setQueryData(subscriptionKeys.detail(updated.id), updated)
   void queryClient.invalidateQueries({ queryKey: subscriptionKeys.all })
   void queryClient.invalidateQueries({ queryKey: statisticsKeys.all })

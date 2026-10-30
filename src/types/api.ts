@@ -142,3 +142,17 @@ export interface AdminUsage {
   serviceName: string
   subscriptionCount: number
 }
+
+export interface GmailConnection {
+  connected: boolean
+  gmailAddress: string | null
+  status: 'CONNECTED' | 'DISCONNECTED' | 'NOT_CONNECTED'
+}
+
+export interface GmailSyncStatus {
+  state: 'IDLE' | 'RUNNING' | 'FAILED'
+  processed: number
+  total: number
+  lastSyncedAt: string | null
+  error: 'RECONNECT_REQUIRED' | 'SOME_EMAILS_FAILED' | 'SYNC_FAILED' | null
+}

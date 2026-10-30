@@ -21,5 +21,6 @@ This map reflects the OpenAPI document at `https://subscriptionmaster.app/api/v3
 | `GET /statistics/summary` | `statisticsApi.summary` | `useSummary` | Dashboard |
 | `GET /statistics/monthly-dynamics` | `statisticsApi.monthlyDynamics` | `useMonthlyDynamics` | Dashboard |
 | `GET /admin/statistics/service-usage` | `statisticsApi.adminUsage` | `useAdminUsage` | Service usage |
-
-
+| `GET /me/gmail` | `gmailApi.getConnection` | `useGmailConnection` | Dashboard Gmail card |
+| `POST /gmail/sync` | `gmailApi.requestSync` | `useRequestSync` | Dashboard Gmail card |
+| `GET /gmail/sync-status` | `gmailApi.getSyncStatus` | `useSyncStatus` (polls while running) | Dashboard Gmail card |
