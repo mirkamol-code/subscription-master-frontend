@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { CategoryIcon } from '@/components/common/category-icon'
+import { ErrorState } from '@/components/common/error-state'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useSubscriptionActions } from '@/features/subscriptions/use-subscription-actions'
@@ -7,12 +8,18 @@ import { useAllSubscriptions } from '@/hooks/use-subscriptions'
 import { FREQUENCY_SUFFIX } from '@/lib/labels'
 import { formatMoney } from '@/lib/utils'
 
-/** Subscriptions found in emails whose details were guessed; shown only while there are some. */
 export function NeedsReviewCard() {
   const subscriptions = useAllSubscriptions()
   const actions = useSubscriptionActions()
   const toReview = subscriptions.data?.filter((item) => item.needsReview) ?? []
 
+  if (subscriptions.isError) {
+    return (
+      <Card className="p-4">
+        <ErrorState bare error={subscriptions.error} onRetry={() => void subscriptions.refetch()} />
+      </Card>
+    )
+  }
   if (!toReview.length) return null
 
   return (

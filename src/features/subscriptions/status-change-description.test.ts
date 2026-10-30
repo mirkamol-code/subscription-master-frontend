@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest'
 import { describeStatusChange } from '@/features/subscriptions/status-change-description'
 import type { StatusChange } from '@/types/api'
 
-const netflix = { name: 'Netflix', nextPaymentDate: '2026-11-05' }
+const netflix = { name: 'Netflix' }
+
+function startOfLocalDay(year: number, monthIndex: number, day: number) {
+  return new Date(year, monthIndex, day).toISOString()
+}
 
 function statusChange(overrides: Partial<StatusChange>): StatusChange {
   return {
@@ -43,7 +47,12 @@ describe('describeStatusChange', () => {
 
   it('warns softly when no receipt arrived by the expected date', () => {
     // given
-    const change = statusChange({ toStatus: 'BILLING_REQUIRED', reason: 'OVERDUE', source: 'SYSTEM' })
+    const change = statusChange({
+      toStatus: 'BILLING_REQUIRED',
+      reason: 'OVERDUE',
+      source: 'SYSTEM',
+      effectiveAt: startOfLocalDay(2026, 10, 5),
+    })
 
     // when
     const description = describeStatusChange(change, netflix)
@@ -55,20 +64,20 @@ describe('describeStatusChange', () => {
     })
   })
 
-  it('leaves out the expected date once the next payment has moved past an old overdue', () => {
+  it('takes the expected date from the overdue change, not the moved-on next payment', () => {
     // given
     const change = statusChange({
       toStatus: 'BILLING_REQUIRED',
       reason: 'OVERDUE',
       source: 'SYSTEM',
-      effectiveAt: '2026-08-10T09:00:00Z',
+      effectiveAt: startOfLocalDay(2026, 7, 10),
     })
 
     // when
     const description = describeStatusChange(change, netflix)
 
     // then
-    expect(description.text).toBe('We didn’t find a receipt for Netflix. Check your payment')
+    expect(description.text).toBe('We didn’t find a receipt for Netflix, expected Aug 10. Check your payment')
   })
 
   it('still reads well when the billing email has no sender', () => {

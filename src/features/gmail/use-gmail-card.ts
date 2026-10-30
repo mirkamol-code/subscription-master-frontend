@@ -6,8 +6,8 @@ import { useGmailConnection, useRequestSync, useSyncStatus } from '@/hooks/use-g
 
 export function useGmailCard() {
   const connection = useGmailConnection()
-  const card = connection.data ? describeGmailConnection(connection.data) : undefined
-  const syncStatus = useSyncStatus(!!card?.canSync)
+  const connectionView = connection.data ? describeGmailConnection(connection.data) : undefined
+  const syncStatus = useSyncStatus(!!connectionView?.canSync)
   const sync = syncStatus.data ? describeSync(syncStatus.data) : undefined
   const requestSync = useRequestSync()
 
@@ -21,7 +21,8 @@ export function useGmailCard() {
 
   return {
     connection,
-    card,
+    connectionView,
+    syncStatus,
     sync,
     startSync: () => void startSync(),
     isSyncing: requestSync.isPending || !!sync?.isRunning,
