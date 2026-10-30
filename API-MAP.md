@@ -4,8 +4,9 @@ This map reflects the OpenAPI document at `https://subscriptionmaster.app/api/v3
 
 | Backend endpoint | API function | React Query hook / action | Screen |
 |---|---|---|---|
-| `POST /auth/login` | `authApi.login` | Auth context mutation | Login |
-| `POST /auth/register` | `authApi.register` | Auth context mutation | Registration |
+| `GET /oauth2/authorization/google` | `GOOGLE_LOGIN_URL` | Full-page link | Login |
+| `POST /auth/exchange` | `authApi.exchange` | `exchangeLoginCodeOnce` | Google callback (`/auth/callback`) |
+| `GET /auth/me` | `authApi.me` | `useCurrentUser` | Header account menu, admin access |
 | `POST /auth/refresh` | Axios response interceptor | Automatic single-flight refresh | All protected screens |
 | `POST /auth/logout` | `authApi.logout` | Auth context logout action | Header user menu |
 | `GET /subscriptions` | `subscriptionsApi.list` | `useSubscriptions` | Dashboard, subscription list |

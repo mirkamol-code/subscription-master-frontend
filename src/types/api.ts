@@ -90,6 +90,8 @@ export interface SpendingSummary {
 export interface UserProfile {
   id: number
   email: string
+  displayName: string | null
+  avatarUrl: string | null
   roles: string[]
   baseCurrency: string
   createdAt: string

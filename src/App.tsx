@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from '@/layouts/app-layout'
 import { ProtectedRoute, PublicOnlyRoute } from '@/routes/protected-route'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -9,6 +9,9 @@ const AdminUsagePage = lazy(() =>
 )
 const AuthPage = lazy(() =>
   import('@/pages/auth-page').then((m) => ({ default: m.AuthPage })),
+)
+const AuthCallbackPage = lazy(() =>
+  import('@/pages/auth-callback-page').then((m) => ({ default: m.AuthCallbackPage })),
 )
 const DashboardPage = lazy(() =>
   import('@/pages/dashboard-page').then((m) => ({ default: m.DashboardPage })),
@@ -43,9 +46,10 @@ export default function App() {
     <Suspense fallback={<PageFallback />}>
       <Routes>
         <Route element={<PublicOnlyRoute />}>
-          <Route path="/login" element={<AuthPage key="login" mode="login" />} />
-          <Route path="/register" element={<AuthPage key="register" mode="register" />} />
+          <Route path="/login" element={<AuthPage />} />
         </Route>
+        <Route path="/register" element={<Navigate to="/login" replace />} />
+        <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route index element={<DashboardPage />} />
