@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { CalendarDays, ChevronLeft, ChevronRight, LayoutGrid, List, Plus, SearchX } from 'lucide-react'
+import { CalendarDays, ChevronLeft, ChevronRight, Eye, EyeOff, LayoutGrid, List, Plus, SearchX } from 'lucide-react'
 import { EmptyState } from '@/components/common/empty-state'
 import { ErrorState } from '@/components/common/error-state'
 import { PageHeader } from '@/components/common/page-header'
@@ -39,6 +39,7 @@ export function SubscriptionsPage() {
     ? (searchParams.get('view') as View)
     : 'grid'
   const page = Math.max(Number(searchParams.get('page')) || 0, 0)
+  const isShowingHidden = searchParams.get('hidden') === '1'
 
   const filters: FilterValues = {
     name: searchParams.get('name') ?? '',
@@ -60,6 +61,7 @@ export function SubscriptionsPage() {
     minPrice: toNumber(filters.minPrice),
     maxPrice: toNumber(filters.maxPrice),
     sort: [filters.sort],
+    hidden: isShowingHidden || undefined,
   })
   const actions = useSubscriptionActions()
 
@@ -101,9 +103,9 @@ export function SubscriptionsPage() {
     )
   }, [data, page, lastPage, setSearchParams])
 
-  const hasFilters = Object.entries(filters).some(
-    ([key, value]) => value && !(key === 'sort' && value === DEFAULT_SORT),
-  )
+  const hasFilters =
+    isShowingHidden ||
+    Object.entries(filters).some(([key, value]) => value && !(key === 'sort' && value === DEFAULT_SORT))
 
   return (
     <div className="space-y-6">
@@ -135,6 +137,17 @@ export function SubscriptionsPage() {
                 </button>
               ))}
             </div>
+            {view !== 'calendar' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-pressed={isShowingHidden}
+                onClick={() => updateParams({ hidden: isShowingHidden ? '' : '1', page: '' })}
+              >
+                {isShowingHidden ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
+                {isShowingHidden ? 'Show tracked' : 'Show hidden'}
+              </Button>
+            )}
             <Button asChild variant="accent">
               <Link to="/subscriptions/new">
                 <Plus className="size-4" /> Add
@@ -189,12 +202,14 @@ export function SubscriptionsPage() {
             <SubscriptionGrid
               items={items}
               onChangeStatus={actions.changeStatus}
+              onToggleHidden={actions.toggleHidden}
               onDelete={actions.requestDelete}
             />
           ) : (
             <SubscriptionTable
               items={items}
               onChangeStatus={actions.changeStatus}
+              onToggleHidden={actions.toggleHidden}
               onDelete={actions.requestDelete}
             />
           )}

@@ -1,6 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, History, Pencil, Receipt, Trash2 } from 'lucide-react'
+import { ArrowLeft, Eye, EyeOff, History, Pencil, Receipt, Trash2, TriangleAlert } from 'lucide-react'
 import { CategoryIcon } from '@/components/common/category-icon'
+import { NeedsReviewBadge } from '@/components/common/needs-review-badge'
 import { ErrorState } from '@/components/common/error-state'
 import { RenewalPill } from '@/components/common/renewal-pill'
 import { StatusBadge } from '@/components/common/status-badge'
@@ -77,6 +78,8 @@ export function SubscriptionDetailPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="truncate text-2xl font-bold tracking-tight text-slate-900">{item.name}</h1>
                 <StatusBadge status={item.status} />
+                {item.needsReview && <NeedsReviewBadge />}
+                {item.hidden && <span className="text-xs font-medium text-slate-400">Hidden</span>}
               </div>
               <p className="mt-1 text-sm text-slate-500">
                 {getCategoryMeta(item.category).label} · {FREQUENCY_LABEL[item.frequency]}
@@ -105,6 +108,10 @@ export function SubscriptionDetailPage() {
                 <Pencil className="size-4" /> Edit
               </Link>
             </Button>
+            <Button variant="ghost" size="sm" onClick={() => actions.toggleHidden(item)}>
+              {item.hidden ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
+              {item.hidden ? 'Unhide' : 'Hide'}
+            </Button>
             <Button
               variant="ghost"
               size="sm"
@@ -126,6 +133,26 @@ export function SubscriptionDetailPage() {
           <Stat label="Since" value={formatDate(item.startDate)} />
         </dl>
       </Card>
+
+      {item.needsReview && (
+        <div
+          role="status"
+          className="flex flex-col gap-3 rounded-2xl bg-amber-50 px-5 py-4 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <p className="flex items-start gap-2.5">
+            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-600" aria-hidden />
+            We guessed the amount, currency or billing cycle from an email. Check they’re right.
+          </p>
+          <div className="flex shrink-0 gap-2">
+            <Button size="sm" variant="accent" onClick={() => actions.confirmReview(item)} disabled={actions.isConfirmingReview}>
+              {actions.isConfirmingReview ? 'Saving…' : 'Looks right'}
+            </Button>
+            <Button asChild size="sm" variant="outline">
+              <Link to={`/subscriptions/${item.id}/edit`}>Edit</Link>
+            </Button>
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <PaymentHistory subscription={item} />
