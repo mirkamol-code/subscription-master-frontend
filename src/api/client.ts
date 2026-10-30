@@ -38,7 +38,7 @@ api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const config = error.config as RetryConfig | undefined
-    const isPublicAuthRequest = /^\/auth\/(login|register|refresh|logout)\b/.test(
+    const isPublicAuthRequest = /^\/auth\/(exchange|refresh|logout)\b/.test(
       config?.url ?? '',
     )
     const session = tokenStore.get()
@@ -102,20 +102,12 @@ function extractServerMessage(data: unknown): string | null {
   return null
 }
 
-function statusMessage(status: number, isAuthAttempt: boolean): string {
+function statusMessage(status: number): string {
   if (status === 400 || status === 422) return 'Please check the details you entered and try again.'
-  if (status === 401) {
-    return isAuthAttempt
-      ? 'That email and password don’t match. Please try again.'
-      : 'Your session has ended. Please sign in again.'
-  }
+  if (status === 401) return 'Your session has ended. Please sign in again.'
   if (status === 403) return 'You don’t have access to this page.'
   if (status === 404) return 'We couldn’t find what you were looking for.'
-  if (status === 409) {
-    return isAuthAttempt
-      ? 'An account with this email already exists.'
-      : 'This was changed somewhere else. Refresh the page and try again.'
-  }
+  if (status === 409) return 'This was changed somewhere else. Refresh the page and try again.'
   if (status === 429) return 'Too many attempts. Please wait a moment and try again.'
   if (status === 503) return 'The service is temporarily unavailable. Please try again in a few minutes.'
   return 'Something went wrong on our side. Please try again in a moment.'
@@ -154,7 +146,6 @@ export function getApiError(error: unknown): string {
   }
 
   const { status, data } = error.response
-  const isAuthAttempt = /^\/auth\/(login|register)\b/.test(error.config?.url ?? '')
 
   if ((data as { errorCode?: string } | null)?.errorCode === 'EXCHANGE_RATES_UNAVAILABLE') {
     return 'Exchange rates are temporarily unavailable, so amounts in UZS can’t be shown right now. Please try again in a few minutes.'
@@ -165,5 +156,5 @@ export function getApiError(error: unknown): string {
     const serverMessage = extractServerMessage(data)
     if (serverMessage) return serverMessage
   }
-  return statusMessage(status, isAuthAttempt)
+  return statusMessage(status)
 }

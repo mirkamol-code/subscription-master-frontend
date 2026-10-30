@@ -1,21 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { authApi } from '@/api/endpoints/auth'
 import { tokenStore, type StoredSession } from '@/lib/token-store'
 
 interface AuthContextValue {
   session: StoredSession | null
-  login: ReturnType<typeof useLoginMutation>
-  register: ReturnType<typeof useRegisterMutation>
   logout: () => void
-}
-
-function useLoginMutation() {
-  return useMutation({ mutationFn: authApi.login })
-}
-
-function useRegisterMutation() {
-  return useMutation({ mutationFn: authApi.register })
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -23,8 +13,6 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState(tokenStore.get())
   const queryClient = useQueryClient()
-  const loginMutation = useLoginMutation()
-  const registerMutation = useRegisterMutation()
 
   useEffect(() => {
     const sync = () => setSession(tokenStore.get())
@@ -39,8 +27,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo<AuthContextValue>(
     () => ({
       session,
-      login: loginMutation,
-      register: registerMutation,
       logout: () => {
         const current = tokenStore.get()
         if (current?.refreshToken) {
@@ -52,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         queryClient.clear()
       },
     }),
-    [loginMutation, queryClient, registerMutation, session],
+    [queryClient, session],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

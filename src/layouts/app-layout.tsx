@@ -16,7 +16,8 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { BrandMark } from '@/components/common/brand-mark'
 import { useAuth } from '@/features/auth/auth-context'
 import { CurrencySwitcherDropdown } from '@/features/currency/currency-switcher-dropdown'
-import { useIsAdmin } from '@/hooks/use-current-user'
+import { useCurrentUser, useIsAdmin } from '@/hooks/use-current-user'
+import type { UserProfile } from '@/types/api'
 import { cn } from '@/lib/utils'
 
 interface NavItem {
@@ -61,7 +62,23 @@ function SidebarNav({ isAdmin, onNavigate }: { isAdmin: boolean; onNavigate?: ()
   )
 }
 
-function AccountMenu({ email, onLogout }: { email: string; onLogout: () => void }) {
+type SignedInUser = Pick<UserProfile, 'email' | 'displayName' | 'avatarUrl'>
+
+function getUserName(user: SignedInUser) {
+  return user.displayName || user.email
+}
+
+function UserAvatar({ user }: { user: SignedInUser }) {
+  return user.avatarUrl ? (
+    <img src={user.avatarUrl} alt="" referrerPolicy="no-referrer" className="size-9 shrink-0 rounded-full object-cover" />
+  ) : (
+    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-linear-to-br from-teal-400 to-emerald-600 text-sm font-semibold text-white">
+      {getUserName(user).charAt(0).toUpperCase() || 'U'}
+    </span>
+  )
+}
+
+function AccountMenu({ user, onLogout }: { user: SignedInUser; onLogout: () => void }) {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -70,12 +87,14 @@ function AccountMenu({ email, onLogout }: { email: string; onLogout: () => void 
           className="flex w-full items-center gap-3 rounded-xl p-2 text-left outline-none transition-colors hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-teal-500/60"
           aria-label="Account menu"
         >
-          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-linear-to-br from-teal-400 to-emerald-600 text-sm font-semibold text-white">
-            {email.charAt(0).toUpperCase() || 'U'}
-          </span>
+          <UserAvatar user={user} />
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-medium text-slate-900">{email}</span>
-            <span className="block text-xs text-slate-400">Personal account</span>
+            <span className="block truncate text-sm font-medium text-slate-900">
+              {getUserName(user)}
+            </span>
+            <span className="block truncate text-xs text-slate-400">
+              {user.displayName ? user.email : 'Personal account'}
+            </span>
           </span>
           <ChevronsUpDown className="size-4 shrink-0 text-slate-400" />
         </button>
@@ -102,12 +121,12 @@ function AccountMenu({ email, onLogout }: { email: string; onLogout: () => void 
 
 function Sidebar({
   isAdmin,
-  email,
+  user,
   onLogout,
   onNavigate,
 }: {
   isAdmin: boolean
-  email: string
+  user: SignedInUser
   onLogout: () => void
   onNavigate?: () => void
 }) {
@@ -119,7 +138,7 @@ function Sidebar({
       </Link>
       <SidebarNav isAdmin={isAdmin} onNavigate={onNavigate} />
       <div className="mt-auto border-t border-slate-200/70 pt-3">
-        <AccountMenu email={email} onLogout={onLogout} />
+        <AccountMenu user={user} onLogout={onLogout} />
       </div>
     </div>
   )
@@ -129,8 +148,13 @@ export function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { session, logout } = useAuth()
   const { isAdmin } = useIsAdmin()
+  const { data: profile } = useCurrentUser()
   const navigate = useNavigate()
-  const email = session?.email || 'Account'
+  const user: SignedInUser = {
+    email: profile?.email || session?.email || 'Account',
+    displayName: profile?.displayName ?? null,
+    avatarUrl: profile?.avatarUrl ?? null,
+  }
 
   const handleLogout = () => {
     logout()
@@ -140,7 +164,7 @@ export function AppLayout() {
   return (
     <div className="min-h-screen">
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-slate-200/70 bg-white lg:block">
-        <Sidebar isAdmin={isAdmin} email={email} onLogout={handleLogout} />
+        <Sidebar isAdmin={isAdmin} user={user} onLogout={handleLogout} />
       </aside>
 
       <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -157,7 +181,7 @@ export function AppLayout() {
             </Dialog.Close>
             <Sidebar
               isAdmin={isAdmin}
-              email={email}
+              user={user}
               onLogout={handleLogout}
               onNavigate={() => setMobileOpen(false)}
             />

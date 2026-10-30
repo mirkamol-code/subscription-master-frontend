@@ -66,8 +66,8 @@ describe('getApiError', () => {
     expect(getApiError(httpError(503, data, '/statistics/summary'))).toMatch(/^Exchange rates are temporarily unavailable/)
   })
 
-  it('treats a wrong password as a credentials problem, not an expired session', () => {
-    const data = { status: 401, errorCode: 'INVALID_CREDENTIALS', message: 'Invalid credentials' }
-    expect(getApiError(httpError(401, data, '/auth/login'))).toBe('Invalid credentials')
+  it('shows why a Login code was rejected, not an expired session', () => {
+    const data = { status: 401, message: 'Invalid or expired login code' }
+    expect(getApiError(httpError(401, data, '/auth/exchange'))).toBe('Invalid or expired login code')
   })
 })
