@@ -36,3 +36,5 @@ This map reflects the OpenAPI document at `https://subscriptionmaster.app/api/v3
 | `POST /notifications/read-all` | `notificationsApi.markAllRead` | `useMarkAllNotificationsRead` | Header bell |
 | `GET /settings/notifications` | `notificationsApi.getSettings` | `useNotificationSettings` | Settings |
 | `PUT /settings/notifications` | `notificationsApi.updateSettings` | `useUpdateNotificationSettings` | Settings |
+| `DELETE /me/gmail` | `accountApi.disconnectGmail` | `useDisconnectGmail` | Settings danger zone (typed email confirm) |
+| `DELETE /me` | `accountApi.deleteAccount` | `useDeleteAccount` | Settings danger zone (typed email confirm) |
