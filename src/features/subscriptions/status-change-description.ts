@@ -1,24 +1,24 @@
 import { getStatusLabel } from '@/lib/labels'
-import { formatShortDate } from '@/lib/utils'
+import type { Tone } from '@/lib/tone'
+import { formatShortDate, toLocalIsoDate } from '@/lib/utils'
 import type { StatusChange, Subscription } from '@/types/api'
 
 export interface StatusChangeDescription {
   text: string
   detail?: string
-  tone: 'positive' | 'neutral' | 'warning' | 'danger'
+  tone: Tone
 }
 
-type DescribedSubscription = Pick<Subscription, 'name' | 'nextPaymentDate'>
+type DescribedSubscription = Pick<Subscription, 'name'>
 
 function describeEmailSender(change: StatusChange): string | undefined {
   const sender = change.emailSender?.trim()
   return sender ? `Email from ${sender}` : undefined
 }
 
-function describeOverdue(change: StatusChange, subscription: DescribedSubscription): StatusChangeDescription {
-  const isMissedPayment = !!subscription.nextPaymentDate && subscription.nextPaymentDate < change.effectiveAt.slice(0, 10)
-  const expected = isMissedPayment ? `, expected ${formatShortDate(subscription.nextPaymentDate)}` : ''
-  return { text: `We didn’t find a receipt for ${subscription.name}${expected}. Check your payment`, tone: 'warning' }
+function describeOverdue(change: StatusChange, name: string): StatusChangeDescription {
+  const expected = formatShortDate(toLocalIsoDate(change.effectiveAt))
+  return { text: `We didn’t find a receipt for ${name}, expected ${expected}. Check your payment`, tone: 'warning' }
 }
 
 export function describeStatusChange(
@@ -41,7 +41,7 @@ export function describeStatusChange(
     case 'EMAIL_PAYMENT_FAILED':
       return { text: `${name} payment failed`, detail, tone: 'danger' }
     case 'OVERDUE':
-      return describeOverdue(change, subscription)
+      return describeOverdue(change, name)
     case 'SCHEDULED_END':
       return { text: `${name} ended as scheduled`, tone: 'neutral' }
     case 'USER':

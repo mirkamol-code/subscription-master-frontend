@@ -11,15 +11,16 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/common/empty-state'
 import { useCurrency } from '@/features/currency/currency-context'
-import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-action'
-import { describeStatusChange, type StatusChangeDescription } from '@/features/subscriptions/status-change-description'
+import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-choice-ui'
+import { describeStatusChange } from '@/features/subscriptions/status-change-description'
 import { getStatusChoices } from '@/features/subscriptions/status-choices'
 import { useSubscriptionActions } from '@/features/subscriptions/use-subscription-actions'
 import { useStatusHistory, useSubscription, useSubscriptionHistory } from '@/hooks/use-subscriptions'
 import { getCategoryMeta } from '@/lib/category-config'
 import { isRenewing } from '@/lib/renewals'
+import type { Tone } from '@/lib/tone'
 import { FREQUENCY_LABEL, FREQUENCY_SUFFIX } from '@/lib/labels'
-import { cn, formatDate, formatMoney, getAnnualizedCost, getMonthlyEquivalent, todayIsoDate } from '@/lib/utils'
+import { cn, formatDate, formatMoney, getAnnualizedCost, getMonthlyEquivalent, todayIsoDate, toLocalIsoDate } from '@/lib/utils'
 import type { Subscription } from '@/types/api'
 
 function BackLink() {
@@ -220,7 +221,7 @@ function describeNoNextPayment(subscription: Subscription) {
   return 'Cancelled — this won’t renew.'
 }
 
-const TONE_DOT: Record<StatusChangeDescription['tone'], string> = {
+const TONE_DOT: Record<Tone, string> = {
   positive: 'bg-emerald-500',
   neutral: 'bg-slate-400',
   warning: 'bg-amber-500',
@@ -262,7 +263,7 @@ function StatusHistory({ subscription }: { subscription: Subscription }) {
                       <span className="block truncate text-xs text-slate-400">{description.detail}</span>
                     )}
                   </span>
-                  <span className="shrink-0 text-xs text-slate-400">{formatDate(change.effectiveAt.slice(0, 10))}</span>
+                  <span className="shrink-0 text-xs text-slate-400">{formatDate(toLocalIsoDate(change.effectiveAt))}</span>
                 </li>
               )
             })}

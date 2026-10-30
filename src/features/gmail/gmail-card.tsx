@@ -4,11 +4,11 @@ import { ErrorState } from '@/components/common/error-state'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import type { SyncDescription } from '@/features/gmail/sync-status'
 import { useGmailCard } from '@/features/gmail/use-gmail-card'
+import type { Tone } from '@/lib/tone'
 import { cn } from '@/lib/utils'
 
-const TONE_TEXT: Record<SyncDescription['tone'], string> = {
+const TONE_TEXT: Record<Tone, string> = {
   neutral: 'text-slate-500',
   positive: 'text-slate-500',
   warning: 'text-amber-700',
@@ -24,10 +24,10 @@ function GoogleLink({ label }: { label: string }) {
 }
 
 export function GmailCard() {
-  const { connection, card, sync, startSync, isSyncing } = useGmailCard()
+  const { connection, connectionView, syncStatus, sync, startSync, isSyncing } = useGmailCard()
 
   if (connection.isLoading) return <Skeleton className="h-24 rounded-2xl" />
-  if (!card) {
+  if (!connectionView) {
     return (
       <Card className="p-4">
         <ErrorState bare error={connection.error} onRetry={() => void connection.refetch()} />
@@ -35,7 +35,7 @@ export function GmailCard() {
     )
   }
 
-  const actionLabel = card.actionLabel ?? sync?.actionLabel
+  const actionLabel = connectionView.actionLabel ?? sync?.actionLabel
 
   return (
     <Card className="p-5 sm:p-6">
@@ -45,8 +45,8 @@ export function GmailCard() {
             <Mail className="size-5" aria-hidden />
           </span>
           <div className="min-w-0">
-            <p className="font-semibold text-slate-900">{card.title}</p>
-            <p className="truncate text-sm text-slate-500">{card.description}</p>
+            <p className="font-semibold text-slate-900">{connectionView.title}</p>
+            <p className="truncate text-sm text-slate-500">{connectionView.description}</p>
           </div>
         </div>
         {actionLabel ? (
@@ -59,7 +59,13 @@ export function GmailCard() {
         )}
       </div>
 
-      {card.canSync && sync && (
+      {connectionView.canSync && syncStatus.isError && (
+        <div className="mt-4">
+          <ErrorState bare error={syncStatus.error} onRetry={() => void syncStatus.refetch()} />
+        </div>
+      )}
+
+      {connectionView.canSync && sync && (
         <div className="mt-4" aria-live="polite">
           {sync.percent !== null && (
             <div

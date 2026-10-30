@@ -7,7 +7,7 @@ import {
   useDeleteSubscription,
   useSetSubscriptionHidden,
 } from '@/hooks/use-subscriptions'
-import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-action'
+import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-choice-ui'
 import type { UserStatus } from '@/features/subscriptions/status-choices'
 import type { Subscription } from '@/types/api'
 

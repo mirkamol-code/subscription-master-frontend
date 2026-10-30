@@ -1,10 +1,11 @@
-import { formatDate } from '@/lib/utils'
+import type { Tone } from '@/lib/tone'
+import { formatDate, toLocalIsoDate } from '@/lib/utils'
 import type { GmailSyncStatus } from '@/types/api'
 
 export interface SyncDescription {
   label: string
   percent: number | null
-  tone: 'neutral' | 'positive' | 'warning' | 'danger'
+  tone: Tone
   isRunning: boolean
   shouldPoll: boolean
   actionLabel?: string
@@ -22,12 +23,12 @@ function describeRunningSync({ processed, total }: GmailSyncStatus): SyncDescrip
 }
 
 function describeLastSync(lastSyncedAt: string | null) {
-  return lastSyncedAt ? `Last synced ${formatDate(lastSyncedAt.slice(0, 10))}` : 'Not synced yet'
+  return lastSyncedAt ? `Last synced ${formatDate(toLocalIsoDate(lastSyncedAt))}` : 'Not synced yet'
 }
 
 function describeFinishedSync(
   label: string,
-  tone: SyncDescription['tone'],
+  tone: Tone,
   actionLabel?: string,
 ): SyncDescription {
   return { label, percent: null, tone, isRunning: false, shouldPoll: false, ...(actionLabel && { actionLabel }) }

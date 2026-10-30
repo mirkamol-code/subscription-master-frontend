@@ -1,7 +1,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { Eye, EyeOff, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-action'
+import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-choice-ui'
 import { getStatusChoices, type UserStatus } from '@/features/subscriptions/status-choices'
 import { cn } from '@/lib/utils'
 import type { Subscription } from '@/types/api'

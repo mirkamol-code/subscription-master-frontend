@@ -43,6 +43,10 @@ export function toIsoDate(date: Date): string {
   return `${y}-${m}-${d}`
 }
 
+export function toLocalIsoDate(instant: string): string {
+  return toIsoDate(new Date(instant))
+}
+
 export function todayIsoDate(): string {
   return toIsoDate(new Date())
 }

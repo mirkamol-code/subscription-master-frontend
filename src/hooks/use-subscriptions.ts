@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
+import axios from 'axios'
 import { subscriptionsApi } from '@/api/endpoints/subscriptions'
 import type { Subscription, SubscriptionFilters, SubscriptionRequest, SubscriptionStatus } from '@/types/api'
 
@@ -108,6 +109,9 @@ export function useConfirmSubscriptionReview() {
     mutationFn: ({ id, name, price, currency, frequency, status, category, startDate, version }: Subscription) =>
       subscriptionsApi.update(id, { name, price, currency, frequency, status, category, startDate, version }),
     onSuccess: (data) => refreshSubscriptionData(queryClient, data),
+    onError: (error) => {
+      if (axios.isAxiosError(error) && error.response?.status === 409) refreshSubscriptionData(queryClient)
+    },
   })
 }
 
