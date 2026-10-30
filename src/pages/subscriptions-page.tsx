@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { CalendarDays, ChevronLeft, ChevronRight, Eye, EyeOff, LayoutGrid, List, Plus, SearchX } from 'lucide-react'
+import { CalendarDays, ChevronLeft, ChevronRight, LayoutGrid, List, Plus, SearchX } from 'lucide-react'
 import { EmptyState } from '@/components/common/empty-state'
 import { ErrorState } from '@/components/common/error-state'
 import { PageHeader } from '@/components/common/page-header'
@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SubscriptionCalendar } from '@/features/subscriptions/subscription-calendar'
+import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
 import { SubscriptionFilters } from '@/features/subscriptions/subscription-filters'
 import { DEFAULT_SORT, type FilterValues } from '@/features/subscriptions/subscription-filter-options'
 import { SubscriptionGrid } from '@/features/subscriptions/subscription-grid'
@@ -144,8 +145,7 @@ export function SubscriptionsPage() {
                 aria-pressed={isShowingHidden}
                 onClick={() => updateParams({ hidden: isShowingHidden ? '' : '1', page: '' })}
               >
-                {isShowingHidden ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
-                {isShowingHidden ? 'Show tracked' : 'Show hidden'}
+                <HiddenToggleLabel isHidden={isShowingHidden} hideLabel="Show hidden" unhideLabel="Show tracked" />
               </Button>
             )}
             <Button asChild variant="accent">

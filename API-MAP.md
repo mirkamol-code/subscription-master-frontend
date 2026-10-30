@@ -26,4 +26,4 @@ This map reflects the OpenAPI document at `https://subscriptionmaster.app/api/v3
 | `GET /gmail/sync-status` | `gmailApi.getSyncStatus` | `useSyncStatus` (polls while running) | Dashboard Gmail card |
 | `POST /subscriptions/{id}/hide` | `subscriptionsApi.hide` | `useSetSubscriptionHidden` | Details, subscription list |
 | `POST /subscriptions/{id}/unhide` | `subscriptionsApi.unhide` | `useSetSubscriptionHidden` | Details, subscription list (Show hidden) |
-| `PUT /subscriptions/{id}` (unchanged) | `subscriptionsApi.update` | `useConfirmSubscriptionReview` | Dashboard Needs review, details |
+| `PUT /subscriptions/{id}` (unchanged) | `subscriptionsApi.update` | `useConfirmGuessedDetails` | Dashboard Needs review, details |

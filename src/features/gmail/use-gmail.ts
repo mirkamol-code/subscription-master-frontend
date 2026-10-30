@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { hasApiErrorCode } from '@/api/client'
 import { gmailApi } from '@/api/endpoints/gmail'
 import { describeSync } from '@/features/gmail/sync-status'
@@ -17,7 +17,10 @@ export function useGmailConnection() {
   return useQuery({ queryKey: gmailKeys.connection(), queryFn: gmailApi.getConnection })
 }
 
-/** Polls while a Sync runs; when one finishes, the subscriptions and totals it changed are reloaded. */
+function reloadSubscriptionsWhenSyncEnds(queryClient: QueryClient, previous: GmailSyncStatus | undefined, current: GmailSyncStatus) {
+  if (previous?.state === 'RUNNING' && current.state !== 'RUNNING') refreshSubscriptionData(queryClient)
+}
+
 export function useSyncStatus(isEnabled: boolean) {
   const queryClient = useQueryClient()
   return useQuery({
@@ -25,7 +28,7 @@ export function useSyncStatus(isEnabled: boolean) {
     queryFn: async () => {
       const previous = queryClient.getQueryData<GmailSyncStatus>(gmailKeys.syncStatus())
       const status = await gmailApi.getSyncStatus()
-      if (previous?.state === 'RUNNING' && status.state !== 'RUNNING') refreshSubscriptionData(queryClient)
+      reloadSubscriptionsWhenSyncEnds(queryClient, previous, status)
       return status
     },
     enabled: isEnabled,

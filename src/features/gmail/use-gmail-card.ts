@@ -2,7 +2,7 @@ import { toast } from 'sonner'
 import { getApiError, hasApiErrorCode } from '@/api/client'
 import { describeGmailConnection } from '@/features/gmail/gmail-connection'
 import { describeSync } from '@/features/gmail/sync-status'
-import { useGmailConnection, useRequestSync, useSyncStatus } from '@/hooks/use-gmail'
+import { useGmailConnection, useRequestSync, useSyncStatus } from '@/features/gmail/use-gmail'
 
 export function useGmailCard() {
   const connection = useGmailConnection()

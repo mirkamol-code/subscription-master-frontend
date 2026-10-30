@@ -59,6 +59,8 @@ export function GmailCard() {
         )}
       </div>
 
+      {connectionView.canSync && syncStatus.isLoading && <Skeleton className="mt-4 h-4 w-48" />}
+
       {connectionView.canSync && syncStatus.isError && (
         <div className="mt-4">
           <ErrorState bare error={syncStatus.error} onRetry={() => void syncStatus.refetch()} />

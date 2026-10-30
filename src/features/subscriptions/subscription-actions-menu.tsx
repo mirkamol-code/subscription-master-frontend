@@ -1,6 +1,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import { Eye, EyeOff, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
 import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-choice-ui'
 import { getStatusChoices, type UserStatus } from '@/features/subscriptions/status-choices'
 import { cn } from '@/lib/utils'
@@ -61,15 +62,7 @@ export function SubscriptionActionsMenu({
             )
           })}
           <DropdownMenu.Item onSelect={() => onToggleHidden(item)} className={itemClass}>
-            {item.hidden ? (
-              <>
-                <Eye className="size-4 text-slate-400" /> Unhide
-              </>
-            ) : (
-              <>
-                <EyeOff className="size-4 text-slate-400" /> Hide
-              </>
-            )}
+            <HiddenToggleLabel isHidden={item.hidden} iconClassName="text-slate-400" />
           </DropdownMenu.Item>
           <DropdownMenu.Separator className="my-1 h-px bg-slate-100" />
           <DropdownMenu.Item

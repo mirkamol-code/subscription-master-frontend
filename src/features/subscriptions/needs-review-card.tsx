@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
 import { CategoryIcon } from '@/components/common/category-icon'
 import { ErrorState } from '@/components/common/error-state'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { ReviewActions } from '@/features/subscriptions/review-actions'
 import { useSubscriptionActions } from '@/features/subscriptions/use-subscription-actions'
 import { useAllSubscriptions } from '@/hooks/use-subscriptions'
 import { FREQUENCY_SUFFIX } from '@/lib/labels'
@@ -44,14 +44,7 @@ export function NeedsReviewCard() {
                 {formatMoney(item.price, item.currency)}
                 <span className="text-slate-400">{FREQUENCY_SUFFIX[item.frequency]}</span>
               </span>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => actions.confirmReview(item)} disabled={actions.isConfirmingReview}>
-                  Looks right
-                </Button>
-                <Button asChild size="sm" variant="ghost">
-                  <Link to={`/subscriptions/${item.id}/edit`}>Edit</Link>
-                </Button>
-              </div>
+              <ReviewActions item={item} onConfirm={actions.confirmReview} isConfirming={actions.isConfirmingReview} />
             </li>
           ))}
         </ul>

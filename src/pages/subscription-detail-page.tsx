@@ -1,5 +1,5 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, Eye, EyeOff, History, Pencil, Receipt, Trash2, TriangleAlert } from 'lucide-react'
+import { ArrowLeft, History, Pencil, Receipt, Trash2, TriangleAlert } from 'lucide-react'
 import { CategoryIcon } from '@/components/common/category-icon'
 import { NeedsReviewBadge } from '@/components/common/needs-review-badge'
 import { ErrorState } from '@/components/common/error-state'
@@ -11,6 +11,8 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/common/empty-state'
 import { useCurrency } from '@/features/currency/currency-context'
+import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
+import { ReviewActions } from '@/features/subscriptions/review-actions'
 import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-choice-ui'
 import { describeStatusChange } from '@/features/subscriptions/status-change-description'
 import { getStatusChoices } from '@/features/subscriptions/status-choices'
@@ -110,8 +112,7 @@ export function SubscriptionDetailPage() {
               </Link>
             </Button>
             <Button variant="ghost" size="sm" onClick={() => actions.toggleHidden(item)}>
-              {item.hidden ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
-              {item.hidden ? 'Unhide' : 'Hide'}
+              <HiddenToggleLabel isHidden={item.hidden} />
             </Button>
             <Button
               variant="ghost"
@@ -144,14 +145,7 @@ export function SubscriptionDetailPage() {
             <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-600" aria-hidden />
             We guessed the amount, currency or billing cycle from an email. Check they’re right.
           </p>
-          <div className="flex shrink-0 gap-2">
-            <Button size="sm" variant="accent" onClick={() => actions.confirmReview(item)} disabled={actions.isConfirmingReview}>
-              {actions.isConfirmingReview ? 'Saving…' : 'Looks right'}
-            </Button>
-            <Button asChild size="sm" variant="outline">
-              <Link to={`/subscriptions/${item.id}/edit`}>Edit</Link>
-            </Button>
-          </div>
+          <ReviewActions item={item} onConfirm={actions.confirmReview} isConfirming={actions.isConfirmingReview} />
         </div>
       )}
 

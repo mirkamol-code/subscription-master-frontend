@@ -102,8 +102,7 @@ export function useChangeSubscriptionStatus() {
   })
 }
 
-/** Saving a subscription unchanged tells the backend its guessed details are right. */
-export function useConfirmSubscriptionReview() {
+export function useConfirmGuessedDetails() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ id, name, price, currency, frequency, status, category, startDate, version }: Subscription) =>

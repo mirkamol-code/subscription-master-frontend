@@ -3,7 +3,7 @@ import { toast } from 'sonner'
 import { getApiError } from '@/api/client'
 import {
   useChangeSubscriptionStatus,
-  useConfirmSubscriptionReview,
+  useConfirmGuessedDetails,
   useDeleteSubscription,
   useSetSubscriptionHidden,
 } from '@/hooks/use-subscriptions'
@@ -17,7 +17,7 @@ export function useSubscriptionActions(options?: { onDeleted?: (item: Subscripti
   const statusMutation = useChangeSubscriptionStatus()
   const deleteMutation = useDeleteSubscription()
   const hiddenMutation = useSetSubscriptionHidden()
-  const reviewMutation = useConfirmSubscriptionReview()
+  const reviewMutation = useConfirmGuessedDetails()
 
   const changeStatus = async (item: Subscription, status: UserStatus) => {
     try {
