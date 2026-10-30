@@ -38,3 +38,6 @@ This map reflects the OpenAPI document at `https://subscriptionmaster.app/api/v3
 | `PUT /settings/notifications` | `notificationsApi.updateSettings` | `useUpdateNotificationSettings` | Settings |
 | `DELETE /me/gmail` | `accountApi.disconnectGmail` | `useDisconnectGmail` | Settings danger zone (typed email confirm) |
 | `DELETE /me` | `accountApi.deleteAccount` | `useDeleteAccount` | Settings danger zone (typed email confirm) |
+| `GET /push/vapid-public-key` | `pushApi.getVapidPublicKey` | `useBrowserPush` | Settings (Browser notifications) |
+| `POST /push/subscriptions` | `pushApi.subscribe` | `useBrowserPush` | Settings (Browser notifications) |
+| `DELETE /push/subscriptions` | `pushApi.unsubscribe` | `useBrowserPush` | Settings; sign-out forgets this browser locally |
