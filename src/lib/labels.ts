@@ -6,11 +6,13 @@ export const STATUS_LABEL: Record<SubscriptionStatus, string> = {
   BILLING_REQUIRED: 'Billing required',
 }
 
-export function getStatusLabel(status: string): string {
-  const known = STATUS_LABEL[status as SubscriptionStatus]
-  if (known) return known
-  const words = status.toLowerCase().replace(/_/g, ' ').trim()
+export function humanizeCode(code: string): string {
+  const words = code.toLowerCase().replace(/_/g, ' ').trim()
   return words ? words.charAt(0).toUpperCase() + words.slice(1) : 'Unknown'
+}
+
+export function getStatusLabel(status: string): string {
+  return STATUS_LABEL[status as SubscriptionStatus] ?? humanizeCode(status)
 }
 
 export const FREQUENCY_LABEL: Record<Frequency, string> = {

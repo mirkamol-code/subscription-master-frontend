@@ -156,3 +156,21 @@ export interface GmailSyncStatus {
   lastSyncedAt: string | null
   error: 'RECONNECT_REQUIRED' | 'SOME_EMAILS_FAILED' | 'SYNC_FAILED' | null
 }
+
+export interface BillingEmailAttachment {
+  id: number
+  filename: string
+  mimeType: string
+  sizeBytes: number
+}
+
+export interface BillingEmail {
+  id: number
+  gmailMessageId: string
+  kind: 'RECEIPT' | 'CANCELLATION' | 'PAYMENT_FAILED' | 'IRRELEVANT'
+  sender: string | null
+  subject: string | null
+  receivedAt: string
+  confidence: 'HIGH' | 'LOW'
+  attachments: BillingEmailAttachment[]
+}

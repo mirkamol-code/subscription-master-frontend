@@ -27,3 +27,6 @@ This map reflects the OpenAPI document at `https://subscriptionmaster.app/api/v3
 | `POST /subscriptions/{id}/hide` | `subscriptionsApi.hide` | `useSetSubscriptionHidden` | Details, subscription list |
 | `POST /subscriptions/{id}/unhide` | `subscriptionsApi.unhide` | `useSetSubscriptionHidden` | Details, subscription list (Show hidden) |
 | `PUT /subscriptions/{id}` (unchanged) | `subscriptionsApi.update` | `useConfirmGuessedDetails` | Dashboard Needs review, details |
+| `GET /subscriptions/{id}/emails` | `emailsApi.listForSubscription` | `useBillingEmails` | Subscription details (Billing emails) |
+| `GET /emails/{id}/content` | `emailsApi.getContent` | `useEmailContent` | Email viewer (sandboxed iframe) |
+| `GET /emails/{id}/attachments/{attachmentId}` | `emailsApi.getAttachment` | `downloadAttachment` | Billing emails attachments |

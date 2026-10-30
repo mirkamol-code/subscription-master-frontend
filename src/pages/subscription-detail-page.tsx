@@ -11,6 +11,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/common/empty-state'
 import { useCurrency } from '@/features/currency/currency-context'
+import { BillingEmailsCard } from '@/features/emails/billing-emails-card'
 import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
 import { ReviewActions } from '@/features/subscriptions/review-actions'
 import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-choice-ui'
@@ -153,6 +154,7 @@ export function SubscriptionDetailPage() {
         <PaymentHistory subscription={item} />
         <NextPaymentCard subscription={item} />
         <StatusHistory subscription={item} />
+        <BillingEmailsCard subscriptionId={item.id} />
       </div>
 
       <ConfirmDialog {...actions.deleteDialog} />
