@@ -156,3 +156,52 @@ export interface GmailSyncStatus {
   lastSyncedAt: string | null
   error: 'RECONNECT_REQUIRED' | 'SOME_EMAILS_FAILED' | 'SYNC_FAILED' | null
 }
+
+export interface BillingEmailAttachment {
+  id: number
+  filename: string
+  mimeType: string
+  sizeBytes: number
+}
+
+export interface BillingEmail {
+  id: number
+  gmailMessageId: string
+  kind: 'RECEIPT' | 'CANCELLATION' | 'PAYMENT_FAILED' | 'IRRELEVANT'
+  sender: string | null
+  subject: string | null
+  receivedAt: string
+  confidence: 'HIGH' | 'LOW'
+  attachments: BillingEmailAttachment[]
+}
+
+export interface AppNotification {
+  id: number
+  type: 'PAYMENT_DUE' | 'BILLING_REQUIRED' | 'CANCELLED' | 'CANCELLATION_SCHEDULED' | 'REACTIVATED' | 'RETRACKED'
+  severity: 'INFO' | 'URGENT'
+  title: string
+  body: string
+  subscriptionId: number | null
+  link: string | null
+  read: boolean
+  createdAt: string
+}
+
+export interface NotificationSettings {
+  emailEnabled: boolean
+  inAppEnabled: boolean
+  pushEnabled: boolean
+  daysBefore: number
+  timeZone: string
+}
+
+export interface EmailContent {
+  html: string
+  contentSecurityPolicy: string | null
+  blockedRemoteImages: number
+}
+
+export interface PushSubscriptionRequest {
+  endpoint: string
+  keys: { p256dh: string; auth: string }
+}

@@ -27,3 +27,17 @@ This map reflects the OpenAPI document at `https://subscriptionmaster.app/api/v3
 | `POST /subscriptions/{id}/hide` | `subscriptionsApi.hide` | `useSetSubscriptionHidden` | Details, subscription list |
 | `POST /subscriptions/{id}/unhide` | `subscriptionsApi.unhide` | `useSetSubscriptionHidden` | Details, subscription list (Show hidden) |
 | `PUT /subscriptions/{id}` (unchanged) | `subscriptionsApi.update` | `useConfirmGuessedDetails` | Dashboard Needs review, details |
+| `GET /subscriptions/{id}/emails` | `emailsApi.listForSubscription` | `useBillingEmails` | Subscription details (Billing emails) |
+| `GET /emails/{id}/content` | `emailsApi.getContent` | `useEmailContent` | Email viewer (sandboxed iframe) |
+| `GET /emails/{id}/attachments/{attachmentId}` | `emailsApi.getAttachment` | `downloadAttachment` | Billing emails attachments |
+| `GET /notifications` | `notificationsApi.list` | `useNotifications` | Header bell |
+| `GET /notifications/unread-count` | `notificationsApi.getUnreadCount` | `useUnreadCount` (every minute) | Header bell badge |
+| `POST /notifications/{id}/read` | `notificationsApi.markRead` | `useMarkNotificationRead` | Header bell |
+| `POST /notifications/read-all` | `notificationsApi.markAllRead` | `useMarkAllNotificationsRead` | Header bell |
+| `GET /settings/notifications` | `notificationsApi.getSettings` | `useNotificationSettings` | Settings |
+| `PUT /settings/notifications` | `notificationsApi.updateSettings` | `useUpdateNotificationSettings` | Settings |
+| `DELETE /me/gmail` | `userApi.disconnectGmail` | `useDisconnectGmail` | Settings danger zone (typed email confirm) |
+| `DELETE /me` | `userApi.deleteUser` | `useDeleteUser` | Settings danger zone (typed email confirm) |
+| `GET /push/vapid-public-key` | `pushApi.getVapidPublicKey` | `useBrowserPush` | Settings (Browser notifications) |
+| `POST /push/subscriptions` | `pushApi.subscribe` | `useBrowserPush` | Settings (Browser notifications) |
+| `DELETE /push/subscriptions` | `pushApi.unsubscribe` | `useBrowserPush` | Settings; sign-out forgets this browser locally |

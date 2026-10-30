@@ -11,6 +11,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/common/empty-state'
 import { useCurrency } from '@/features/currency/currency-context'
+import { BillingEmailsCard } from '@/features/emails/billing-emails-card'
 import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
 import { ReviewActions } from '@/features/subscriptions/review-actions'
 import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-choice-ui'
@@ -20,9 +21,9 @@ import { useSubscriptionActions } from '@/features/subscriptions/use-subscriptio
 import { useStatusHistory, useSubscription, useSubscriptionHistory } from '@/hooks/use-subscriptions'
 import { getCategoryMeta } from '@/lib/category-config'
 import { isRenewing } from '@/lib/renewals'
-import type { Tone } from '@/lib/tone'
+import { TONE_STYLES } from '@/lib/tone'
 import { FREQUENCY_LABEL, FREQUENCY_SUFFIX } from '@/lib/labels'
-import { cn, formatDate, formatMoney, getAnnualizedCost, getMonthlyEquivalent, todayIsoDate, toLocalIsoDate } from '@/lib/utils'
+import { cn, formatDate, formatMoney, getAnnualizedCost, getMonthlyEquivalent, todayIsoDate, formatInstant } from '@/lib/utils'
 import type { Subscription } from '@/types/api'
 
 function BackLink() {
@@ -153,6 +154,7 @@ export function SubscriptionDetailPage() {
         <PaymentHistory subscription={item} />
         <NextPaymentCard subscription={item} />
         <StatusHistory subscription={item} />
+        <BillingEmailsCard subscriptionId={item.id} />
       </div>
 
       <ConfirmDialog {...actions.deleteDialog} />
@@ -215,13 +217,6 @@ function describeNoNextPayment(subscription: Subscription) {
   return 'Cancelled — this won’t renew.'
 }
 
-const TONE_DOT: Record<Tone, string> = {
-  positive: 'bg-emerald-500',
-  neutral: 'bg-slate-400',
-  warning: 'bg-amber-500',
-  danger: 'bg-rose-500',
-}
-
 function StatusHistory({ subscription }: { subscription: Subscription }) {
   const history = useStatusHistory(subscription.id)
 
@@ -250,14 +245,14 @@ function StatusHistory({ subscription }: { subscription: Subscription }) {
               const description = describeStatusChange(change, subscription)
               return (
                 <li key={change.id} className="flex items-start gap-3 px-3 py-3">
-                  <span className={cn('mt-1.5 size-2 shrink-0 rounded-full', TONE_DOT[description.tone])} />
+                  <span className={cn('mt-1.5 size-2 shrink-0 rounded-full', TONE_STYLES[description.tone].dot)} />
                   <span className="min-w-0 flex-1">
                     <span className="block text-sm text-slate-700">{description.text}</span>
                     {description.detail && (
                       <span className="block truncate text-xs text-slate-400">{description.detail}</span>
                     )}
                   </span>
-                  <span className="shrink-0 text-xs text-slate-400">{formatDate(toLocalIsoDate(change.effectiveAt))}</span>
+                  <span className="shrink-0 text-xs text-slate-400">{formatInstant(change.effectiveAt)}</span>
                 </li>
               )
             })}

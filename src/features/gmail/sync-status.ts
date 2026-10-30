@@ -1,5 +1,5 @@
 import type { Tone } from '@/lib/tone'
-import { formatDate, toLocalIsoDate } from '@/lib/utils'
+import { formatInstant } from '@/lib/utils'
 import type { GmailSyncStatus } from '@/types/api'
 
 export interface SyncDescription {
@@ -23,7 +23,7 @@ function describeRunningSync({ processed, total }: GmailSyncStatus): SyncDescrip
 }
 
 function describeLastSync(lastSyncedAt: string | null) {
-  return lastSyncedAt ? `Last synced ${formatDate(toLocalIsoDate(lastSyncedAt))}` : 'Not synced yet'
+  return lastSyncedAt ? `Last synced ${formatInstant(lastSyncedAt)}` : 'Not synced yet'
 }
 
 function describeFinishedSync(
