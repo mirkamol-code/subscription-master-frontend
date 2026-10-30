@@ -134,6 +134,10 @@ export function getFieldErrors(error: unknown): Record<string, string> {
   return result
 }
 
+export function hasApiErrorCode(error: unknown, errorCode: string): boolean {
+  return axios.isAxiosError(error) && (error.response?.data as { errorCode?: string } | undefined)?.errorCode === errorCode
+}
+
 export function getApiError(error: unknown): string {
   if (!axios.isAxiosError(error)) {
     return 'Something went wrong. Please try again.'

@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCurrency } from '@/features/currency/currency-context'
 import { CurrencyRateCard } from '@/features/currency/currency-rate-card'
+import { GmailCard } from '@/features/gmail/gmail-card'
 import { useMonthlyDynamics, useSummary } from '@/hooks/use-statistics'
 import { useSubscriptions } from '@/hooks/use-subscriptions'
 import { getCategoryMeta } from '@/lib/category-config'
@@ -53,6 +54,8 @@ export function DashboardPage() {
           </Button>
         }
       />
+
+      <GmailCard />
 
       <SpendHero
         summary={summary.data}
