@@ -30,3 +30,9 @@ This map reflects the OpenAPI document at `https://subscriptionmaster.app/api/v3
 | `GET /subscriptions/{id}/emails` | `emailsApi.listForSubscription` | `useBillingEmails` | Subscription details (Billing emails) |
 | `GET /emails/{id}/content` | `emailsApi.getContent` | `useEmailContent` | Email viewer (sandboxed iframe) |
 | `GET /emails/{id}/attachments/{attachmentId}` | `emailsApi.getAttachment` | `downloadAttachment` | Billing emails attachments |
+| `GET /notifications` | `notificationsApi.list` | `useNotifications` | Header bell |
+| `GET /notifications/unread-count` | `notificationsApi.getUnreadCount` | `useUnreadCount` (every minute) | Header bell badge |
+| `POST /notifications/{id}/read` | `notificationsApi.markRead` | `useMarkNotificationRead` | Header bell |
+| `POST /notifications/read-all` | `notificationsApi.markAllRead` | `useMarkAllNotificationsRead` | Header bell |
+| `GET /settings/notifications` | `notificationsApi.getSettings` | `useNotificationSettings` | Settings |
+| `PUT /settings/notifications` | `notificationsApi.updateSettings` | `useUpdateNotificationSettings` | Settings |

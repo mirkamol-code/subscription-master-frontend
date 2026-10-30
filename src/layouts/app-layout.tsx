@@ -8,6 +8,7 @@ import {
   LayoutGrid,
   LogOut,
   Menu,
+  Settings,
   X,
   type LucideIcon,
 } from 'lucide-react'
@@ -16,6 +17,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { BrandMark } from '@/components/common/brand-mark'
 import { useAuth } from '@/features/auth/auth-context'
 import { CurrencySwitcherDropdown } from '@/features/currency/currency-switcher-dropdown'
+import { NotificationBell } from '@/features/notifications/notification-bell'
 import { useCurrentUser, useIsAdmin } from '@/hooks/use-current-user'
 import type { UserProfile } from '@/types/api'
 import { cn } from '@/lib/utils'
@@ -31,6 +33,7 @@ const navigation: NavItem[] = [
   { label: 'Overview', href: '/', icon: LayoutGrid },
   { label: 'Subscriptions', href: '/subscriptions', icon: CreditCard },
   { label: 'Reports', href: '/reports', icon: FileDown },
+  { label: 'Settings', href: '/settings', icon: Settings },
   { label: 'Popular services', href: '/admin/usage', icon: BarChart3, adminOnly: true },
 ]
 
@@ -205,7 +208,8 @@ export function AppLayout() {
               <span className="text-sm font-bold tracking-tight">Subscription Master</span>
             </Link>
           </div>
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <NotificationBell />
             <CurrencySwitcherDropdown />
           </div>
         </header>

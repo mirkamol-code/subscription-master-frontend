@@ -22,6 +22,9 @@ const NotFoundPage = lazy(() =>
 const ReportsPage = lazy(() =>
   import('@/pages/reports-page').then((m) => ({ default: m.ReportsPage })),
 )
+const SettingsPage = lazy(() =>
+  import('@/pages/settings-page').then((m) => ({ default: m.SettingsPage })),
+)
 const SubscriptionDetailPage = lazy(() =>
   import('@/pages/subscription-detail-page').then((m) => ({ default: m.SubscriptionDetailPage })),
 )
@@ -58,6 +61,7 @@ export default function App() {
             <Route path="subscriptions/:id" element={<SubscriptionDetailPage />} />
             <Route path="subscriptions/:id/edit" element={<SubscriptionFormPage mode="edit" />} />
             <Route path="reports" element={<ReportsPage />} />
+            <Route path="settings" element={<SettingsPage />} />
             <Route path="admin/usage" element={<AdminUsagePage />} />
           </Route>
         </Route>

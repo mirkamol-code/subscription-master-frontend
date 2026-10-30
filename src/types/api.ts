@@ -174,3 +174,23 @@ export interface BillingEmail {
   confidence: 'HIGH' | 'LOW'
   attachments: BillingEmailAttachment[]
 }
+
+export interface AppNotification {
+  id: number
+  type: 'PAYMENT_DUE' | 'BILLING_REQUIRED' | 'CANCELLED' | 'CANCELLATION_SCHEDULED' | 'REACTIVATED' | 'RETRACKED'
+  severity: 'INFO' | 'URGENT'
+  title: string
+  body: string
+  subscriptionId: number | null
+  link: string | null
+  read: boolean
+  createdAt: string
+}
+
+export interface NotificationSettings {
+  emailEnabled: boolean
+  inAppEnabled: boolean
+  pushEnabled: boolean
+  daysBefore: number
+  timeZone: string
+}
