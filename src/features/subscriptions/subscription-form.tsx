@@ -8,14 +8,14 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input, Select } from '@/components/ui/input'
 import { CATEGORY_CONFIG, getCategoryMeta } from '@/lib/category-config'
-import { CURRENCY_META, FREQUENCY_LABEL, FREQUENCY_SUFFIX, STATUS_LABEL } from '@/lib/labels'
+import { getStatusChoices } from '@/features/subscriptions/status-choices'
+import { CURRENCY_META, FREQUENCY_LABEL, FREQUENCY_SUFFIX, getStatusLabel } from '@/lib/labels'
 import { formatDate, formatMoney, getAnnualizedCost, todayIsoDate } from '@/lib/utils'
 import { subscriptionSchema, type SubscriptionValues } from '@/schemas/subscription'
 import {
   categories,
   currencies,
   frequencies,
-  subscriptionStatuses,
   type SubscriptionRequest,
 } from '@/types/api'
 
@@ -59,6 +59,8 @@ export function SubscriptionForm({
   })
   const { errors } = form.formState
   const preview = useWatch({ control: form.control })
+  const initialStatus = initialValues?.status ?? 'ACTIVE'
+  const statusOptions = [initialStatus, ...getStatusChoices(initialStatus)]
 
   const submit = form.handleSubmit(async (values) => {
     const fieldErrors = await onSubmit(values)
@@ -146,7 +148,7 @@ export function SubscriptionForm({
           <legend className="sr-only">Status</legend>
           <p className="mb-3 text-sm font-medium text-slate-700">Status</p>
           <Segmented
-            options={subscriptionStatuses.map((value) => ({ value, label: STATUS_LABEL[value] }))}
+            options={statusOptions.map((value) => ({ value, label: getStatusLabel(value) }))}
             register={form.register('status')}
           />
         </fieldset>

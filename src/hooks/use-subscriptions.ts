@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { subscriptionsApi } from '@/api/endpoints/subscriptions'
-import type { Subscription, SubscriptionFilters, SubscriptionRequest } from '@/types/api'
+import type { Subscription, SubscriptionFilters, SubscriptionRequest, SubscriptionStatus } from '@/types/api'
 
 export const subscriptionKeys = {
   all: ['subscriptions'] as const,
@@ -9,6 +9,7 @@ export const subscriptionKeys = {
   allList: () => [...subscriptionKeys.all, 'all-items'] as const,
   detail: (id: number) => [...subscriptionKeys.all, 'detail', id] as const,
   history: (id: number) => [...subscriptionKeys.detail(id), 'history'] as const,
+  statusHistory: (id: number) => [...subscriptionKeys.detail(id), 'status-history'] as const,
 }
 
 const statisticsKeys = { all: ['statistics'] as const }
@@ -59,6 +60,14 @@ export function useSubscriptionHistory(id: number) {
   })
 }
 
+export function useStatusHistory(id: number) {
+  return useQuery({
+    queryKey: subscriptionKeys.statusHistory(id),
+    queryFn: () => subscriptionsApi.getStatusHistory(id),
+    enabled: Number.isFinite(id),
+  })
+}
+
 export function useSubscription(id: number) {
   return useQuery({
     queryKey: subscriptionKeys.detail(id),
@@ -83,20 +92,13 @@ export function useUpdateSubscription(id: number) {
   })
 }
 
-function useStatusChange(change: (id: number) => Promise<Subscription>) {
+export function useChangeSubscriptionStatus() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: change,
+    mutationFn: ({ id, status }: { id: number; status: SubscriptionStatus }) =>
+      subscriptionsApi.changeStatus(id, status),
     onSuccess: (data) => refreshSubscriptionData(queryClient, data),
   })
-}
-
-export function usePauseSubscription() {
-  return useStatusChange(subscriptionsApi.pause)
-}
-
-export function useResumeSubscription() {
-  return useStatusChange(subscriptionsApi.resume)
 }
 
 export function useDeleteSubscription() {

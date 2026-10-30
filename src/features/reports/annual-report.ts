@@ -1,7 +1,7 @@
 import { fetchLiveExchangeRates, toUzs, type ExchangeRates } from '@/hooks/use-currency-rates'
 import { fetchAllSubscriptions } from '@/hooks/use-subscriptions'
 import { getCategoryMeta } from '@/lib/category-config'
-import { FREQUENCY_LABEL, STATUS_LABEL } from '@/lib/labels'
+import { FREQUENCY_LABEL, getStatusLabel } from '@/lib/labels'
 import { buildCsvBlob, buildXlsxBlob, type SpreadsheetCell } from '@/lib/spreadsheet'
 import { getAnnualizedCost, roundMoney } from '@/lib/utils'
 import type { Currency, Subscription } from '@/types/api'
@@ -40,7 +40,7 @@ function buildReportRows(
     return [
       sub.name,
       getCategoryMeta(sub.category).label,
-      STATUS_LABEL[sub.status],
+      getStatusLabel(sub.status),
       FREQUENCY_LABEL[sub.frequency],
       roundMoney(sub.price),
       sub.currency,

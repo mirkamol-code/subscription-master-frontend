@@ -1,32 +1,21 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { getApiError } from '@/api/client'
-import {
-  useDeleteSubscription,
-  usePauseSubscription,
-  useResumeSubscription,
-} from '@/hooks/use-subscriptions'
-import { STATUS_ACTION } from '@/features/subscriptions/status-action'
+import { useChangeSubscriptionStatus, useDeleteSubscription } from '@/hooks/use-subscriptions'
+import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-action'
+import type { UserStatus } from '@/features/subscriptions/status-choices'
 import type { Subscription } from '@/types/api'
 
-/** Pause/resume and delete with consistent feedback, plus the delete-confirmation state. */
+/** Status changes and delete with consistent feedback, plus the delete-confirmation state. */
 export function useSubscriptionActions(options?: { onDeleted?: (item: Subscription) => void }) {
   const [deleteTarget, setDeleteTarget] = useState<Subscription | null>(null)
-  const pauseMutation = usePauseSubscription()
-  const resumeMutation = useResumeSubscription()
+  const statusMutation = useChangeSubscriptionStatus()
   const deleteMutation = useDeleteSubscription()
 
-  const changeStatus = async (item: Subscription) => {
-    const action = STATUS_ACTION[item.status]
-    if (!action) return
+  const changeStatus = async (item: Subscription, status: UserStatus) => {
     try {
-      if (action === 'pause') {
-        await pauseMutation.mutateAsync(item.id)
-        toast.success(`${item.name} paused`)
-      } else {
-        await resumeMutation.mutateAsync(item.id)
-        toast.success(`${item.name} is active again`)
-      }
+      await statusMutation.mutateAsync({ id: item.id, status })
+      toast.success(STATUS_CHOICE_UI[status].doneMessage(item.name))
     } catch (error) {
       toast.error(getApiError(error))
     }
@@ -45,7 +34,7 @@ export function useSubscriptionActions(options?: { onDeleted?: (item: Subscripti
   }
 
   return {
-    changeStatus: (item: Subscription) => void changeStatus(item),
+    changeStatus: (item: Subscription, status: UserStatus) => void changeStatus(item, status),
     requestDelete: setDeleteTarget,
     deleteDialog: {
       open: deleteTarget !== null,
@@ -59,6 +48,6 @@ export function useSubscriptionActions(options?: { onDeleted?: (item: Subscripti
       onConfirm: () => void confirmDelete(),
       pending: deleteMutation.isPending,
     },
-    isChangingStatus: pauseMutation.isPending || resumeMutation.isPending,
+    isChangingStatus: statusMutation.isPending,
   }
 }

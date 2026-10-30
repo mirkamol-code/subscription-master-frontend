@@ -2,8 +2,15 @@ import type { Currency, Frequency, SubscriptionStatus } from '@/types/api'
 
 export const STATUS_LABEL: Record<SubscriptionStatus, string> = {
   ACTIVE: 'Active',
-  PAUSED: 'Paused',
   CANCELLED: 'Cancelled',
+  BILLING_REQUIRED: 'Billing required',
+}
+
+export function getStatusLabel(status: string): string {
+  const known = STATUS_LABEL[status as SubscriptionStatus]
+  if (known) return known
+  const words = status.toLowerCase().replace(/_/g, ' ').trim()
+  return words ? words.charAt(0).toUpperCase() + words.slice(1) : 'Unknown'
 }
 
 export const FREQUENCY_LABEL: Record<Frequency, string> = {

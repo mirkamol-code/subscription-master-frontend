@@ -15,8 +15,8 @@ This map reflects the OpenAPI document at `https://subscriptionmaster.app/api/v3
 | `GET /subscriptions/{id}` | `subscriptionsApi.get` | `useSubscription` | Details, edit |
 | `PUT /subscriptions/{id}` | `subscriptionsApi.update` | `useUpdateSubscription` | Edit subscription |
 | `DELETE /subscriptions/{id}` | `subscriptionsApi.remove` | `useDeleteSubscription` | Details, subscription list |
-| `POST /subscriptions/{id}/pause` | `subscriptionsApi.pause` | `usePauseSubscription` | Details, subscription list |
-| `POST /subscriptions/{id}/resume` | `subscriptionsApi.resume` | `useResumeSubscription` | Details, subscription list |
+| `PUT /subscriptions/{id}/status` | `subscriptionsApi.changeStatus` | `useChangeSubscriptionStatus` | Details, subscription list |
+| `GET /subscriptions/{id}/status-history` | `subscriptionsApi.getStatusHistory` | `useStatusHistory` | Subscription details |
 | `GET /subscriptions/{id}/history` | `subscriptionsApi.getHistory` | `useSubscriptionHistory` | Subscription details |
 | `GET /statistics/summary` | `statisticsApi.summary` | `useSummary` | Dashboard |
 | `GET /statistics/monthly-dynamics` | `statisticsApi.monthlyDynamics` | `useMonthlyDynamics` | Dashboard |

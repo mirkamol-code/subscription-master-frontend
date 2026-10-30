@@ -1,22 +1,13 @@
-import { Pause, Play, type LucideIcon } from 'lucide-react'
-import type { SubscriptionStatus } from '@/types/api'
+import { Ban, CircleCheck, type LucideIcon } from 'lucide-react'
+import type { UserStatus } from '@/features/subscriptions/status-choices'
 
-export type StatusAction = 'pause' | 'resume'
-
-interface StatusActionUi {
+interface StatusChoiceUi {
   label: string
-  pendingLabel: string
+  doneMessage: (name: string) => string
   icon: LucideIcon
 }
 
-/** The one status change each status allows; cancelled subscriptions can't be paused or resumed. */
-export const STATUS_ACTION: Record<SubscriptionStatus, StatusAction | null> = {
-  ACTIVE: 'pause',
-  PAUSED: 'resume',
-  CANCELLED: null,
-}
-
-export const STATUS_ACTION_UI: Record<StatusAction, StatusActionUi> = {
-  pause: { label: 'Pause', pendingLabel: 'Pausing…', icon: Pause },
-  resume: { label: 'Resume', pendingLabel: 'Resuming…', icon: Play },
+export const STATUS_CHOICE_UI: Record<UserStatus, StatusChoiceUi> = {
+  ACTIVE: { label: 'Mark active', doneMessage: (name) => `${name} is active`, icon: CircleCheck },
+  CANCELLED: { label: 'Mark cancelled', doneMessage: (name) => `${name} marked cancelled`, icon: Ban },
 }
