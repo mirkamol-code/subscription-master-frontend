@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { notificationsApi } from '@/api/endpoints/notifications'
 
 const INBOX_SIZE = 20
@@ -44,6 +44,16 @@ export function useMarkNotificationRead() {
 
 export function useMarkAllNotificationsRead() {
   return useInboxMutation(() => notificationsApi.markAllRead())
+}
+
+export async function enablePushReminders(queryClient: QueryClient) {
+  const settings = await queryClient.fetchQuery({
+    queryKey: notificationKeys.settings(),
+    queryFn: notificationsApi.getSettings,
+  })
+  if (settings.pushEnabled) return
+  const saved = await notificationsApi.updateSettings({ ...settings, pushEnabled: true })
+  queryClient.setQueryData(notificationKeys.settings(), saved)
 }
 
 export function useNotificationSettings() {

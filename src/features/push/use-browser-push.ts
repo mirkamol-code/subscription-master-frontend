@@ -2,10 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { toast } from 'sonner'
 import { getApiError } from '@/api/client'
-import { notificationsApi } from '@/api/endpoints/notifications'
-import { notificationKeys } from '@/features/notifications/use-notifications'
+import { enablePushReminders } from '@/features/notifications/use-notifications'
 import { readBrowserPushState, turnOffBrowserPush, turnOnBrowserPush } from '@/features/push/browser-push'
-import type { NotificationSettings } from '@/types/api'
 
 const pushStateKey = ['push', 'browser-state'] as const
 
@@ -17,16 +15,10 @@ export function useBrowserPush() {
   const queryClient = useQueryClient()
   const state = useQuery({ queryKey: pushStateKey, queryFn: readBrowserPushState })
 
-  const enablePushReminders = async () => {
-    const settings = queryClient.getQueryData<NotificationSettings>(notificationKeys.settings())
-    if (!settings || settings.pushEnabled) return
-    queryClient.setQueryData(notificationKeys.settings(), await notificationsApi.updateSettings({ ...settings, pushEnabled: true }))
-  }
-
   const turnOn = useMutation({
     mutationFn: async () => {
       await turnOnBrowserPush()
-      await enablePushReminders()
+      await enablePushReminders(queryClient)
     },
     onSuccess: () => toast.success('Browser notifications are on'),
     onError: (error) => toast.error(describePushError(error)),

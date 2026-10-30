@@ -1,3 +1,5 @@
+import type { PushSubscriptionRequest } from '@/types/api'
+
 const INVALID_KEY = 'The server sent an invalid push key'
 
 export function urlBase64ToUint8Array(value: string): Uint8Array<ArrayBuffer> {
@@ -10,11 +12,6 @@ export function urlBase64ToUint8Array(value: string): Uint8Array<ArrayBuffer> {
   } catch {
     throw new Error(INVALID_KEY)
   }
-}
-
-export interface PushSubscriptionRequest {
-  endpoint: string
-  keys: { p256dh: string; auth: string }
 }
 
 export function toPushSubscriptionRequest(subscription: PushSubscriptionJSON): PushSubscriptionRequest | null {

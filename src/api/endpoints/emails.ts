@@ -1,11 +1,5 @@
 import { api } from '@/api/client'
-import type { BillingEmail } from '@/types/api'
-
-export interface EmailContent {
-  html: string
-  contentSecurityPolicy: string | null
-  blockedRemoteImages: number
-}
+import type { BillingEmail, EmailContent } from '@/types/api'
 
 export const emailsApi = {
   listForSubscription: async (subscriptionId: number) =>

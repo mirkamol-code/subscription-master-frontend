@@ -1,8 +1,8 @@
 import { api } from '@/api/client'
 
-export const accountApi = {
+export const userApi = {
   disconnectGmail: async () => (await api.delete<{ googleAccessRevoked: boolean }>('/me/gmail')).data,
-  deleteAccount: async () => {
+  deleteUser: async () => {
     await api.delete('/me')
   },
 }

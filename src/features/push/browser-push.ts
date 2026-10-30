@@ -14,6 +14,14 @@ async function findPushSubscription() {
   return (await registration?.pushManager.getSubscription()) ?? null
 }
 
+async function askNotificationPermission() {
+  const permission = await Notification.requestPermission()
+  if (permission === 'denied') {
+    throw new Error('Notifications are blocked for this site. Allow them in your browser’s site settings.')
+  }
+  if (permission !== 'granted') throw new Error('Allow notifications when your browser asks, to get reminders here.')
+}
+
 export async function readBrowserPushState(): Promise<BrowserPushState> {
   if (!isBrowserPushSupported()) return 'unsupported'
   if (Notification.permission === 'denied') return 'blocked'
@@ -21,11 +29,9 @@ export async function readBrowserPushState(): Promise<BrowserPushState> {
 }
 
 export async function turnOnBrowserPush() {
+  await askNotificationPermission()
   const registration = await navigator.serviceWorker.register(SERVICE_WORKER_URL)
   await navigator.serviceWorker.ready
-  if ((await Notification.requestPermission()) !== 'granted') {
-    throw new Error('Notifications are blocked for this site. Allow them in your browser’s site settings.')
-  }
   const publicKey = await pushApi.getVapidPublicKey()
   const subscription =
     (await registration.pushManager.getSubscription()) ??
@@ -48,7 +54,14 @@ export async function turnOffBrowserPush() {
   await subscription.unsubscribe()
 }
 
-export async function forgetBrowserPush() {
+export async function forgetBrowserPush(accessToken: string | undefined) {
   if (!isBrowserPushSupported()) return
-  await (await findPushSubscription())?.unsubscribe()
+  try {
+    const subscription = await findPushSubscription()
+    if (!subscription) return
+    if (accessToken) await pushApi.unsubscribe(subscription.endpoint, accessToken).catch(() => undefined)
+    await subscription.unsubscribe()
+  } catch {
+    return
+  }
 }

@@ -5,15 +5,8 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useGmailCard } from '@/features/gmail/use-gmail-card'
-import type { Tone } from '@/lib/tone'
+import { TONE_STYLES } from '@/lib/tone'
 import { cn } from '@/lib/utils'
-
-const TONE_TEXT: Record<Tone, string> = {
-  neutral: 'text-slate-500',
-  positive: 'text-slate-500',
-  warning: 'text-amber-700',
-  danger: 'text-rose-600',
-}
 
 function GoogleLink({ label }: { label: string }) {
   return (
@@ -81,7 +74,7 @@ export function GmailCard() {
               <div className="h-full rounded-full bg-teal-500 transition-all" style={{ width: `${sync.percent}%` }} />
             </div>
           )}
-          <p className={cn('text-sm', TONE_TEXT[sync.tone])}>{sync.label}</p>
+          <p className={cn('text-sm', TONE_STYLES[sync.tone].text)}>{sync.label}</p>
         </div>
       )}
     </Card>

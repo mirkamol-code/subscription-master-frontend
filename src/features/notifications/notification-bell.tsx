@@ -14,7 +14,7 @@ import {
   useNotifications,
   useUnreadCount,
 } from '@/features/notifications/use-notifications'
-import { cn, formatDate, toLocalIsoDate } from '@/lib/utils'
+import { cn, formatInstant } from '@/lib/utils'
 import type { AppNotification } from '@/types/api'
 
 function useNotificationBell() {
@@ -119,7 +119,7 @@ export function NotificationBell() {
                       {notification.title}
                     </span>
                     <span className="block text-xs text-slate-500">{notification.body}</span>
-                    <span className="block text-[11px] text-slate-400">{formatDate(toLocalIsoDate(notification.createdAt))}</span>
+                    <span className="block text-[11px] text-slate-400">{formatInstant(notification.createdAt)}</span>
                   </span>
                 </DropdownMenu.Item>
               ))

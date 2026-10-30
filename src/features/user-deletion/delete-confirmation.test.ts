@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isDeleteConfirmed } from '@/features/account/delete-confirmation'
+import { isDeleteConfirmed } from '@/features/user-deletion/delete-confirmation'
 
 describe('isDeleteConfirmed', () => {
   it('confirms when the User types the email they sign in with', () => {

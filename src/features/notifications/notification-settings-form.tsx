@@ -10,6 +10,10 @@ import type { NotificationSettings } from '@/types/api'
 
 const DEVICE_TIME_ZONE = Intl.DateTimeFormat().resolvedOptions().timeZone
 
+function formatTimeZone(zone: string) {
+  return zone.replace(/_/g, ' ')
+}
+
 function listTimeZones(current: string) {
   const zones = Intl.supportedValuesOf('timeZone')
   return zones.includes(current) ? zones : [current, ...zones]
@@ -89,7 +93,7 @@ export function NotificationSettingsForm({ settings }: { settings: NotificationS
           <Select id="timeZone" aria-invalid={!!errors.timeZone} {...form.register('timeZone')}>
             {listTimeZones(settings.timeZone).map((zone) => (
               <option key={zone} value={zone}>
-                {zone.replace(/_/g, ' ')}
+                {formatTimeZone(zone)}
               </option>
             ))}
           </Select>
@@ -99,7 +103,7 @@ export function NotificationSettingsForm({ settings }: { settings: NotificationS
               onClick={() => form.setValue('timeZone', DEVICE_TIME_ZONE, { shouldDirty: true })}
               className="mt-1.5 text-[13px] font-medium text-teal-700 hover:underline"
             >
-              Use this device’s time zone ({DEVICE_TIME_ZONE.replace(/_/g, ' ')})
+              Use this device’s time zone ({formatTimeZone(DEVICE_TIME_ZONE)})
             </button>
           )}
           {errors.timeZone && <p className="mt-1.5 text-[13px] text-rose-600">{errors.timeZone.message}</p>}

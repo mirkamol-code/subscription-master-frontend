@@ -47,6 +47,10 @@ export function toLocalIsoDate(instant: string): string {
   return toIsoDate(new Date(instant))
 }
 
+export function formatInstant(instant: string) {
+  return formatDate(toLocalIsoDate(instant))
+}
+
 export function todayIsoDate(): string {
   return toIsoDate(new Date())
 }

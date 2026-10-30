@@ -3,7 +3,7 @@ import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import { TriangleAlert } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { isDeleteConfirmed } from '@/features/account/delete-confirmation'
+import { isDeleteConfirmed } from '@/features/user-deletion/delete-confirmation'
 
 interface TypedConfirmDialogProps {
   open: boolean
@@ -32,9 +32,7 @@ export function TypedConfirmDialog({
   const canConfirm = isDeleteConfirmed(typed, email) && !pending
 
   const changeOpen = (isOpen: boolean) => {
-    if (pending) return
-    if (!isOpen) setTyped('')
-    onOpenChange(isOpen)
+    if (!pending) onOpenChange(isOpen)
   }
 
   return (

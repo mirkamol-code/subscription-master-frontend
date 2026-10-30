@@ -12,16 +12,9 @@ import { downloadAttachment } from '@/features/emails/download-attachment'
 import { EmailViewerDialog } from '@/features/emails/email-viewer-dialog'
 import { useBillingEmails } from '@/features/emails/use-billing-emails'
 import { formatFileSize } from '@/lib/file-size'
-import type { Tone } from '@/lib/tone'
-import { cn, formatDate, toLocalIsoDate } from '@/lib/utils'
+import { TONE_STYLES } from '@/lib/tone'
+import { cn, formatInstant } from '@/lib/utils'
 import type { BillingEmail, BillingEmailAttachment } from '@/types/api'
-
-const TONE_BADGE: Record<Tone, string> = {
-  positive: 'bg-emerald-50 text-emerald-700',
-  neutral: 'bg-slate-100 text-slate-600',
-  warning: 'bg-amber-50 text-amber-700',
-  danger: 'bg-rose-50 text-rose-700',
-}
 
 async function saveAttachment(email: BillingEmail, attachment: BillingEmailAttachment) {
   try {
@@ -65,7 +58,7 @@ export function BillingEmailsCard({ subscriptionId }: { subscriptionId: number }
                     onClick={() => setOpenEmail(email)}
                     className="flex w-full items-start gap-3 rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60"
                   >
-                    <Badge className={cn('shrink-0', TONE_BADGE[description.tone])}>{description.kindLabel}</Badge>
+                    <Badge className={cn('shrink-0', TONE_STYLES[description.tone].badge)}>{description.kindLabel}</Badge>
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-medium text-slate-900 hover:text-teal-700">
                         {description.title}
@@ -75,7 +68,7 @@ export function BillingEmailsCard({ subscriptionId }: { subscriptionId: number }
                         <span className="block text-xs text-amber-700">{description.confidenceNote}</span>
                       )}
                     </span>
-                    <span className="shrink-0 text-xs text-slate-400">{formatDate(toLocalIsoDate(email.receivedAt))}</span>
+                    <span className="shrink-0 text-xs text-slate-400">{formatInstant(email.receivedAt)}</span>
                   </button>
                   {email.attachments.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-2 pl-1">

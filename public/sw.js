@@ -1,5 +1,8 @@
 const DEFAULT_TITLE = 'Subscription Master'
 
+self.addEventListener('install', () => self.skipWaiting())
+self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()))
+
 function readPayload(event) {
   if (!event.data) return {}
   try {
@@ -12,10 +15,22 @@ function readPayload(event) {
 function toAppUrl(url) {
   try {
     const target = new URL(url, self.location.origin)
-    return target.origin === self.location.origin ? target.href : self.location.origin + '/'
+    if (target.protocol !== 'https:' && target.protocol !== 'http:') return self.location.origin + '/'
+    return self.location.origin + target.pathname + target.search + target.hash
   } catch {
     return self.location.origin + '/'
   }
+}
+
+function openInApp(url) {
+  return self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windows) => {
+    const open = windows.find((client) => new URL(client.url).origin === self.location.origin)
+    if (!open) return self.clients.openWindow(url)
+    return open
+      .navigate(url)
+      .then((client) => (client ?? open).focus())
+      .catch(() => self.clients.openWindow(url))
+  })
 }
 
 self.addEventListener('push', (event) => {
@@ -32,12 +47,5 @@ self.addEventListener('push', (event) => {
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
-  const url = toAppUrl(event.notification.data?.url || '/')
-  event.waitUntil(
-    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windows) => {
-      const open = windows.find((client) => new URL(client.url).origin === self.location.origin)
-      if (open) return open.navigate(url).then((client) => (client ?? open).focus())
-      return self.clients.openWindow(url)
-    }),
-  )
+  event.waitUntil(openInApp(toAppUrl(event.notification.data?.url || '/')))
 })

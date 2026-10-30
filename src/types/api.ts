@@ -194,3 +194,14 @@ export interface NotificationSettings {
   daysBefore: number
   timeZone: string
 }
+
+export interface EmailContent {
+  html: string
+  contentSecurityPolicy: string | null
+  blockedRemoteImages: number
+}
+
+export interface PushSubscriptionRequest {
+  endpoint: string
+  keys: { p256dh: string; auth: string }
+}

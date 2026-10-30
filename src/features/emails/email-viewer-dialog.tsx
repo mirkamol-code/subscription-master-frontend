@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { describeBillingEmail } from '@/features/emails/billing-email-description'
 import { buildEmailDocument } from '@/features/emails/email-document'
 import { useEmailContent } from '@/features/emails/use-billing-emails'
-import { formatDate, toLocalIsoDate } from '@/lib/utils'
+import { formatInstant } from '@/lib/utils'
 import type { BillingEmail } from '@/types/api'
 
 interface EmailViewerDialogProps {
@@ -16,8 +16,8 @@ interface EmailViewerDialogProps {
 }
 
 function EmailBody({ email }: { email: BillingEmail }) {
-  const [showImages, setShowImages] = useState(false)
-  const content = useEmailContent(email.id, showImages)
+  const [isShowingImages, setIsShowingImages] = useState(false)
+  const content = useEmailContent(email.id, isShowingImages)
 
   if (content.isLoading) return <Skeleton className="h-96 rounded-xl" />
   if (!content.data) return <ErrorState bare error={content.error} onRetry={() => void content.refetch()} />
@@ -25,12 +25,12 @@ function EmailBody({ email }: { email: BillingEmail }) {
   const blocked = content.data.blockedRemoteImages
   return (
     <div className="space-y-3">
-      {blocked > 0 && !showImages && (
+      {blocked > 0 && !isShowingImages && (
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-50 px-4 py-2.5 text-sm text-slate-600">
           <span>
             {blocked} remote {blocked === 1 ? 'image was' : 'images were'} blocked to protect your privacy.
           </span>
-          <Button size="sm" variant="outline" onClick={() => setShowImages(true)}>
+          <Button size="sm" variant="outline" onClick={() => setIsShowingImages(true)}>
             <ImageIcon className="size-4" aria-hidden /> Load images
           </Button>
         </div>
@@ -60,7 +60,7 @@ export function EmailViewerDialog({ email, onClose }: EmailViewerDialogProps) {
                 <div className="min-w-0">
                   <Dialog.Title className="truncate text-lg font-semibold text-slate-900">{description.title}</Dialog.Title>
                   <Dialog.Description className="truncate text-sm text-slate-500">
-                    {description.from} · {formatDate(toLocalIsoDate(email.receivedAt))}
+                    {description.from} · {formatInstant(email.receivedAt)}
                   </Dialog.Description>
                 </div>
                 <Dialog.Close

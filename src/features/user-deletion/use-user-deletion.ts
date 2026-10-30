@@ -1,7 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
-import { accountApi } from '@/api/endpoints/account'
+import { userApi } from '@/api/endpoints/user'
 import { useAuth } from '@/features/auth/auth-context'
 
 const GOOGLE_PERMISSIONS_URL = 'https://myaccount.google.com/permissions'
@@ -26,7 +26,7 @@ function warnIfGoogleAccessRemains(googleAccessRevoked: boolean) {
 export function useDisconnectGmail() {
   const endSession = useEndSession()
   return useMutation({
-    mutationFn: accountApi.disconnectGmail,
+    mutationFn: userApi.disconnectGmail,
     onSuccess: ({ googleAccessRevoked }) => {
       endSession()
       toast.success('Gmail disconnected and your data deleted')
@@ -35,10 +35,10 @@ export function useDisconnectGmail() {
   })
 }
 
-export function useDeleteAccount() {
+export function useDeleteUser() {
   const endSession = useEndSession()
   return useMutation({
-    mutationFn: accountApi.deleteAccount,
+    mutationFn: userApi.deleteUser,
     onSuccess: () => {
       endSession()
       toast.success('Your account was deleted')

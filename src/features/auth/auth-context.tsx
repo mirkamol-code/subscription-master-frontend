@@ -30,9 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       logout: () => {
         const current = tokenStore.get()
-        void forgetBrowserPush().catch(() => {
-          // Best effort: the backend drops the expired endpoint on its next send
-        })
+        void forgetBrowserPush(current?.accessToken)
         if (current?.refreshToken) {
           void authApi.logout(current.refreshToken).catch(() => {
             // Ignore network error on logout; local session is cleared immediately

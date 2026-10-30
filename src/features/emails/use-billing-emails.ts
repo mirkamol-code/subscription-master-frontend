@@ -15,11 +15,10 @@ export function useBillingEmails(subscriptionId: number) {
   })
 }
 
-export function useEmailContent(emailId: number | null, showImages: boolean) {
+export function useEmailContent(emailId: number, isShowingImages: boolean) {
   return useQuery({
-    queryKey: emailKeys.content(emailId ?? -1, showImages),
-    queryFn: () => emailsApi.getContent(emailId as number, showImages),
-    enabled: emailId !== null,
+    queryKey: emailKeys.content(emailId, isShowingImages),
+    queryFn: () => emailsApi.getContent(emailId, isShowingImages),
     staleTime: Infinity,
   })
 }

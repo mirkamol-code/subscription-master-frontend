@@ -2,7 +2,7 @@ import { ErrorState } from '@/components/common/error-state'
 import { PageHeader } from '@/components/common/page-header'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { DangerZoneCard } from '@/features/account/danger-zone-card'
+import { DangerZoneCard } from '@/features/user-deletion/danger-zone-card'
 import { BrowserPushCard } from '@/features/push/browser-push-card'
 import { NotificationSettingsForm } from '@/features/notifications/notification-settings-form'
 import { useNotificationSettings } from '@/features/notifications/use-notifications'
@@ -24,7 +24,7 @@ function NotificationSettingsCard() {
         ) : !settings.data ? (
           <ErrorState bare error={settings.error} onRetry={() => void settings.refetch()} />
         ) : (
-          <NotificationSettingsForm settings={settings.data} />
+          <NotificationSettingsForm key={String(settings.data.pushEnabled)} settings={settings.data} />
         )}
       </CardContent>
     </Card>
