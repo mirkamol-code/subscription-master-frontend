@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { CategoryIcon } from '@/components/common/category-icon'
+import { NeedsReviewBadge } from '@/components/common/needs-review-badge'
 import {
   SubscriptionActionsMenu,
   type SubscriptionItemActions,
@@ -37,8 +38,9 @@ export function SubscriptionGrid({ items, ...actions }: SubscriptionListProps) {
               >
                 {item.name}
               </Link>
-              <p className="truncate text-[13px] text-slate-500">
+              <p className="flex items-center gap-2 truncate text-[13px] text-slate-500">
                 {getCategoryMeta(item.category).label}
+                {item.needsReview && <NeedsReviewBadge />}
               </p>
             </div>
             <SubscriptionActionsMenu item={item} {...actions} className="relative z-10 -mr-1.5 -mt-1" />

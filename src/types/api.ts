@@ -1,6 +1,6 @@
 export const currencies = ['UZS', 'USD', 'EUR'] as const
 export const frequencies = ['WEEKLY', 'MONTHLY', 'ANNUAL'] as const
-export const subscriptionStatuses = ['ACTIVE', 'PAUSED', 'CANCELLED'] as const
+export const subscriptionStatuses = ['ACTIVE', 'CANCELLED', 'BILLING_REQUIRED'] as const
 export const categories = [
   'ENTERTAINMENT',
   'PRODUCTIVITY',
@@ -32,6 +32,34 @@ export interface Subscription extends SubscriptionRequest {
   id: number
   nextPaymentDate: string
   version: number
+  merchantKey: string | null
+  needsReview: boolean
+  hidden: boolean
+  lastPaymentDate: string | null
+  logoDomain: string | null
+  endsOn: string | null
+}
+
+export type StatusChangeReason =
+  | 'EMAIL_RECEIPT'
+  | 'EMAIL_CANCELLATION'
+  | 'CANCELLATION_SCHEDULED'
+  | 'EMAIL_PAYMENT_FAILED'
+  | 'USER'
+  | 'OVERDUE'
+  | 'SCHEDULED_END'
+
+export interface StatusChange {
+  id: number
+  fromStatus: SubscriptionStatus | null
+  toStatus: SubscriptionStatus
+  reason: StatusChangeReason
+  source: 'EMAIL' | 'USER' | 'SYSTEM'
+  effectiveAt: string
+  endsOn: string | null
+  billingEmailId: number | null
+  emailSender: string | null
+  emailReceivedAt: string | null
 }
 
 export interface Page<T> {
@@ -55,6 +83,7 @@ export interface SubscriptionFilters {
   nextPaymentDateTo?: string
   minPrice?: number
   maxPrice?: number
+  hidden?: boolean
   page?: number
   size?: number
   sort?: string[]
@@ -112,4 +141,18 @@ export interface MonthlyCost {
 export interface AdminUsage {
   serviceName: string
   subscriptionCount: number
+}
+
+export interface GmailConnection {
+  connected: boolean
+  gmailAddress: string | null
+  status: 'CONNECTED' | 'DISCONNECTED' | 'NOT_CONNECTED'
+}
+
+export interface GmailSyncStatus {
+  state: 'IDLE' | 'RUNNING' | 'FAILED'
+  processed: number
+  total: number
+  lastSyncedAt: string | null
+  error: 'RECONNECT_REQUIRED' | 'SOME_EMAILS_FAILED' | 'SYNC_FAILED' | null
 }

@@ -1,7 +1,9 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { STATUS_ACTION, STATUS_ACTION_UI } from '@/features/subscriptions/status-action'
+import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
+import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-choice-ui'
+import { getStatusChoices, type UserStatus } from '@/features/subscriptions/status-choices'
 import { cn } from '@/lib/utils'
 import type { Subscription } from '@/types/api'
 
@@ -9,7 +11,8 @@ const itemClass =
   'flex cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-slate-700 outline-none data-highlighted:bg-slate-100'
 
 export interface SubscriptionItemActions {
-  onChangeStatus: (item: Subscription) => void
+  onChangeStatus: (item: Subscription, status: UserStatus) => void
+  onToggleHidden: (item: Subscription) => void
   onDelete: (item: Subscription) => void
 }
 
@@ -21,12 +24,10 @@ interface SubscriptionActionsMenuProps extends SubscriptionItemActions {
 export function SubscriptionActionsMenu({
   item,
   onChangeStatus,
+  onToggleHidden,
   onDelete,
   className,
 }: SubscriptionActionsMenuProps) {
-  const statusAction = STATUS_ACTION[item.status]
-  const StatusIcon = statusAction && STATUS_ACTION_UI[statusAction].icon
-
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -52,11 +53,17 @@ export function SubscriptionActionsMenu({
               <Pencil className="size-4 text-slate-400" /> Edit
             </Link>
           </DropdownMenu.Item>
-          {statusAction && StatusIcon && (
-            <DropdownMenu.Item onSelect={() => onChangeStatus(item)} className={itemClass}>
-              <StatusIcon className="size-4 text-slate-400" /> {STATUS_ACTION_UI[statusAction].label}
-            </DropdownMenu.Item>
-          )}
+          {getStatusChoices(item.status).map((status) => {
+            const { icon: StatusIcon, label } = STATUS_CHOICE_UI[status]
+            return (
+              <DropdownMenu.Item key={status} onSelect={() => onChangeStatus(item, status)} className={itemClass}>
+                <StatusIcon className="size-4 text-slate-400" /> {label}
+              </DropdownMenu.Item>
+            )
+          })}
+          <DropdownMenu.Item onSelect={() => onToggleHidden(item)} className={itemClass}>
+            <HiddenToggleLabel isHidden={item.hidden} iconClassName="text-slate-400" />
+          </DropdownMenu.Item>
           <DropdownMenu.Separator className="my-1 h-px bg-slate-100" />
           <DropdownMenu.Item
             onSelect={() => onDelete(item)}

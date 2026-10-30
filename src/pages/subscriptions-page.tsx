@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SubscriptionCalendar } from '@/features/subscriptions/subscription-calendar'
+import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
 import { SubscriptionFilters } from '@/features/subscriptions/subscription-filters'
 import { DEFAULT_SORT, type FilterValues } from '@/features/subscriptions/subscription-filter-options'
 import { SubscriptionGrid } from '@/features/subscriptions/subscription-grid'
@@ -39,6 +40,7 @@ export function SubscriptionsPage() {
     ? (searchParams.get('view') as View)
     : 'grid'
   const page = Math.max(Number(searchParams.get('page')) || 0, 0)
+  const isShowingHidden = searchParams.get('hidden') === '1'
 
   const filters: FilterValues = {
     name: searchParams.get('name') ?? '',
@@ -60,6 +62,7 @@ export function SubscriptionsPage() {
     minPrice: toNumber(filters.minPrice),
     maxPrice: toNumber(filters.maxPrice),
     sort: [filters.sort],
+    hidden: isShowingHidden || undefined,
   })
   const actions = useSubscriptionActions()
 
@@ -101,9 +104,9 @@ export function SubscriptionsPage() {
     )
   }, [data, page, lastPage, setSearchParams])
 
-  const hasFilters = Object.entries(filters).some(
-    ([key, value]) => value && !(key === 'sort' && value === DEFAULT_SORT),
-  )
+  const hasFilters =
+    isShowingHidden ||
+    Object.entries(filters).some(([key, value]) => value && !(key === 'sort' && value === DEFAULT_SORT))
 
   return (
     <div className="space-y-6">
@@ -135,6 +138,16 @@ export function SubscriptionsPage() {
                 </button>
               ))}
             </div>
+            {view !== 'calendar' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-pressed={isShowingHidden}
+                onClick={() => updateParams({ hidden: isShowingHidden ? '' : '1', page: '' })}
+              >
+                <HiddenToggleLabel isHidden={isShowingHidden} hideLabel="Show hidden" unhideLabel="Show tracked" />
+              </Button>
+            )}
             <Button asChild variant="accent">
               <Link to="/subscriptions/new">
                 <Plus className="size-4" /> Add
@@ -189,12 +202,14 @@ export function SubscriptionsPage() {
             <SubscriptionGrid
               items={items}
               onChangeStatus={actions.changeStatus}
+              onToggleHidden={actions.toggleHidden}
               onDelete={actions.requestDelete}
             />
           ) : (
             <SubscriptionTable
               items={items}
               onChangeStatus={actions.changeStatus}
+              onToggleHidden={actions.toggleHidden}
               onDelete={actions.requestDelete}
             />
           )}

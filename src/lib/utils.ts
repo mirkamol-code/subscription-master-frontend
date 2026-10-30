@@ -43,6 +43,10 @@ export function toIsoDate(date: Date): string {
   return `${y}-${m}-${d}`
 }
 
+export function toLocalIsoDate(instant: string): string {
+  return toIsoDate(new Date(instant))
+}
+
 export function todayIsoDate(): string {
   return toIsoDate(new Date())
 }
@@ -56,6 +60,10 @@ export function formatDate(value: string | undefined) {
     day: 'numeric',
     year: 'numeric',
   }).format(date)
+}
+
+export function formatShortDate(value: string) {
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(parseLocalDate(value))
 }
 
 /** Turns "2026-05" or "2026-05-01" into "May"; leaves anything else untouched. */

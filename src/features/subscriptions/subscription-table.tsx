@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { CategoryIcon } from '@/components/common/category-icon'
+import { NeedsReviewBadge } from '@/components/common/needs-review-badge'
 import { Card } from '@/components/ui/card'
 import { SubscriptionActionsMenu } from '@/features/subscriptions/subscription-actions-menu'
 import type { SubscriptionListProps } from '@/features/subscriptions/subscription-grid'
@@ -45,7 +46,10 @@ export function SubscriptionTable({ items, ...actions }: SubscriptionListProps) 
                       >
                         {item.name}
                       </Link>
-                      <p className="text-xs text-slate-400">{getCategoryMeta(item.category).label}</p>
+                      <p className="flex items-center gap-2 text-xs text-slate-400">
+                        {getCategoryMeta(item.category).label}
+                        {item.needsReview && <NeedsReviewBadge />}
+                      </p>
                     </div>
                   </div>
                 </td>
