@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Mail, Paperclip } from 'lucide-react'
+import { Mail, Paperclip, PencilLine } from 'lucide-react'
 import { getApiError } from '@/api/client'
 import { EmptyState } from '@/components/common/empty-state'
 import { ErrorState } from '@/components/common/error-state'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { describeBillingEmail } from '@/features/emails/billing-email-description'
 import { downloadAttachment } from '@/features/emails/download-attachment'
 import { EmailViewerDialog } from '@/features/emails/email-viewer-dialog'
+import { OpenInGmailLink } from '@/features/emails/open-in-gmail-link'
 import { useBillingEmails } from '@/features/emails/use-billing-emails'
 import { formatFileSize } from '@/lib/file-size'
 import { TONE_STYLES } from '@/lib/tone'
@@ -24,7 +26,12 @@ async function saveAttachment(email: BillingEmail, attachment: BillingEmailAttac
   }
 }
 
-export function BillingEmailsCard({ subscriptionId }: { subscriptionId: number }) {
+interface BillingEmailsCardProps {
+  subscriptionId: number
+  onEnterAmount: (receipt: BillingEmail) => void
+}
+
+export function BillingEmailsCard({ subscriptionId, onEnterAmount }: BillingEmailsCardProps) {
   const emails = useBillingEmails(subscriptionId)
   const [openEmail, setOpenEmail] = useState<BillingEmail | null>(null)
 
@@ -67,25 +74,35 @@ export function BillingEmailsCard({ subscriptionId }: { subscriptionId: number }
                       {description.confidenceNote && (
                         <span className="block text-xs text-amber-700">{description.confidenceNote}</span>
                       )}
+                      {description.amountNote && (
+                        <span className="block text-xs text-amber-700">{description.amountNote}</span>
+                      )}
                     </span>
                     <span className="shrink-0 text-xs text-slate-400">{formatInstant(email.receivedAt)}</span>
                   </button>
-                  {email.attachments.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2 pl-1">
-                      {email.attachments.map((attachment) => (
-                        <button
-                          key={attachment.id}
-                          type="button"
-                          onClick={() => void saveAttachment(email, attachment)}
-                          className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1 text-xs text-slate-600 hover:bg-slate-50"
-                        >
-                          <Paperclip className="size-3.5 shrink-0" aria-hidden />
-                          <span className="truncate">{attachment.filename}</span>
-                          <span className="shrink-0 text-slate-400">{formatFileSize(attachment.sizeBytes)}</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  <div className="mt-2 flex flex-wrap gap-2 pl-1">
+                    {email.amountUnreadable && (
+                      <Button size="sm" variant="outline" onClick={() => onEnterAmount(email)}>
+                        <PencilLine className="size-3.5" aria-hidden /> Enter amount
+                      </Button>
+                    )}
+                    <OpenInGmailLink
+                      gmailMessageId={email.gmailMessageId}
+                      className="rounded-lg px-2.5 py-1 text-xs text-slate-500 hover:bg-slate-50"
+                    />
+                    {email.attachments.map((attachment) => (
+                      <button
+                        key={attachment.id}
+                        type="button"
+                        onClick={() => void saveAttachment(email, attachment)}
+                        className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1 text-xs text-slate-600 hover:bg-slate-50"
+                      >
+                        <Paperclip className="size-3.5 shrink-0" aria-hidden />
+                        <span className="truncate">{attachment.filename}</span>
+                        <span className="shrink-0 text-slate-400">{formatFileSize(attachment.sizeBytes)}</span>
+                      </button>
+                    ))}
+                  </div>
                 </li>
               )
             })}

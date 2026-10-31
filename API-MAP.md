@@ -1,5 +1,7 @@
 # Backend-to-frontend map
 
+Subscriptions come only from Gmail receipts; there is no endpoint to add one by hand.
+
 This map reflects the OpenAPI document at `https://subscriptionmaster.app/api/v3/api-docs` (base server URL `https://subscriptionmaster.app/api`).
 
 | Backend endpoint | API function | React Query hook / action | Screen |
@@ -11,12 +13,11 @@ This map reflects the OpenAPI document at `https://subscriptionmaster.app/api/v3
 | `POST /auth/logout` | `authApi.logout` | Auth context logout action | Header user menu |
 | `GET /subscriptions` | `subscriptionsApi.list` | `useSubscriptions` | Dashboard, subscription list |
 | `GET /subscriptions/all` | `subscriptionsApi.listAll` | `useAllSubscriptions` | Calendar view, summary fallback, reports |
-| `POST /subscriptions` | `subscriptionsApi.create` | `useCreateSubscription` | Add subscription |
 | `GET /subscriptions/{id}` | `subscriptionsApi.get` | `useSubscription` | Details, edit |
 | `PUT /subscriptions/{id}` | `subscriptionsApi.update` | `useUpdateSubscription` | Edit subscription |
 | `DELETE /subscriptions/{id}` | `subscriptionsApi.remove` | `useDeleteSubscription` | Details, subscription list |
 | `PUT /subscriptions/{id}/status` | `subscriptionsApi.changeStatus` | `useChangeSubscriptionStatus` | Details, subscription list |
-| `GET /subscriptions/{id}/status-history` | `subscriptionsApi.getStatusHistory` | `useStatusHistory` | Subscription details |
+| `GET /subscriptions/{id}/status-history` | `subscriptionsApi.getStatusHistory` | `useStatusHistory` | Subscription details (each change links to its source email and to Gmail) |
 | `GET /subscriptions/{id}/history` | `subscriptionsApi.getHistory` | `useSubscriptionHistory` | Subscription details |
 | `GET /statistics/summary` | `statisticsApi.summary` | `useSummary` | Dashboard |
 | `GET /statistics/monthly-dynamics` | `statisticsApi.monthlyDynamics` | `useMonthlyDynamics` | Dashboard |
@@ -27,7 +28,8 @@ This map reflects the OpenAPI document at `https://subscriptionmaster.app/api/v3
 | `POST /subscriptions/{id}/hide` | `subscriptionsApi.hide` | `useSetSubscriptionHidden` | Details, subscription list |
 | `POST /subscriptions/{id}/unhide` | `subscriptionsApi.unhide` | `useSetSubscriptionHidden` | Details, subscription list (Show hidden) |
 | `PUT /subscriptions/{id}` (unchanged) | `subscriptionsApi.update` | `useConfirmGuessedDetails` | Dashboard Needs review, details |
-| `GET /subscriptions/{id}/emails` | `emailsApi.listForSubscription` | `useBillingEmails` | Subscription details (Billing emails) |
+| `GET /subscriptions/{id}/emails` | `emailsApi.listForSubscription` | `useBillingEmails` | Subscription details (Billing emails, Open in Gmail, status history source emails) |
+| `POST /subscriptions/{id}/emails/{emailId}/payment` | `subscriptionsApi.confirmReceiptAmount` | `useConfirmReceiptAmount` | Enter amount dialog (receipt with unreadable amount) |
 | `GET /emails/{id}/content` | `emailsApi.getContent` | `useEmailContent` | Email viewer (sandboxed iframe) |
 | `GET /emails/{id}/attachments/{attachmentId}` | `emailsApi.getAttachment` | `downloadAttachment` | Billing emails attachments |
 | `GET /notifications` | `notificationsApi.list` | `useNotifications` | Header bell |

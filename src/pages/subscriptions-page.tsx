@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import { CalendarDays, ChevronLeft, ChevronRight, LayoutGrid, List, Plus, SearchX } from 'lucide-react'
+import { useSearchParams } from 'react-router-dom'
+import { CalendarDays, ChevronLeft, ChevronRight, LayoutGrid, List, SearchX } from 'lucide-react'
 import { EmptyState } from '@/components/common/empty-state'
 import { ErrorState } from '@/components/common/error-state'
 import { PageHeader } from '@/components/common/page-header'
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
+import { GmailCard } from '@/features/gmail/gmail-card'
 import { SubscriptionCalendar } from '@/features/subscriptions/subscription-calendar'
 import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
 import { SubscriptionFilters } from '@/features/subscriptions/subscription-filters'
@@ -148,11 +149,6 @@ export function SubscriptionsPage() {
                 <HiddenToggleLabel isHidden={isShowingHidden} hideLabel="Show hidden" unhideLabel="Show tracked" />
               </Button>
             )}
-            <Button asChild variant="accent">
-              <Link to="/subscriptions/new">
-                <Plus className="size-4" /> Add
-              </Link>
-            </Button>
           </>
         }
       />
@@ -171,32 +167,28 @@ export function SubscriptionsPage() {
             </div>
           ) : listQuery.isError ? (
             <ErrorState error={listQuery.error} onRetry={() => void listQuery.refetch()} />
-          ) : items.length === 0 ? (
-            <Card>
-              {hasFilters ? (
-                <EmptyState
-                  icon={SearchX}
-                  title="No matches"
-                  description="Nothing fits these filters. Try a different search or clear them."
-                  action={
-                    <Button variant="outline" size="sm" onClick={clearFilters}>
-                      Clear filters
-                    </Button>
-                  }
-                />
-              ) : (
+          ) : items.length === 0 && !hasFilters ? (
+            <div className="space-y-4">
+              <Card>
                 <EmptyState
                   title="No subscriptions yet"
-                  description="Add the services you pay for to see what you spend and when it renews."
-                  action={
-                    <Button asChild variant="accent" size="sm">
-                      <Link to="/subscriptions/new">
-                        <Plus className="size-4" /> Add your first
-                      </Link>
-                    </Button>
-                  }
+                  description="Subscriptions are added from the receipts in your Gmail. Sync to find them."
                 />
-              )}
+              </Card>
+              <GmailCard />
+            </div>
+          ) : items.length === 0 ? (
+            <Card>
+              <EmptyState
+                icon={SearchX}
+                title="No matches"
+                description="Nothing fits these filters. Try a different search or clear them."
+                action={
+                  <Button variant="outline" size="sm" onClick={clearFilters}>
+                    Clear filters
+                  </Button>
+                }
+              />
             </Card>
           ) : view === 'grid' ? (
             <SubscriptionGrid

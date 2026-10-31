@@ -28,12 +28,19 @@ export interface SubscriptionRequest {
   version?: number
 }
 
+export interface ReceiptAmountRequest {
+  amount: number
+  currency: Currency
+}
+
 export interface Subscription extends SubscriptionRequest {
   id: number
   nextPaymentDate: string
   version: number
   merchantKey: string | null
   needsReview: boolean
+  reviewReason: 'AMOUNT_UNREADABLE' | null
+  reviewNote: string | null
   hidden: boolean
   lastPaymentDate: string | null
   logoDomain: string | null
@@ -58,7 +65,9 @@ export interface StatusChange {
   effectiveAt: string
   endsOn: string | null
   billingEmailId: number | null
+  gmailMessageId: string | null
   emailSender: string | null
+  emailSubject: string | null
   emailReceivedAt: string | null
 }
 
@@ -172,6 +181,7 @@ export interface BillingEmail {
   subject: string | null
   receivedAt: string
   confidence: 'HIGH' | 'LOW'
+  amountUnreadable: boolean
   attachments: BillingEmailAttachment[]
 }
 

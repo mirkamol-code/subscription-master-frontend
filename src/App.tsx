@@ -57,9 +57,8 @@ export default function App() {
           <Route element={<AppLayout />}>
             <Route index element={<DashboardPage />} />
             <Route path="subscriptions" element={<SubscriptionsPage />} />
-            <Route path="subscriptions/new" element={<SubscriptionFormPage mode="create" />} />
             <Route path="subscriptions/:id" element={<SubscriptionDetailPage />} />
-            <Route path="subscriptions/:id/edit" element={<SubscriptionFormPage mode="edit" />} />
+            <Route path="subscriptions/:id/edit" element={<SubscriptionFormPage />} />
             <Route path="reports" element={<ReportsPage />} />
             <Route path="settings" element={<SettingsPage />} />
             <Route path="admin/usage" element={<AdminUsagePage />} />
