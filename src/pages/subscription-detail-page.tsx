@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, History, Pencil, Receipt, Trash2, TriangleAlert } from 'lucide-react'
+import { ArrowLeft, Pencil, Receipt, Trash2, TriangleAlert } from 'lucide-react'
 import { CategoryIcon } from '@/components/common/category-icon'
 import { NeedsReviewBadge } from '@/components/common/needs-review-badge'
 import { ErrorState } from '@/components/common/error-state'
@@ -12,19 +13,22 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { EmptyState } from '@/components/common/empty-state'
 import { useCurrency } from '@/features/currency/currency-context'
 import { BillingEmailsCard } from '@/features/emails/billing-emails-card'
+import { ReceiptAmountDialog } from '@/features/emails/receipt-amount-dialog'
+import { findReceiptAwaitingAmount } from '@/features/emails/receipt-awaiting-amount'
+import { useBillingEmails } from '@/features/emails/use-billing-emails'
 import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
 import { ReviewActions } from '@/features/subscriptions/review-actions'
+import { getReviewPrompt } from '@/features/subscriptions/review-prompt'
+import { StatusHistoryCard } from '@/features/subscriptions/status-history-card'
 import { STATUS_CHOICE_UI } from '@/features/subscriptions/status-choice-ui'
-import { describeStatusChange } from '@/features/subscriptions/status-change-description'
 import { getStatusChoices } from '@/features/subscriptions/status-choices'
 import { useSubscriptionActions } from '@/features/subscriptions/use-subscription-actions'
-import { useStatusHistory, useSubscription, useSubscriptionHistory } from '@/hooks/use-subscriptions'
+import { useSubscription, useSubscriptionHistory } from '@/hooks/use-subscriptions'
 import { getCategoryMeta } from '@/lib/category-config'
 import { isRenewing } from '@/lib/renewals'
-import { TONE_STYLES } from '@/lib/tone'
 import { FREQUENCY_LABEL, FREQUENCY_SUFFIX } from '@/lib/labels'
-import { cn, formatDate, formatMoney, getAnnualizedCost, getMonthlyEquivalent, todayIsoDate, formatInstant } from '@/lib/utils'
-import type { Subscription } from '@/types/api'
+import { formatDate, formatMoney, getAnnualizedCost, getMonthlyEquivalent, todayIsoDate } from '@/lib/utils'
+import type { BillingEmail, Subscription } from '@/types/api'
 
 function BackLink() {
   return (
@@ -40,7 +44,10 @@ export function SubscriptionDetailPage() {
   const id = Number(useParams().id)
   const navigate = useNavigate()
   const query = useSubscription(id)
+  const emails = useBillingEmails(id)
   const actions = useSubscriptionActions({ onDeleted: () => navigate('/subscriptions') })
+  const [receiptToPrice, setReceiptToPrice] = useState<BillingEmail | null>(null)
+  const receiptAwaitingAmount = findReceiptAwaitingAmount(emails.data)
 
   if (query.isLoading) {
     return (
@@ -144,19 +151,31 @@ export function SubscriptionDetailPage() {
         >
           <p className="flex items-start gap-2.5">
             <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-600" aria-hidden />
-            We guessed the amount, currency or billing cycle from an email. Check they’re right.
+            {getReviewPrompt(item).message}
           </p>
-          <ReviewActions item={item} onConfirm={actions.confirmReview} isConfirming={actions.isConfirmingReview} />
+          <ReviewActions
+            item={item}
+            onConfirm={actions.confirmReview}
+            isConfirming={actions.isConfirmingReview}
+            onEnterAmount={() => setReceiptToPrice(receiptAwaitingAmount ?? null)}
+            canEnterAmount={!!receiptAwaitingAmount}
+          />
         </div>
       )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <PaymentHistory subscription={item} />
         <NextPaymentCard subscription={item} />
-        <StatusHistory subscription={item} />
-        <BillingEmailsCard subscriptionId={item.id} />
+        <StatusHistoryCard subscription={item} />
+        <BillingEmailsCard subscriptionId={item.id} onEnterAmount={setReceiptToPrice} />
       </div>
 
+      <ReceiptAmountDialog
+        subscriptionId={item.id}
+        defaultCurrency={item.currency}
+        receipt={receiptToPrice}
+        onClose={() => setReceiptToPrice(null)}
+      />
       <ConfirmDialog {...actions.deleteDialog} />
     </div>
   )
@@ -215,52 +234,6 @@ function describeNoNextPayment(subscription: Subscription) {
     return `Cancelled — access until ${formatDate(subscription.endsOn)}.`
   }
   return 'Cancelled — this won’t renew.'
-}
-
-function StatusHistory({ subscription }: { subscription: Subscription }) {
-  const history = useStatusHistory(subscription.id)
-
-  return (
-    <Card className="lg:col-span-2">
-      <CardHeader>
-        <CardTitle>Status history</CardTitle>
-      </CardHeader>
-      <CardContent className="px-3 pb-3 pt-3">
-        {history.isLoading ? (
-          <div className="space-y-2 px-3">
-            <Skeleton className="h-12" />
-            <Skeleton className="h-12" />
-          </div>
-        ) : history.isError ? (
-          <ErrorState bare error={history.error} onRetry={() => void history.refetch()} />
-        ) : !history.data?.length ? (
-          <EmptyState
-            icon={History}
-            title="No status changes yet"
-            description="Receipts, cancellations and failed payments will show up here."
-          />
-        ) : (
-          <ul className="divide-y divide-slate-100">
-            {history.data.map((change) => {
-              const description = describeStatusChange(change, subscription)
-              return (
-                <li key={change.id} className="flex items-start gap-3 px-3 py-3">
-                  <span className={cn('mt-1.5 size-2 shrink-0 rounded-full', TONE_STYLES[description.tone].dot)} />
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-sm text-slate-700">{description.text}</span>
-                    {description.detail && (
-                      <span className="block truncate text-xs text-slate-400">{description.detail}</span>
-                    )}
-                  </span>
-                  <span className="shrink-0 text-xs text-slate-400">{formatInstant(change.effectiveAt)}</span>
-                </li>
-              )
-            })}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
-  )
 }
 
 function PaymentHistory({ subscription }: { subscription: Subscription }) {

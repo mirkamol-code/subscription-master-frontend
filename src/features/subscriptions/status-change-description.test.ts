@@ -18,13 +18,33 @@ function statusChange(overrides: Partial<StatusChange>): StatusChange {
     effectiveAt: '2026-11-08T09:00:00Z',
     endsOn: null,
     billingEmailId: null,
+    gmailMessageId: null,
     emailSender: null,
+    emailSubject: null,
     emailReceivedAt: null,
     ...overrides,
   }
 }
 
 describe('describeStatusChange', () => {
+  it('names the source email by its subject and sender', () => {
+    // given
+    const change = statusChange({
+      toStatus: 'CANCELLED',
+      reason: 'EMAIL_CANCELLATION',
+      source: 'EMAIL',
+      billingEmailId: 7,
+      emailSender: 'OpenAI <noreply@tm.openai.com>',
+      emailSubject: 'Your ChatGPT Plus subscription has been canceled',
+    })
+
+    // when
+    const description = describeStatusChange(change, netflix)
+
+    // then
+    expect(description.detail).toBe('“Your ChatGPT Plus subscription has been canceled” from OpenAI <noreply@tm.openai.com>')
+  })
+
   it('reports a failed payment from a billing email', () => {
     // given
     const change = statusChange({

@@ -8,6 +8,7 @@ export interface BillingEmailDescription {
   title: string
   from: string
   confidenceNote?: string
+  amountNote?: string
 }
 
 const KIND_LABELS: Partial<Record<BillingEmail['kind'], { kindLabel: string; tone: Tone }>> = {
@@ -23,5 +24,6 @@ export function describeBillingEmail(email: BillingEmail): BillingEmailDescripti
     title: email.subject?.trim() || '(no subject)',
     from: email.sender?.trim() || 'Unknown sender',
     ...(email.confidence === 'LOW' && { confidenceNote: 'We’re not sure this email belongs here' }),
+    ...(email.amountUnreadable && { amountNote: 'Amount unreadable. Enter it to record this payment.' }),
   }
 }

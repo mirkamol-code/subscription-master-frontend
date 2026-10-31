@@ -11,8 +11,11 @@ export interface StatusChangeDescription {
 
 type DescribedSubscription = Pick<Subscription, 'name'>
 
-function describeEmailSender(change: StatusChange): string | undefined {
+function describeSourceEmail(change: StatusChange): string | undefined {
   const sender = change.emailSender?.trim()
+  const subject = change.emailSubject?.trim()
+  if (subject && sender) return `“${subject}” from ${sender}`
+  if (subject) return `“${subject}”`
   return sender ? `Email from ${sender}` : undefined
 }
 
@@ -26,7 +29,7 @@ export function describeStatusChange(
   subscription: DescribedSubscription,
 ): StatusChangeDescription {
   const { name } = subscription
-  const detail = describeEmailSender(change)
+  const detail = describeSourceEmail(change)
   switch (change.reason) {
     case 'EMAIL_RECEIPT':
       return { text: `Receipt found, ${name} is active`, detail, tone: 'positive' }

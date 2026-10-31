@@ -10,7 +10,7 @@ import { Input, Select } from '@/components/ui/input'
 import { CATEGORY_CONFIG, getCategoryMeta } from '@/lib/category-config'
 import { getStatusChoices } from '@/features/subscriptions/status-choices'
 import { CURRENCY_META, FREQUENCY_LABEL, FREQUENCY_SUFFIX, getStatusLabel } from '@/lib/labels'
-import { formatDate, formatMoney, getAnnualizedCost, todayIsoDate } from '@/lib/utils'
+import { formatDate, formatMoney, getAnnualizedCost } from '@/lib/utils'
 import { subscriptionSchema, type SubscriptionValues } from '@/schemas/subscription'
 import {
   categories,
@@ -20,7 +20,7 @@ import {
 } from '@/types/api'
 
 interface SubscriptionFormProps {
-  initialValues?: SubscriptionRequest
+  initialValues: SubscriptionRequest
   /** May resolve to the server's per-field messages, which are shown under each field. */
   onSubmit: (values: SubscriptionValues) => Promise<Record<string, string> | void>
   pending: boolean
@@ -29,18 +29,7 @@ interface SubscriptionFormProps {
   serverError?: string
 }
 
-function toFormValues(initial?: SubscriptionRequest): Partial<SubscriptionValues> {
-  if (!initial) {
-    return {
-      name: '',
-      price: undefined,
-      currency: 'UZS',
-      frequency: 'MONTHLY',
-      status: 'ACTIVE',
-      category: 'OTHER',
-      startDate: todayIsoDate(),
-    }
-  }
+function toFormValues(initial: SubscriptionRequest): SubscriptionValues {
   const { name, price, currency, frequency, status, category, startDate } = initial
   return { name, price, currency, frequency, status, category, startDate }
 }
@@ -59,7 +48,7 @@ export function SubscriptionForm({
   })
   const { errors } = form.formState
   const preview = useWatch({ control: form.control })
-  const initialStatus = initialValues?.status ?? 'ACTIVE'
+  const initialStatus = initialValues.status
   const statusOptions = [initialStatus, ...getStatusChoices(initialStatus)]
 
   const submit = form.handleSubmit(async (values) => {

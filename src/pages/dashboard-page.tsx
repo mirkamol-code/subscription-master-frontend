@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, CalendarCheck, PieChart, Plus, TrendingUp } from 'lucide-react'
+import { ArrowRight, CalendarCheck, PieChart, TrendingUp } from 'lucide-react'
 import { CategoryIcon } from '@/components/common/category-icon'
 import { EmptyState } from '@/components/common/empty-state'
 import { ErrorState } from '@/components/common/error-state'
@@ -47,13 +47,6 @@ export function DashboardPage() {
           month: 'long',
           day: 'numeric',
         })}
-        actions={
-          <Button asChild variant="accent">
-            <Link to="/subscriptions/new">
-              <Plus className="size-4" /> Add subscription
-            </Link>
-          </Button>
-        }
       />
 
       <GmailCard />
@@ -154,14 +147,7 @@ export function DashboardPage() {
               <EmptyState
                 icon={CalendarCheck}
                 title="All clear"
-                description="No active subscriptions to renew. Add one to start tracking."
-                action={
-                  <Button asChild variant="outline" size="sm">
-                    <Link to="/subscriptions/new">
-                      <Plus className="size-4" /> Add subscription
-                    </Link>
-                  </Button>
-                }
+                description="No active subscriptions to renew. New ones appear when Gmail finds their receipts."
               />
             )}
           </CardContent>

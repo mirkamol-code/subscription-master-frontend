@@ -17,6 +17,10 @@ export function useGmailConnection() {
   return useQuery({ queryKey: gmailKeys.connection(), queryFn: gmailApi.getConnection })
 }
 
+export function useGmailAddress(): string | null {
+  return useGmailConnection().data?.gmailAddress ?? null
+}
+
 function reloadSubscriptionsWhenSyncEnds(queryClient: QueryClient, previous: GmailSyncStatus | undefined, current: GmailSyncStatus) {
   if (previous?.state === 'RUNNING' && current.state !== 'RUNNING') refreshSubscriptionData(queryClient)
 }

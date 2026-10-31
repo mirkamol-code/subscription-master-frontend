@@ -11,6 +11,7 @@ function billingEmail(overrides: Partial<BillingEmail>): BillingEmail {
     subject: 'Your Netflix receipt',
     receivedAt: '2026-11-05T08:00:00Z',
     confidence: 'HIGH',
+    amountUnreadable: false,
     attachments: [],
     ...overrides,
   }
@@ -28,6 +29,22 @@ describe('describeBillingEmail', () => {
 
     // then
     expect(description).toMatchObject({ kindLabel, tone })
+  })
+
+  it('asks for the amount when a receipt could not be priced', () => {
+    // when
+    const description = describeBillingEmail(billingEmail({ amountUnreadable: true }))
+
+    // then
+    expect(description.amountNote).toBe('Amount unreadable. Enter it to record this payment.')
+  })
+
+  it('has no amount note once the receipt is priced', () => {
+    // when
+    const description = describeBillingEmail(billingEmail({ amountUnreadable: false }))
+
+    // then
+    expect(description.amountNote).toBeUndefined()
   })
 
   it('warns when the email was matched to the subscription with low confidence', () => {

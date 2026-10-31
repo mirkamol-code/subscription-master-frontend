@@ -8,20 +8,17 @@ import { PageHeader } from '@/components/common/page-header'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { SubscriptionForm } from '@/features/subscriptions/subscription-form'
-import { useCreateSubscription, useSubscription, useUpdateSubscription } from '@/hooks/use-subscriptions'
+import { useSubscription, useUpdateSubscription } from '@/hooks/use-subscriptions'
 import type { SubscriptionValues } from '@/schemas/subscription'
 
-export function SubscriptionFormPage({ mode }: { mode: 'create' | 'edit' }) {
+export function SubscriptionFormPage() {
   const id = Number(useParams().id)
   const navigate = useNavigate()
   const [serverError, setServerError] = useState('')
-  const isEdit = mode === 'edit'
 
-  const subscription = useSubscription(isEdit ? id : Number.NaN)
-  const createMutation = useCreateSubscription()
-  const updateMutation = useUpdateSubscription(id)
-  const mutation = isEdit ? updateMutation : createMutation
-  const backHref = isEdit ? `/subscriptions/${id}` : '/subscriptions'
+  const subscription = useSubscription(id)
+  const mutation = useUpdateSubscription(id)
+  const backHref = `/subscriptions/${id}`
 
   const backLink = (
     <Button asChild variant="ghost" size="sm" className="-ml-3 text-slate-500">
@@ -31,7 +28,7 @@ export function SubscriptionFormPage({ mode }: { mode: 'create' | 'edit' }) {
     </Button>
   )
 
-  if (isEdit && subscription.isLoading) {
+  if (subscription.isLoading) {
     return (
       <div className="space-y-6">
         <Skeleton className="h-8 w-48" />
@@ -40,7 +37,7 @@ export function SubscriptionFormPage({ mode }: { mode: 'create' | 'edit' }) {
     )
   }
 
-  if (isEdit && !subscription.data) {
+  if (!subscription.data) {
     return (
       <div className="space-y-6">
         {backLink}
@@ -56,10 +53,8 @@ export function SubscriptionFormPage({ mode }: { mode: 'create' | 'edit' }) {
   const handleSubmit = async (values: SubscriptionValues) => {
     setServerError('')
     try {
-      const saved = await mutation.mutateAsync(
-        isEdit ? { ...values, version: subscription.data?.version } : values,
-      )
-      toast.success(isEdit ? 'Changes saved' : `${values.name} added`)
+      const saved = await mutation.mutateAsync({ ...values, version: subscription.data?.version })
+      toast.success('Changes saved')
       navigate(`/subscriptions/${saved.id}`)
     } catch (error) {
       setServerError(getApiError(error))
@@ -71,17 +66,15 @@ export function SubscriptionFormPage({ mode }: { mode: 'create' | 'edit' }) {
     <div className="space-y-6">
       {backLink}
       <PageHeader
-        title={isEdit ? `Edit ${subscription.data?.name}` : 'New subscription'}
-        description={
-          isEdit ? 'Update the price, billing or status.' : 'Add a service you pay for regularly.'
-        }
+        title={`Edit ${subscription.data.name}`}
+        description="Update the price, billing or status."
       />
       <SubscriptionForm
-        key={subscription.data?.id ?? 'new'}
+        key={subscription.data.id}
         initialValues={subscription.data}
         onSubmit={handleSubmit}
         pending={mutation.isPending}
-        submitLabel={isEdit ? 'Save changes' : 'Add subscription'}
+        submitLabel="Save changes"
         cancelHref={backHref}
         serverError={serverError}
       />

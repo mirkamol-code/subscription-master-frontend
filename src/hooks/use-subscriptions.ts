@@ -77,14 +77,6 @@ export function useSubscription(id: number) {
   })
 }
 
-export function useCreateSubscription() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: subscriptionsApi.create,
-    onSuccess: () => refreshSubscriptionData(queryClient),
-  })
-}
-
 export function useUpdateSubscription(id: number) {
   const queryClient = useQueryClient()
   return useMutation({
