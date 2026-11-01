@@ -3,6 +3,7 @@ import { ArrowRight, CalendarCheck, PieChart, TrendingUp } from 'lucide-react'
 import { CategoryIcon } from '@/components/common/category-icon'
 import { EmptyState } from '@/components/common/empty-state'
 import { ErrorState } from '@/components/common/error-state'
+import { HeroBackdrop } from '@/components/common/hero-backdrop'
 import { PageHeader } from '@/components/common/page-header'
 import { RenewalPill } from '@/components/common/renewal-pill'
 import { Button } from '@/components/ui/button'
@@ -39,7 +40,7 @@ export function DashboardPage() {
   })
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
         title={greeting()}
         description={new Date().toLocaleDateString('en-US', {
@@ -122,7 +123,7 @@ export function DashboardPage() {
               <CardTitle>Coming up</CardTitle>
               <CardDescription>Your next payments</CardDescription>
             </div>
-            <Button asChild variant="ghost" size="sm" className="-mr-2 -mt-1 text-slate-500">
+            <Button asChild variant="ghost" size="sm" className="-mr-2 -mt-1">
               <Link to="/subscriptions">
                 View all <ArrowRight className="size-3.5" />
               </Link>
@@ -180,31 +181,35 @@ function SpendHero({
   const topExpense = summary?.mostExpensive
 
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-ink p-6 text-white shadow-xl shadow-slate-900/10 sm:p-8">
-      <div aria-hidden className="pointer-events-none absolute -right-24 -top-32 size-96 rounded-full bg-teal-500/25 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute -bottom-40 left-1/3 size-80 rounded-full bg-emerald-400/10 blur-3xl" />
+    <section className="dark relative overflow-hidden rounded-3xl border border-white/10 bg-hero p-6 text-white shadow-2xl shadow-accent/20 sm:p-10">
+      <HeroBackdrop />
 
-      <div className="relative grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end">
-        <div>
-          <p className="text-sm text-slate-400">You spend each month</p>
+      <div className="relative grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-end">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">You spend each month</p>
           {loading ? (
-            <Skeleton className="mt-3 h-12 w-64 bg-white/10" />
+            <Skeleton className="mt-4 h-14 w-full max-w-72 bg-white/10" />
           ) : failed ? (
             <div className="mt-3 flex items-center gap-3">
-              <p className="text-lg text-slate-300">Couldn’t load your totals.</p>
-              <Button variant="subtle" size="sm" onClick={onRetry}>
+              <p className="text-lg text-white/70">Couldn’t load your totals.</p>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onRetry}
+                className="bg-white/10 text-white hover:bg-white/15 hover:text-white"
+              >
                 Retry
               </Button>
             </div>
           ) : (
-            <p className="mt-2 text-4xl font-bold tracking-tight tabular-nums sm:text-5xl animate-fade-in">
+            <p className="mt-3 text-4xl font-extrabold tracking-tighter tabular-nums sm:text-5xl xl:text-6xl animate-fade-in">
               {formatMoney(monthly, displayCurrency)}
             </p>
           )}
           {!loading && !failed && (
-            <p className="mt-3 text-sm text-slate-400">
+            <p className="mt-4 text-[15px] text-white/60">
               About{' '}
-              <span className="font-medium text-slate-200">
+              <span className="font-semibold text-white">
                 {formatMoney(monthly * 12, displayCurrency)}
               </span>{' '}
               a year
@@ -212,9 +217,10 @@ function SpendHero({
           )}
         </div>
 
-        <dl className="grid grid-cols-3 gap-4 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10 backdrop-blur-sm">
+        <dl className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <HeroStat label="Active" value={activeCount === undefined ? '—' : String(activeCount)} />
           <HeroStat
+            className="order-last col-span-2 sm:order-none sm:col-span-1"
             label="Next up"
             value={nextPayment ? formatDate(nextPayment.nextPaymentDate).replace(/, \d{4}$/, '') : '—'}
             hint={nextPayment?.name}
@@ -234,12 +240,24 @@ function SpendHero({
   )
 }
 
-function HeroStat({ label, value, hint }: { label: string; value: string; hint?: string }) {
+interface HeroStatProps {
+  label: string
+  value: string
+  hint?: string
+  className?: string
+}
+
+function HeroStat({ label, value, hint, className }: HeroStatProps) {
   return (
-    <div className="min-w-0">
-      <dt className="text-xs text-slate-400">{label}</dt>
-      <dd className="mt-1 truncate text-lg font-semibold tabular-nums">{value}</dd>
-      {hint && <dd className="truncate text-xs text-slate-500">{hint}</dd>}
+    <div
+      className={cn(
+        'min-w-0 rounded-2xl bg-white/[0.04] p-4 ring-1 ring-white/10 backdrop-blur-sm',
+        className,
+      )}
+    >
+      <dt className="text-xs font-medium text-white/50">{label}</dt>
+      <dd className="mt-1.5 truncate text-2xl font-bold tracking-tight tabular-nums">{value}</dd>
+      {hint && <dd className="mt-0.5 truncate text-xs text-white/50">{hint}</dd>}
     </div>
   )
 }
@@ -271,22 +289,22 @@ function TrendChart({ months }: { months: MonthlyCost[] }) {
                   className={cn(
                     'w-full rounded-lg transition-all duration-500',
                     isLatest
-                      ? 'bg-linear-to-t from-teal-600 to-emerald-400'
-                      : 'bg-slate-200 group-hover:bg-slate-300',
+                      ? 'bg-(image:--gradient-brand) shadow-lg shadow-accent/30'
+                      : 'bg-fg/10 group-hover:bg-fg/20',
                   )}
                   style={{ height: `${Math.max((values[index] / max) * 100, 3)}%` }}
                 />
               </div>
-              <span className={cn('text-xs', isLatest ? 'font-semibold text-slate-900' : 'text-slate-400')}>
+              <span className={cn('text-xs', isLatest ? 'font-semibold text-fg' : 'text-muted')}>
                 {label}
               </span>
             </div>
           )
         })}
       </div>
-      <p className="mt-5 border-t border-slate-100 pt-4 text-[13px] text-slate-500">
+      <p className="mt-5 border-t border-border pt-4 text-[13px] text-muted">
         Monthly average{' '}
-        <span className="font-semibold tabular-nums text-slate-900">
+        <span className="font-semibold tabular-nums text-fg">
           {formatMoney(average, displayCurrency)}
         </span>
       </p>
@@ -301,7 +319,7 @@ function CategoryBreakdown({ summary }: { summary: SpendingSummary }) {
 
   return (
     <div className="space-y-5">
-      <div className="flex h-2.5 overflow-hidden rounded-full bg-slate-100">
+      <div className="flex h-2.5 gap-0.5 overflow-hidden rounded-full bg-fg/[0.06]">
         {summary.byCategory.map((item) => (
           <div
             key={item.category}
@@ -320,11 +338,11 @@ function CategoryBreakdown({ summary }: { summary: SpendingSummary }) {
               className="size-2.5 shrink-0 rounded-full"
               style={{ backgroundColor: getCategoryMeta(item.category).accentColor }}
             />
-            <span className="flex-1 truncate text-slate-600">{getCategoryMeta(item.category).label}</span>
-            <span className="font-medium tabular-nums text-slate-900">
+            <span className="flex-1 truncate text-muted">{getCategoryMeta(item.category).label}</span>
+            <span className="font-medium tabular-nums text-fg">
               {formatMoney(convertToDisplay(item.monthlyCostUzs, baseCurrency), displayCurrency)}
             </span>
-            <span className="w-9 text-right text-xs tabular-nums text-slate-400">
+            <span className="w-9 text-right text-xs tabular-nums text-muted">
               {Math.round((item.monthlyCostUzs / total) * 100)}%
             </span>
           </li>
@@ -339,15 +357,15 @@ function UpcomingRow({ item }: { item: Subscription }) {
     <li>
       <Link
         to={`/subscriptions/${item.id}`}
-        className="flex items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-slate-50"
+        className="flex items-center gap-3 rounded-xl px-3 py-3 outline-none transition-colors hover:bg-fg/[0.04] focus-visible:ring-2 focus-visible:ring-ring"
       >
         <CategoryIcon category={item.category} />
         <div className="min-w-0 flex-1">
-          <p className="truncate font-medium text-slate-900">{item.name}</p>
-          <p className="text-[13px] text-slate-400">{formatDate(item.nextPaymentDate)}</p>
+          <p className="truncate font-medium text-fg">{item.name}</p>
+          <p className="text-[13px] text-muted">{formatDate(item.nextPaymentDate)}</p>
         </div>
         <div className="flex flex-col items-end gap-1">
-          <span className="font-semibold tabular-nums text-slate-900">
+          <span className="font-semibold tabular-nums text-fg">
             {formatMoney(item.price, item.currency)}
           </span>
           <RenewalPill date={item.nextPaymentDate} />

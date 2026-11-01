@@ -32,7 +32,7 @@ import type { BillingEmail, Subscription } from '@/types/api'
 
 function BackLink() {
   return (
-    <Button asChild variant="ghost" size="sm" className="-ml-3 text-slate-500">
+    <Button asChild variant="ghost" size="sm" className="-ml-3 text-muted">
       <Link to="/subscriptions">
         <ArrowLeft className="size-4" /> Subscriptions
       </Link>
@@ -87,12 +87,12 @@ export function SubscriptionDetailPage() {
             <CategoryIcon category={item.category} size="lg" />
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="truncate text-2xl font-bold tracking-tight text-slate-900">{item.name}</h1>
+                <h1 className="truncate text-2xl font-bold tracking-tight text-fg">{item.name}</h1>
                 <StatusBadge status={item.status} />
                 {item.needsReview && <NeedsReviewBadge />}
-                {item.hidden && <span className="text-xs font-medium text-slate-400">Hidden</span>}
+                {item.hidden && <span className="text-xs font-medium text-muted">Hidden</span>}
               </div>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1 text-sm text-muted">
                 {getCategoryMeta(item.category).label} · {FREQUENCY_LABEL[item.frequency]}
               </p>
             </div>
@@ -126,14 +126,14 @@ export function SubscriptionDetailPage() {
               variant="ghost"
               size="sm"
               onClick={() => actions.requestDelete(item)}
-              className="text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+              className="text-danger hover:bg-danger/10"
             >
               <Trash2 className="size-4" /> Delete
             </Button>
           </div>
         </div>
 
-        <dl className="grid grid-cols-2 gap-px border-t border-slate-100 bg-slate-100 sm:grid-cols-4">
+        <dl className="grid grid-cols-2 gap-px border-t border-border bg-fg/[0.06] sm:grid-cols-4">
           <Stat label="Price" value={formatMoney(item.price, item.currency)} hint={FREQUENCY_SUFFIX[item.frequency]} />
           <Stat
             label="Per month"
@@ -147,10 +147,10 @@ export function SubscriptionDetailPage() {
       {item.needsReview && (
         <div
           role="status"
-          className="flex flex-col gap-3 rounded-2xl bg-amber-50 px-5 py-4 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between"
+          className="flex flex-col gap-3 rounded-2xl bg-warning/10 px-5 py-4 text-sm text-warning sm:flex-row sm:items-center sm:justify-between"
         >
           <p className="flex items-start gap-2.5">
-            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-amber-600" aria-hidden />
+            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-warning" aria-hidden />
             {getReviewPrompt(item).message}
           </p>
           <ReviewActions
@@ -183,11 +183,11 @@ export function SubscriptionDetailPage() {
 
 function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className="bg-white px-6 py-5 sm:px-8">
-      <dt className="text-[13px] text-slate-500">{label}</dt>
-      <dd className="mt-1 truncate font-semibold tabular-nums text-slate-900">
+    <div className="bg-surface px-6 py-5 sm:px-8">
+      <dt className="text-[13px] text-muted">{label}</dt>
+      <dd className="mt-1 truncate font-semibold tabular-nums text-fg">
         {value}
-        {hint && <span className="ml-0.5 font-normal text-slate-400">{hint}</span>}
+        {hint && <span className="ml-0.5 font-normal text-muted">{hint}</span>}
       </dd>
     </div>
   )
@@ -198,28 +198,28 @@ function NextPaymentCard({ subscription }: { subscription: Subscription }) {
   const showConverted = subscription.currency !== displayCurrency
 
   return (
-    <Card className="relative overflow-hidden bg-ink p-6 text-white">
-      <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-teal-500/25 blur-3xl" />
+    <Card className="dark relative overflow-hidden border-white/10 bg-hero p-6 text-white shadow-xl shadow-accent/15">
+      <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-violet-600/30 blur-3xl" />
       <div className="relative">
-        <p className="text-sm text-slate-400">Next payment</p>
+        <p className="text-sm text-white/60">Next payment</p>
         {isRenewing(subscription) ? (
           <>
             <p className="mt-2 text-3xl font-bold tracking-tight">{formatDate(subscription.nextPaymentDate)}</p>
             <RenewalPill date={subscription.nextPaymentDate} className="mt-3" />
             <div className="mt-6 border-t border-white/10 pt-4">
-              <p className="text-sm text-slate-400">Amount</p>
+              <p className="text-sm text-white/60">Amount</p>
               <p className="mt-1 text-xl font-semibold tabular-nums">
                 {formatMoney(subscription.price, subscription.currency)}
               </p>
               {showConverted && (
-                <p className="text-sm tabular-nums text-slate-400">
+                <p className="text-sm tabular-nums text-white/60">
                   ≈ {formatMoney(convertToDisplay(subscription.price, subscription.currency), displayCurrency)}
                 </p>
               )}
             </div>
           </>
         ) : (
-          <p className="mt-2 text-lg font-medium text-slate-200">{describeNoNextPayment(subscription)}</p>
+          <p className="mt-2 text-lg font-medium text-white/50">{describeNoNextPayment(subscription)}</p>
         )}
       </div>
     </Card>
@@ -259,16 +259,16 @@ function PaymentHistory({ subscription }: { subscription: Subscription }) {
             description="Past payments for this subscription will show up here."
           />
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-border">
             {history.data.map((record) => (
               <li key={record.id} className="flex items-center justify-between gap-4 px-3 py-3">
-                <span className="text-sm text-slate-600">{formatDate(record.chargedAt)}</span>
+                <span className="text-sm text-muted">{formatDate(record.chargedAt)}</span>
                 <span className="text-right">
-                  <span className="block font-medium tabular-nums text-slate-900">
+                  <span className="block font-medium tabular-nums text-fg">
                     {formatMoney(record.amount, record.currency)}
                   </span>
                   {record.currency !== 'UZS' && record.amountUzs > 0 && (
-                    <span className="block text-xs tabular-nums text-slate-400">
+                    <span className="block text-xs tabular-nums text-muted">
                       ≈ {formatMoney(record.amountUzs, 'UZS')}
                     </span>
                   )}

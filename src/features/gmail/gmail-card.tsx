@@ -34,12 +34,12 @@ export function GmailCard() {
     <Card className="p-5 sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-center gap-4">
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-teal-50 text-teal-700">
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent/10 text-accent ring-1 ring-accent/20">
             <Mail className="size-5" aria-hidden />
           </span>
           <div className="min-w-0">
-            <p className="font-semibold text-slate-900">{connectionView.title}</p>
-            <p className="truncate text-sm text-slate-500">{connectionView.description}</p>
+            <p className="font-semibold text-fg">{connectionView.title}</p>
+            <p className="truncate text-sm text-muted">{connectionView.description}</p>
           </div>
         </div>
         {actionLabel ? (
@@ -64,14 +64,14 @@ export function GmailCard() {
         <div className="mt-4" aria-live="polite">
           {sync.percent !== null && (
             <div
-              className="mb-2 h-1.5 overflow-hidden rounded-full bg-slate-100"
+              className="mb-2 h-1.5 overflow-hidden rounded-full bg-fg/[0.06]"
               role="progressbar"
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={sync.percent}
               aria-label="Sync progress"
             >
-              <div className="h-full rounded-full bg-teal-500 transition-all" style={{ width: `${sync.percent}%` }} />
+              <div className="h-full rounded-full bg-(image:--gradient-brand) transition-all" style={{ width: `${sync.percent}%` }} />
             </div>
           )}
           <p className={cn('text-sm', TONE_STYLES[sync.tone].text)}>{sync.label}</p>

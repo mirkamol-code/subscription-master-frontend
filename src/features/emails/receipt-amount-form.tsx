@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import * as Dialog from '@radix-ui/react-dialog'
+import { DialogClose } from '@/components/ui/dialog'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { getApiError } from '@/api/client'
@@ -42,14 +42,14 @@ export function ReceiptAmountForm({ subscriptionId, defaultCurrency, receipt, on
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
       {serverError && (
-        <p role="alert" className="rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        <p role="alert" className="rounded-xl bg-danger/10 px-4 py-3 text-sm text-danger">
           {serverError}
         </p>
       )}
       <div className="grid gap-4 sm:grid-cols-[1fr_140px]">
         <div>
           <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-slate-700">Amount charged</span>
+            <span className="mb-1.5 block text-sm font-medium text-fg">Amount charged</span>
             <Input
               type="number"
               inputMode="decimal"
@@ -64,13 +64,13 @@ export function ReceiptAmountForm({ subscriptionId, defaultCurrency, receipt, on
             />
           </label>
           {amountError && (
-            <p id={amountErrorId} className="mt-1.5 text-[13px] text-rose-600">
+            <p id={amountErrorId} className="mt-1.5 text-[13px] text-danger">
               {amountError}
             </p>
           )}
         </div>
         <label className="block">
-          <span className="mb-1.5 block text-sm font-medium text-slate-700">Currency</span>
+          <span className="mb-1.5 block text-sm font-medium text-fg">Currency</span>
           <Select aria-required {...form.register('currency')}>
             {currencies.map((currency) => (
               <option key={currency} value={currency}>
@@ -81,11 +81,11 @@ export function ReceiptAmountForm({ subscriptionId, defaultCurrency, receipt, on
         </label>
       </div>
       <div className="flex justify-end gap-2">
-        <Dialog.Close asChild>
+        <DialogClose asChild>
           <Button type="button" variant="ghost">
             Cancel
           </Button>
-        </Dialog.Close>
+        </DialogClose>
         <Button type="submit" variant="gradient" disabled={confirmAmount.isPending}>
           {confirmAmount.isPending ? 'Saving…' : 'Record payment'}
         </Button>

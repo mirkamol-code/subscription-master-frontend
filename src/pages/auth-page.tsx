@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { CalendarClock, Globe2, Mail, PieChart } from 'lucide-react'
 import { GOOGLE_LOGIN_URL } from '@/api/endpoints/auth'
 import { BrandMark } from '@/components/common/brand-mark'
+import { HeroBackdrop } from '@/components/common/hero-backdrop'
 import { Button } from '@/components/ui/button'
 import { hasLoginFailed } from '@/features/auth/login-callback'
 
@@ -46,13 +47,8 @@ export function AuthPage() {
 
   return (
     <main className="grid min-h-screen bg-background lg:grid-cols-2">
-      <section className="relative hidden overflow-hidden border-r border-border bg-ink p-12 text-white lg:flex lg:flex-col">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgb(255_255_255/0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255/0.04)_1px,transparent_1px)] bg-size-[48px_48px] mask-[radial-gradient(ellipse_at_center,black_30%,transparent_75%)]"
-        />
-        <div aria-hidden className="pointer-events-none absolute -right-32 -top-40 size-[34rem] rounded-full bg-violet-600/25 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute -bottom-48 -left-32 size-[28rem] rounded-full bg-indigo-500/15 blur-3xl" />
+      <section className="dark relative hidden overflow-hidden border-r border-border bg-hero p-12 text-white lg:flex lg:flex-col">
+        <HeroBackdrop />
 
         <div className="relative flex items-center gap-2.5">
           <BrandMark />
@@ -74,7 +70,7 @@ export function AuthPage() {
                 </span>
                 <span>
                   <span className="block font-medium">{title}</span>
-                  <span className="block text-sm text-zinc-400">{text}</span>
+                  <span className="block text-sm text-muted">{text}</span>
                 </span>
               </li>
             ))}

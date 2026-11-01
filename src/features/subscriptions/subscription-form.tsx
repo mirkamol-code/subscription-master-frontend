@@ -60,9 +60,9 @@ export function SubscriptionForm({
 
   return (
     <form onSubmit={submit} noValidate className="grid gap-6 lg:grid-cols-[1fr_320px]">
-      <Card className="divide-y divide-slate-100">
+      <Card className="divide-y divide-border">
         {serverError && (
-          <div role="alert" className="rounded-t-2xl bg-rose-50 px-6 py-4 text-sm text-rose-700">
+          <div role="alert" className="rounded-t-2xl bg-danger/10 px-6 py-4 text-sm text-danger">
             {serverError}
           </div>
         )}
@@ -115,7 +115,7 @@ export function SubscriptionForm({
 
         <fieldset className="p-6">
           <legend className="sr-only">Category</legend>
-          <p className="mb-3 text-sm font-medium text-slate-700">Category</p>
+          <p className="mb-3 text-sm font-medium text-fg">Category</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {categories.map((category) => {
               const meta = CATEGORY_CONFIG[category]
@@ -123,7 +123,7 @@ export function SubscriptionForm({
               return (
                 <label key={category} className="cursor-pointer">
                   <input type="radio" value={category} className="peer sr-only" {...form.register('category')} />
-                  <span className="flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2.5 text-[13px] font-medium text-slate-600 transition-all hover:border-slate-300 peer-checked:border-teal-500 peer-checked:bg-teal-50/60 peer-checked:text-slate-900 peer-focus-visible:ring-2 peer-focus-visible:ring-teal-500/60">
+                  <span className="flex items-center gap-2 rounded-xl border border-border px-3 py-2.5 text-[13px] font-medium text-muted transition-all hover:border-fg/20 peer-checked:border-accent peer-checked:bg-accent/10 peer-checked:text-fg peer-focus-visible:ring-2 peer-focus-visible:ring-ring">
                     <Icon className="size-4 shrink-0" />
                     <span className="truncate">{meta.label}</span>
                   </span>
@@ -135,7 +135,7 @@ export function SubscriptionForm({
 
         <fieldset className="p-6">
           <legend className="sr-only">Status</legend>
-          <p className="mb-3 text-sm font-medium text-slate-700">Status</p>
+          <p className="mb-3 text-sm font-medium text-fg">Status</p>
           <Segmented
             options={statusOptions.map((value) => ({ value, label: getStatusLabel(value) }))}
             register={form.register('status')}
@@ -165,30 +165,30 @@ function PreviewCard({ values }: { values: Partial<SubscriptionValues> }) {
 
   return (
     <aside className="lg:sticky lg:top-24 lg:self-start" aria-label="Preview">
-      <p className="mb-3 text-[13px] font-medium text-slate-400">Preview</p>
+      <p className="mb-3 text-[13px] font-medium text-muted">Preview</p>
       <Card className="p-5">
         <div className="flex items-center gap-3">
           <CategoryIcon category={category} />
           <div className="min-w-0 flex-1">
-            <p className="truncate font-semibold text-slate-900">{values.name?.trim() || 'New subscription'}</p>
-            <p className="text-[13px] text-slate-500">{getCategoryMeta(category).label}</p>
+            <p className="truncate font-semibold text-fg">{values.name?.trim() || 'New subscription'}</p>
+            <p className="text-[13px] text-muted">{getCategoryMeta(category).label}</p>
           </div>
           <StatusBadge status={values.status ?? 'ACTIVE'} />
         </div>
-        <p className="mt-6 text-3xl font-semibold tracking-tight tabular-nums text-slate-900">
+        <p className="mt-6 text-3xl font-semibold tracking-tight tabular-nums text-fg">
           {formatMoney(price, currency)}
-          <span className="ml-1 text-sm font-normal text-slate-400">{FREQUENCY_SUFFIX[frequency]}</span>
+          <span className="ml-1 text-sm font-normal text-muted">{FREQUENCY_SUFFIX[frequency]}</span>
         </p>
-        <dl className="mt-4 space-y-2 border-t border-slate-100 pt-4 text-[13px]">
+        <dl className="mt-4 space-y-2 border-t border-border pt-4 text-[13px]">
           <div className="flex justify-between">
-            <dt className="text-slate-500">Per year</dt>
-            <dd className="font-medium tabular-nums text-slate-900">
+            <dt className="text-muted">Per year</dt>
+            <dd className="font-medium tabular-nums text-fg">
               {formatMoney(getAnnualizedCost(price, frequency), currency)}
             </dd>
           </div>
           <div className="flex justify-between">
-            <dt className="text-slate-500">Started</dt>
-            <dd className="font-medium text-slate-900">{formatDate(values.startDate)}</dd>
+            <dt className="text-muted">Started</dt>
+            <dd className="font-medium text-fg">{formatDate(values.startDate)}</dd>
           </div>
         </dl>
       </Card>
@@ -204,11 +204,11 @@ function Segmented({
   register: UseFormRegisterReturn
 }) {
   return (
-    <div className="grid auto-cols-fr grid-flow-col gap-1 rounded-xl bg-slate-100 p-1">
+    <div className="grid auto-cols-fr grid-flow-col gap-1 rounded-xl bg-fg/[0.06] p-1">
       {options.map((option) => (
         <label key={option.value} className="cursor-pointer">
           <input type="radio" value={option.value} className="peer sr-only" {...register} />
-          <span className="block rounded-lg py-2 text-center text-[13px] font-medium text-slate-500 transition-all hover:text-slate-800 peer-checked:bg-white peer-checked:text-slate-900 peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-teal-500/60">
+          <span className="block rounded-lg py-2 text-center text-[13px] font-medium text-muted transition-all hover:text-fg peer-checked:bg-surface peer-checked:text-fg peer-checked:shadow-sm peer-focus-visible:ring-2 peer-focus-visible:ring-ring">
             {option.label}
           </span>
         </label>
@@ -231,9 +231,9 @@ function Field({
   const Wrapper = as
   return (
     <Wrapper className="block">
-      <span className="mb-1.5 block text-sm font-medium text-slate-700">{label}</span>
+      <span className="mb-1.5 block text-sm font-medium text-fg">{label}</span>
       {children}
-      {error && <span className="mt-1.5 block text-[13px] text-rose-600">{error}</span>}
+      {error && <span className="mt-1.5 block text-[13px] text-danger">{error}</span>}
     </Wrapper>
   )
 }

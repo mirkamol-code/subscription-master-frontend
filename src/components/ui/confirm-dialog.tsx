@@ -1,6 +1,18 @@
-import * as AlertDialog from '@radix-ui/react-alert-dialog'
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import type { MouseEvent } from 'react'
 import { Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+
+function confirmWithoutClosing(event: MouseEvent<HTMLButtonElement>, onConfirm: () => void) {
+  event.preventDefault()
+  onConfirm()
+}
 
 interface ConfirmDialogProps {
   open: boolean
@@ -24,41 +36,28 @@ export function ConfirmDialog({
   pending,
 }: ConfirmDialogProps) {
   return (
-    <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
-      <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in" />
-        <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-surface-raised p-6 shadow-2xl outline-none">
-          <div className="animate-pop-in">
-            <div className="grid size-11 place-items-center rounded-full bg-danger/10 text-danger">
-              <Trash2 className="size-5" />
-            </div>
-            <AlertDialog.Title className="mt-4 text-lg font-semibold text-fg">
-              {title}
-            </AlertDialog.Title>
-            <AlertDialog.Description className="mt-1.5 text-sm leading-relaxed text-muted">
-              {description}
-            </AlertDialog.Description>
-            <div className="mt-6 grid grid-cols-2 gap-2.5">
-              <AlertDialog.Cancel asChild>
-                <Button variant="outline" disabled={pending}>
-                  Cancel
-                </Button>
-              </AlertDialog.Cancel>
-              <Button
-                variant="destructive"
-                disabled={pending}
-                onClick={(event) => {
-                  // Keep the dialog open until the action settles; the caller closes it.
-                  event.preventDefault()
-                  onConfirm()
-                }}
-              >
-                {pending ? pendingLabel : confirmLabel}
-              </Button>
-            </div>
-          </div>
-        </AlertDialog.Content>
-      </AlertDialog.Portal>
-    </AlertDialog.Root>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <div className="grid size-11 place-items-center rounded-full bg-danger/10 text-danger">
+          <Trash2 className="size-5" />
+        </div>
+        <AlertDialogTitle>{title}</AlertDialogTitle>
+        <AlertDialogDescription>{description}</AlertDialogDescription>
+        <div className="mt-6 grid grid-cols-2 gap-2.5">
+          <AlertDialogCancel asChild>
+            <Button variant="outline" disabled={pending}>
+              Cancel
+            </Button>
+          </AlertDialogCancel>
+          <Button
+            variant="destructive"
+            disabled={pending}
+            onClick={(event) => confirmWithoutClosing(event, onConfirm)}
+          >
+            {pending ? pendingLabel : confirmLabel}
+          </Button>
+        </div>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

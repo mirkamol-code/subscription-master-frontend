@@ -17,7 +17,7 @@ export function SubscriptionTable({ items, ...actions }: SubscriptionListProps) 
     <Card className="overflow-hidden animate-fade-in">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="border-b border-slate-100 text-xs font-medium text-slate-400">
+          <thead className="border-b border-border text-xs font-medium text-muted">
             <tr>
               <th className="px-6 py-3 font-medium">Service</th>
               <th className="px-4 py-3 font-medium">Billing</th>
@@ -28,12 +28,12 @@ export function SubscriptionTable({ items, ...actions }: SubscriptionListProps) 
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-border">
             {items.map((item) => (
               <tr
                 key={item.id}
                 onClick={() => navigate(`/subscriptions/${item.id}`)}
-                className="cursor-pointer transition-colors hover:bg-slate-50/80"
+                className="cursor-pointer transition-colors hover:bg-fg/[0.06]"
               >
                 <td className="px-6 py-3.5">
                   <div className="flex items-center gap-3">
@@ -42,25 +42,25 @@ export function SubscriptionTable({ items, ...actions }: SubscriptionListProps) 
                       <Link
                         to={`/subscriptions/${item.id}`}
                         onClick={(event) => event.stopPropagation()}
-                        className="block truncate font-medium text-slate-900 outline-none hover:text-teal-700 focus-visible:underline"
+                        className="block truncate font-medium text-fg outline-none hover:text-accent focus-visible:underline"
                       >
                         {item.name}
                       </Link>
-                      <p className="flex items-center gap-2 text-xs text-slate-400">
+                      <p className="flex items-center gap-2 text-xs text-muted">
                         {getCategoryMeta(item.category).label}
                         {item.needsReview && <NeedsReviewBadge />}
                       </p>
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3.5 text-slate-500">{FREQUENCY_LABEL[item.frequency]}</td>
-                <td className="whitespace-nowrap px-4 py-3.5 text-right font-semibold tabular-nums text-slate-900">
+                <td className="px-4 py-3.5 text-muted">{FREQUENCY_LABEL[item.frequency]}</td>
+                <td className="whitespace-nowrap px-4 py-3.5 text-right font-semibold tabular-nums text-fg">
                   {formatMoney(item.price, item.currency)}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3.5">
                   <div className="flex items-center gap-2">
                     {isRenewing(item) && (
-                      <span className="text-slate-500">{formatDate(item.nextPaymentDate)}</span>
+                      <span className="text-muted">{formatDate(item.nextPaymentDate)}</span>
                     )}
                     <SubscriptionRenewal item={item} />
                   </div>
