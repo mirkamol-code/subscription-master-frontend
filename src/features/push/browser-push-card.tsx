@@ -20,15 +20,15 @@ export function BrowserPushCard() {
     <Card className="p-5 sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex min-w-0 items-start gap-4">
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-teal-50 text-teal-700">
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-accent/10 text-accent">
             <BellRing className="size-5" aria-hidden />
           </span>
           <div className="min-w-0">
-            <p className="font-semibold text-slate-900">Browser notifications</p>
+            <p className="font-semibold text-fg">Browser notifications</p>
             {push.state.isLoading ? (
               <Skeleton className="mt-1 h-4 w-56" />
             ) : push.state.data ? (
-              <p className="text-sm text-slate-500">{STATE_TEXT[push.state.data]}</p>
+              <p className="text-sm text-muted">{STATE_TEXT[push.state.data]}</p>
             ) : (
               <ErrorState bare error={push.state.error} onRetry={() => void push.state.refetch()} />
             )}

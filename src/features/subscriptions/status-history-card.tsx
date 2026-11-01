@@ -31,13 +31,13 @@ function SourceEmailLinks({ change, sourceEmail, onView }: SourceEmailLinksProps
         <button
           type="button"
           onClick={() => onView(sourceEmail)}
-          className="inline-flex items-center gap-1 text-teal-700 hover:underline"
+          className="inline-flex items-center gap-1 text-accent hover:underline"
         >
           <Mail className="size-3.5" aria-hidden /> View email
         </button>
       )}
       {change.gmailMessageId && (
-        <OpenInGmailLink gmailMessageId={change.gmailMessageId} className="gap-1 text-slate-500 hover:underline" />
+        <OpenInGmailLink gmailMessageId={change.gmailMessageId} className="gap-1 text-muted hover:underline" />
       )}
     </span>
   )
@@ -69,20 +69,20 @@ export function StatusHistoryCard({ subscription }: StatusHistoryCardProps) {
             description="Receipts, cancellations and failed payments will show up here."
           />
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-border">
             {history.data.map((change) => {
               const description = describeStatusChange(change, subscription)
               return (
                 <li key={change.id} className="flex items-start gap-3 px-3 py-3">
                   <span className={cn('mt-1.5 size-2 shrink-0 rounded-full', TONE_STYLES[description.tone].dot)} />
                   <span className="min-w-0 flex-1">
-                    <span className="block text-sm text-slate-700">{description.text}</span>
+                    <span className="block text-sm text-fg">{description.text}</span>
                     {description.detail && (
-                      <span className="block truncate text-xs text-slate-400">{description.detail}</span>
+                      <span className="block truncate text-xs text-muted">{description.detail}</span>
                     )}
                     <SourceEmailLinks change={change} sourceEmail={findSourceEmail(change)} onView={setOpenEmail} />
                   </span>
-                  <span className="shrink-0 text-xs text-slate-400">{formatInstant(change.effectiveAt)}</span>
+                  <span className="shrink-0 text-xs text-muted">{formatInstant(change.effectiveAt)}</span>
                 </li>
               )
             })}

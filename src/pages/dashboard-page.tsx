@@ -181,7 +181,7 @@ function SpendHero({
   const topExpense = summary?.mostExpensive
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-hero p-6 text-white shadow-2xl shadow-accent/20 sm:p-10">
+    <section className="dark relative overflow-hidden rounded-3xl border border-white/10 bg-hero p-6 text-white shadow-2xl shadow-accent/20 sm:p-10">
       <HeroBackdrop />
 
       <div className="relative grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-end">

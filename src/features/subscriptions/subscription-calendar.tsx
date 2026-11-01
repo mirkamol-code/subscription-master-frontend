@@ -81,7 +81,7 @@ export function SubscriptionCalendar() {
     <div className="grid gap-5 animate-fade-in lg:grid-cols-[1fr_300px]">
       <Card className="overflow-hidden">
         <div className="flex items-center justify-between gap-3 px-5 py-4">
-          <h2 className="text-[15px] font-semibold text-slate-900">{monthLabel}</h2>
+          <h2 className="text-[15px] font-semibold text-fg">{monthLabel}</h2>
           <div className="flex items-center gap-1">
             {!isCurrentMonth && (
               <Button
@@ -101,9 +101,9 @@ export function SubscriptionCalendar() {
           </div>
         </div>
 
-        <div className="grid grid-cols-7 border-y border-slate-100 bg-slate-50/60">
+        <div className="grid grid-cols-7 border-y border-border bg-fg/[0.03]">
           {WEEKDAYS.map((weekday) => (
-            <div key={weekday} className="py-2 text-center text-xs font-medium text-slate-400">
+            <div key={weekday} className="py-2 text-center text-xs font-medium text-muted">
               {weekday}
             </div>
           ))}
@@ -117,16 +117,16 @@ export function SubscriptionCalendar() {
               <div
                 key={iso}
                 className={cn(
-                  'min-h-16 border-slate-100 p-1.5 sm:min-h-24',
+                  'min-h-16 border-border p-1.5 sm:min-h-24',
                   index % 7 !== 6 && 'border-r',
                   index < 35 && 'border-b',
-                  !inMonth && 'bg-slate-50/50',
+                  !inMonth && 'bg-fg/[0.03]',
                 )}
               >
                 <span
                   className={cn(
                     'grid size-6 place-items-center rounded-full text-xs font-medium',
-                    isToday ? 'bg-teal-600 text-white' : inMonth ? 'text-slate-700' : 'text-slate-300',
+                    isToday ? 'bg-accent text-accent-fg' : inMonth ? 'text-fg' : 'text-muted/50',
                   )}
                 >
                   {day}
@@ -160,7 +160,7 @@ export function SubscriptionCalendar() {
                     )
                   })}
                   {dayCharges.length > MAX_CHIPS && (
-                    <span className="block px-1.5 text-[11px] text-slate-400">
+                    <span className="block px-1.5 text-[11px] text-muted">
                       +{dayCharges.length - MAX_CHIPS} more
                     </span>
                   )}
@@ -173,21 +173,21 @@ export function SubscriptionCalendar() {
 
       <div className="space-y-5">
         <Card className="p-5">
-          <p className="text-[13px] text-slate-500">Upcoming in {monthName}</p>
+          <p className="text-[13px] text-muted">Upcoming in {monthName}</p>
           {query.isLoading ? (
             <Skeleton className="mt-2 h-8 w-36" />
           ) : (
-            <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums text-slate-900">
+            <p className="mt-1 text-2xl font-semibold tracking-tight tabular-nums text-fg">
               {formatMoney(upcomingTotal, displayCurrency)}
             </p>
           )}
-          <p className="mt-1 text-[13px] text-slate-400">
+          <p className="mt-1 text-[13px] text-muted">
             {charges.length} {charges.length === 1 ? 'payment' : 'payments'}
           </p>
         </Card>
 
         <Card className="overflow-hidden">
-          <h3 className="px-5 pt-5 text-[13px] font-medium text-slate-500">Upcoming payments</h3>
+          <h3 className="px-5 pt-5 text-[13px] font-medium text-muted">Upcoming payments</h3>
           {query.isLoading ? (
             <div className="space-y-2 p-5">
               {[0, 1, 2].map((n) => (
@@ -195,30 +195,30 @@ export function SubscriptionCalendar() {
               ))}
             </div>
           ) : charges.length === 0 ? (
-            <p className="px-5 pb-6 pt-3 text-sm text-slate-400">
+            <p className="px-5 pb-6 pt-3 text-sm text-muted">
               {isPastMonth
                 ? 'Past payments are listed on each subscription’s page.'
                 : `Nothing else due in ${monthName}.`}
             </p>
           ) : (
-            <ul className="max-h-[420px] divide-y divide-slate-100 overflow-y-auto px-2 py-2">
+            <ul className="max-h-[420px] divide-y divide-border overflow-y-auto px-2 py-2">
               {charges.map(({ date, subscription, amount }) => (
                 <li key={`${subscription.id}-${date}`}>
                   <Link
                     to={`/subscriptions/${subscription.id}`}
                     className={cn(
-                      'flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-slate-50',
+                      'flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-fg/[0.06]',
                       date < today && 'opacity-50',
                     )}
                   >
                     <CategoryIcon category={subscription.category} size="sm" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-slate-900">{subscription.name}</p>
-                      <p className="text-xs text-slate-400">
+                      <p className="truncate text-sm font-medium text-fg">{subscription.name}</p>
+                      <p className="text-xs text-muted">
                         {parseLocalDate(date).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })}
                       </p>
                     </div>
-                    <span className="text-sm font-medium tabular-nums text-slate-700">
+                    <span className="text-sm font-medium tabular-nums text-fg">
                       {formatMoney(amount, displayCurrency)}
                     </span>
                   </Link>

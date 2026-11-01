@@ -56,20 +56,20 @@ export function AdminUsagePage() {
             <ol>
               {services.map((service, index) => (
                 <li key={service.serviceName} className="flex items-center gap-4 rounded-xl px-4 py-3">
-                  <span className="w-6 text-right text-sm tabular-nums text-slate-400">{index + 1}</span>
+                  <span className="w-6 text-right text-sm tabular-nums text-muted">{index + 1}</span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline justify-between gap-3">
-                      <span className="truncate font-medium text-slate-900">{service.serviceName}</span>
-                      <span className="shrink-0 text-sm tabular-nums text-slate-500">
+                      <span className="truncate font-medium text-fg">{service.serviceName}</span>
+                      <span className="shrink-0 text-sm tabular-nums text-muted">
                         {service.subscriptionCount.toLocaleString('en-US')}
-                        <span className="ml-2 text-xs text-slate-400">
+                        <span className="ml-2 text-xs text-muted">
                           {Math.round((service.subscriptionCount / (total || 1)) * 100)}%
                         </span>
                       </span>
                     </div>
-                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-fg/[0.06]">
                       <div
-                        className="h-full rounded-full bg-linear-to-r from-teal-500 to-emerald-400 transition-all duration-500"
+                        className="h-full rounded-full bg-(image:--gradient-brand) transition-all duration-500"
                         style={{ width: `${(service.subscriptionCount / max) * 100}%` }}
                       />
                     </div>
@@ -87,8 +87,8 @@ export function AdminUsagePage() {
 function SummaryStat({ label, value }: { label: string; value: string }) {
   return (
     <Card className="p-5">
-      <dt className="text-[13px] text-slate-500">{label}</dt>
-      <dd className="mt-1 truncate text-2xl font-semibold tracking-tight text-slate-900">{value}</dd>
+      <dt className="text-[13px] text-muted">{label}</dt>
+      <dd className="mt-1 truncate text-2xl font-semibold tracking-tight text-fg">{value}</dd>
     </Card>
   )
 }

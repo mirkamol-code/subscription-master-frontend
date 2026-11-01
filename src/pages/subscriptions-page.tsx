@@ -120,7 +120,7 @@ export function SubscriptionsPage() {
         }
         actions={
           <>
-            <div role="tablist" aria-label="View" className="flex rounded-xl bg-slate-200/50 p-1">
+            <div role="tablist" aria-label="View" className="flex rounded-xl bg-fg/10 p-1">
               {VIEWS.map(({ value, label, icon: Icon }) => (
                 <button
                   key={value}
@@ -132,7 +132,7 @@ export function SubscriptionsPage() {
                   onClick={() => updateParams({ view: value === 'grid' ? '' : value })}
                   className={cn(
                     'grid size-8 place-items-center rounded-lg transition-all',
-                    view === value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800',
+                    view === value ? 'bg-surface-raised text-fg shadow-sm ring-1 ring-border' : 'text-muted hover:text-fg',
                   )}
                 >
                   <Icon className="size-4" />
@@ -208,7 +208,7 @@ export function SubscriptionsPage() {
 
           {data && data.totalPages > 1 && (
             <nav aria-label="Pagination" className="flex items-center justify-between gap-3">
-              <p className="text-[13px] text-slate-500">
+              <p className="text-[13px] text-muted">
                 Page {data.number + 1} of {data.totalPages}
               </p>
               <div className="flex gap-2">

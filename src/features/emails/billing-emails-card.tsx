@@ -55,7 +55,7 @@ export function BillingEmailsCard({ subscriptionId, onEnterAmount }: BillingEmai
             description="Receipts, cancellations and failed payments we find in Gmail will show up here."
           />
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-border">
             {emails.data.map((email) => {
               const description = describeBillingEmail(email)
               return (
@@ -63,22 +63,22 @@ export function BillingEmailsCard({ subscriptionId, onEnterAmount }: BillingEmai
                   <button
                     type="button"
                     onClick={() => setOpenEmail(email)}
-                    className="flex w-full items-start gap-3 rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60"
+                    className="flex w-full items-start gap-3 rounded-lg text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <Badge className={cn('shrink-0', TONE_STYLES[description.tone].badge)}>{description.kindLabel}</Badge>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium text-slate-900 hover:text-teal-700">
+                      <span className="block truncate text-sm font-medium text-fg hover:text-accent">
                         {description.title}
                       </span>
-                      <span className="block truncate text-xs text-slate-400">{description.from}</span>
+                      <span className="block truncate text-xs text-muted">{description.from}</span>
                       {description.confidenceNote && (
-                        <span className="block text-xs text-amber-700">{description.confidenceNote}</span>
+                        <span className="block text-xs text-warning">{description.confidenceNote}</span>
                       )}
                       {description.amountNote && (
-                        <span className="block text-xs text-amber-700">{description.amountNote}</span>
+                        <span className="block text-xs text-warning">{description.amountNote}</span>
                       )}
                     </span>
-                    <span className="shrink-0 text-xs text-slate-400">{formatInstant(email.receivedAt)}</span>
+                    <span className="shrink-0 text-xs text-muted">{formatInstant(email.receivedAt)}</span>
                   </button>
                   <div className="mt-2 flex flex-wrap gap-2 pl-1">
                     {email.amountUnreadable && (
@@ -88,18 +88,18 @@ export function BillingEmailsCard({ subscriptionId, onEnterAmount }: BillingEmai
                     )}
                     <OpenInGmailLink
                       gmailMessageId={email.gmailMessageId}
-                      className="rounded-lg px-2.5 py-1 text-xs text-slate-500 hover:bg-slate-50"
+                      className="rounded-lg px-2.5 py-1 text-xs text-muted hover:bg-fg/[0.06]"
                     />
                     {email.attachments.map((attachment) => (
                       <button
                         key={attachment.id}
                         type="button"
                         onClick={() => void saveAttachment(email, attachment)}
-                        className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1 text-xs text-slate-600 hover:bg-slate-50"
+                        className="inline-flex max-w-full items-center gap-1.5 rounded-lg border border-border px-2.5 py-1 text-xs text-muted hover:bg-fg/[0.06]"
                       >
                         <Paperclip className="size-3.5 shrink-0" aria-hidden />
                         <span className="truncate">{attachment.filename}</span>
-                        <span className="shrink-0 text-slate-400">{formatFileSize(attachment.sizeBytes)}</span>
+                        <span className="shrink-0 text-muted">{formatFileSize(attachment.sizeBytes)}</span>
                       </button>
                     ))}
                   </div>

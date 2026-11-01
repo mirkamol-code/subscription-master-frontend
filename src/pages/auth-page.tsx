@@ -47,7 +47,7 @@ export function AuthPage() {
 
   return (
     <main className="grid min-h-screen bg-background lg:grid-cols-2">
-      <section className="relative hidden overflow-hidden border-r border-border bg-hero p-12 text-white lg:flex lg:flex-col">
+      <section className="dark relative hidden overflow-hidden border-r border-border bg-hero p-12 text-white lg:flex lg:flex-col">
         <HeroBackdrop />
 
         <div className="relative flex items-center gap-2.5">
@@ -70,7 +70,7 @@ export function AuthPage() {
                 </span>
                 <span>
                   <span className="block font-medium">{title}</span>
-                  <span className="block text-sm text-zinc-400">{text}</span>
+                  <span className="block text-sm text-muted">{text}</span>
                 </span>
               </li>
             ))}

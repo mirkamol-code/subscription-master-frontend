@@ -26,7 +26,7 @@ const REPORT_OPTIONS: ReportOption[] = [
     description: 'Every subscription with its price, billing cycle, yearly cost and next payment date.',
     worksWith: 'Excel, Numbers, Google Sheets',
     icon: FileSpreadsheet,
-    iconClass: 'bg-emerald-50 text-emerald-600',
+    iconClass: 'bg-success/10 text-success',
   },
   {
     format: 'csv',
@@ -34,7 +34,7 @@ const REPORT_OPTIONS: ReportOption[] = [
     description: 'The same details as a simple text file you can open or import almost anywhere.',
     worksWith: 'Budgeting apps, any spreadsheet',
     icon: FileText,
-    iconClass: 'bg-sky-50 text-sky-600',
+    iconClass: 'bg-accent/10 text-accent',
   },
 ]
 
@@ -74,8 +74,8 @@ export function ReportsPage() {
               disabled={downloading !== null}
               aria-busy={isBusy}
               className={cn(
-                'group flex flex-col rounded-2xl border border-slate-200/70 bg-white p-6 text-left shadow-[0_1px_2px_rgb(15_23_42/0.04)] outline-none transition-all duration-200',
-                'hover:-translate-y-0.5 hover:border-slate-300/80 hover:shadow-lg hover:shadow-slate-200/60 focus-visible:ring-2 focus-visible:ring-teal-500/60',
+                'group flex flex-col rounded-2xl border border-border bg-surface p-6 text-left outline-none transition-all duration-200',
+                'hover:-translate-y-0.5 hover:border-fg/20 hover:shadow-lg hover:shadow-black/5 focus-visible:ring-2 focus-visible:ring-ring',
                 'disabled:translate-y-0 disabled:cursor-wait disabled:shadow-none',
                 downloading !== null && !isBusy && 'opacity-60',
               )}
@@ -88,9 +88,9 @@ export function ReportsPage() {
                     {isBusy ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
                   </span>
                 </span>
-                <span className="mt-5 text-lg font-semibold text-slate-900">{option.title}</span>
-                <span className="mt-1.5 flex-1 text-sm leading-relaxed text-slate-500">{option.description}</span>
-                <span className="mt-5 text-[13px] text-slate-400">
+                <span className="mt-5 text-lg font-semibold text-fg">{option.title}</span>
+                <span className="mt-1.5 flex-1 text-sm leading-relaxed text-muted">{option.description}</span>
+                <span className="mt-5 text-[13px] text-muted">
                   {isBusy ? 'Preparing your file…' : `Works with ${option.worksWith}`}
                 </span>
             </button>
@@ -99,15 +99,15 @@ export function ReportsPage() {
       </div>
 
       <section>
-        <h2 className="text-sm font-medium text-slate-900">What’s included</h2>
+        <h2 className="text-sm font-medium text-fg">What’s included</h2>
         <ul className="mt-3 flex flex-wrap gap-2">
           {INCLUDED.map((item) => (
-            <li key={item} className="rounded-full bg-white px-3 py-1.5 text-[13px] text-slate-600 ring-1 ring-slate-200/70">
+            <li key={item} className="rounded-full bg-surface px-3 py-1.5 text-[13px] text-muted ring-1 ring-border">
               {item}
             </li>
           ))}
         </ul>
-        <p className="mt-4 text-[13px] text-slate-400">
+        <p className="mt-4 text-[13px] text-muted">
           Amounts are shown in each subscription’s own currency, with a yearly total in Uzbek som.
         </p>
       </section>
