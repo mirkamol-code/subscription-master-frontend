@@ -34,7 +34,7 @@ export function NeedsReviewCard() {
         </div>
       </CardHeader>
       <CardContent className="px-3 pb-3 pt-1">
-        <ul className="divide-y divide-slate-100">
+        <ul className="divide-y divide-border">
           {toReview.map((item) => {
             const prompt = getReviewPrompt(item)
             return (
@@ -43,17 +43,17 @@ export function NeedsReviewCard() {
                 <span className="min-w-0 flex-1">
                   <Link
                     to={`/subscriptions/${item.id}`}
-                    className="block truncate font-medium text-slate-900 hover:text-teal-700"
+                    className="block truncate font-medium text-fg hover:text-accent"
                   >
                     {item.name}
                   </Link>
                   {prompt.action === 'ENTER_AMOUNT' && (
-                    <span className="block truncate text-xs text-amber-700">{prompt.message}</span>
+                    <span className="block truncate text-xs text-warning">{prompt.message}</span>
                   )}
                 </span>
-                <span className="text-sm tabular-nums text-slate-600">
+                <span className="text-sm tabular-nums text-muted">
                   {formatMoney(item.price, item.currency)}
-                  <span className="text-slate-400">{FREQUENCY_SUFFIX[item.frequency]}</span>
+                  <span className="text-muted">{FREQUENCY_SUFFIX[item.frequency]}</span>
                 </span>
                 <ReviewActions item={item} onConfirm={actions.confirmReview} isConfirming={actions.isConfirmingReview} />
               </li>
