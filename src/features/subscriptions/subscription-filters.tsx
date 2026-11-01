@@ -32,7 +32,7 @@ export function SubscriptionFilters({ values, onChange, onClear }: SubscriptionF
         <div
           role="tablist"
           aria-label="Filter by status"
-          className="flex shrink-0 gap-1 overflow-x-auto rounded-xl bg-slate-200/50 p-1"
+          className="flex shrink-0 gap-1 overflow-x-auto rounded-xl bg-fg/10 p-1"
         >
           {STATUS_TABS.map((tab) => (
             <button
@@ -44,8 +44,8 @@ export function SubscriptionFilters({ values, onChange, onClear }: SubscriptionF
               className={cn(
                 'rounded-lg px-3 py-1.5 text-[13px] font-medium transition-all',
                 values.status === tab.value
-                  ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-800',
+                  ? 'bg-surface-raised text-fg shadow-sm ring-1 ring-border'
+                  : 'text-muted hover:text-fg',
               )}
             >
               {tab.label}
@@ -54,7 +54,7 @@ export function SubscriptionFilters({ values, onChange, onClear }: SubscriptionF
         </div>
 
         <div className="relative flex-1">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-muted" />
           <DebouncedInput
             type="search"
             aria-label="Search subscriptions"
@@ -88,7 +88,7 @@ export function SubscriptionFilters({ values, onChange, onClear }: SubscriptionF
             <SlidersHorizontal className="size-4" />
             Filters
             {extraFilterCount > 0 && (
-              <span className="grid size-5 place-items-center rounded-full bg-teal-600 text-[11px] text-white">
+              <span className="grid size-5 place-items-center rounded-full bg-accent text-[11px] font-semibold text-accent-fg">
                 {extraFilterCount}
               </span>
             )}
@@ -97,7 +97,7 @@ export function SubscriptionFilters({ values, onChange, onClear }: SubscriptionF
       </div>
 
       {showMore && (
-        <div className="grid gap-3 rounded-2xl border border-slate-200/70 bg-white p-4 animate-slide-up sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-3 rounded-2xl border border-border bg-surface p-4 animate-slide-up sm:grid-cols-2 lg:grid-cols-4">
           <Select
             aria-label="Category"
             value={values.category}
@@ -151,7 +151,7 @@ export function SubscriptionFilters({ values, onChange, onClear }: SubscriptionF
         <button
           type="button"
           onClick={onClear}
-          className="inline-flex items-center gap-1 text-[13px] font-medium text-slate-500 hover:text-slate-900"
+          className="inline-flex items-center gap-1 text-[13px] font-medium text-muted hover:text-fg"
         >
           <X className="size-3.5" /> Clear filters
         </button>

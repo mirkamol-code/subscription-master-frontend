@@ -21,7 +21,7 @@ export function SubscriptionFormPage() {
   const backHref = `/subscriptions/${id}`
 
   const backLink = (
-    <Button asChild variant="ghost" size="sm" className="-ml-3 text-slate-500">
+    <Button asChild variant="ghost" size="sm" className="-ml-3 text-muted">
       <Link to={backHref}>
         <ArrowLeft className="size-4" /> Back
       </Link>

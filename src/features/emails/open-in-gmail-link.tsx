@@ -15,7 +15,7 @@ export function OpenInGmailLink({ gmailMessageId, className }: OpenInGmailLinkPr
       href={buildGmailMessageUrl(gmailMessageId, gmailAddress)}
       target="_blank"
       rel="noopener noreferrer"
-      className={cn('inline-flex items-center gap-1.5 hover:text-teal-700', className)}
+      className={cn('inline-flex items-center gap-1.5 hover:text-accent', className)}
     >
       <ExternalLink className="size-3.5" aria-hidden /> Open in Gmail
       <span className="sr-only"> (opens in a new tab)</span>

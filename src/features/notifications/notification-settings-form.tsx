@@ -21,11 +21,11 @@ function listTimeZones(current: string) {
 
 function ChannelToggle({ label, hint, register }: { label: string; hint: string; register: UseFormRegisterReturn }) {
   return (
-    <label className="flex cursor-pointer items-start gap-3 rounded-xl p-3 hover:bg-slate-50">
-      <input type="checkbox" className="mt-0.5 size-4 accent-teal-600" {...register} />
+    <label className="flex cursor-pointer items-start gap-3 rounded-xl p-3 hover:bg-fg/[0.06]">
+      <input type="checkbox" className="mt-0.5 size-4 accent-accent" {...register} />
       <span>
-        <span className="block text-sm font-medium text-slate-900">{label}</span>
-        <span className="block text-[13px] text-slate-500">{hint}</span>
+        <span className="block text-sm font-medium text-fg">{label}</span>
+        <span className="block text-[13px] text-muted">{hint}</span>
       </span>
     </label>
   )
@@ -56,7 +56,7 @@ export function NotificationSettingsForm({ settings }: { settings: NotificationS
   return (
     <form onSubmit={submit} noValidate className="space-y-6">
       <fieldset className="space-y-1">
-        <legend className="mb-2 text-sm font-medium text-slate-700">Remind me by</legend>
+        <legend className="mb-2 text-sm font-medium text-fg">Remind me by</legend>
         <ChannelToggle label="Email" hint="Sent from your own Gmail to yourself." register={form.register('emailEnabled')} />
         <ChannelToggle label="In the app" hint="Shown under the bell." register={form.register('inAppEnabled')} />
         <ChannelToggle
@@ -68,7 +68,7 @@ export function NotificationSettingsForm({ settings }: { settings: NotificationS
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="daysBefore" className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label htmlFor="daysBefore" className="mb-1.5 block text-sm font-medium text-fg">
             Days before a payment
           </label>
           <Input
@@ -81,13 +81,13 @@ export function NotificationSettingsForm({ settings }: { settings: NotificationS
             {...form.register('daysBefore', { valueAsNumber: true })}
           />
           {errors.daysBefore && (
-            <p id="daysBefore-error" className="mt-1.5 text-[13px] text-rose-600">
+            <p id="daysBefore-error" className="mt-1.5 text-[13px] text-danger">
               {errors.daysBefore.message}
             </p>
           )}
         </div>
         <div>
-          <label htmlFor="timeZone" className="mb-1.5 block text-sm font-medium text-slate-700">
+          <label htmlFor="timeZone" className="mb-1.5 block text-sm font-medium text-fg">
             Time zone
           </label>
           <Select id="timeZone" aria-invalid={!!errors.timeZone} {...form.register('timeZone')}>
@@ -101,12 +101,12 @@ export function NotificationSettingsForm({ settings }: { settings: NotificationS
             <button
               type="button"
               onClick={() => form.setValue('timeZone', DEVICE_TIME_ZONE, { shouldDirty: true })}
-              className="mt-1.5 text-[13px] font-medium text-teal-700 hover:underline"
+              className="mt-1.5 text-[13px] font-medium text-accent hover:underline"
             >
               Use this device’s time zone ({formatTimeZone(DEVICE_TIME_ZONE)})
             </button>
           )}
-          {errors.timeZone && <p className="mt-1.5 text-[13px] text-rose-600">{errors.timeZone.message}</p>}
+          {errors.timeZone && <p className="mt-1.5 text-[13px] text-danger">{errors.timeZone.message}</p>}
         </div>
       </div>
 

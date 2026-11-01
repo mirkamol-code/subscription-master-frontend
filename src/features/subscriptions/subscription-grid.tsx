@@ -24,9 +24,9 @@ export function SubscriptionGrid({ items, ...actions }: SubscriptionListProps) {
           key={item.id}
           style={{ animationDelay: `${Math.min(index, 8) * 30}ms` }}
           className={cn(
-            'group relative flex flex-col rounded-2xl border border-slate-200/70 bg-white p-5 shadow-[0_1px_2px_rgb(15_23_42/0.04)] transition-all duration-200 animate-slide-up',
-            'hover:-translate-y-0.5 hover:border-slate-300/80 hover:shadow-lg hover:shadow-slate-200/60',
-            !isRenewing(item) && 'bg-slate-50/60',
+            'group relative flex flex-col rounded-2xl border border-border bg-surface p-5 shadow-[0_1px_2px_rgb(15_23_42/0.04)] transition-all duration-200 animate-slide-up',
+            'hover:-translate-y-0.5 hover:border-fg/20 hover:shadow-lg hover:shadow-black/5',
+            !isRenewing(item) && 'bg-fg/[0.03]',
           )}
         >
           <div className="flex items-start gap-3">
@@ -34,11 +34,11 @@ export function SubscriptionGrid({ items, ...actions }: SubscriptionListProps) {
             <div className="min-w-0 flex-1">
               <Link
                 to={`/subscriptions/${item.id}`}
-                className="block truncate font-semibold text-slate-900 outline-none after:absolute after:inset-0 after:rounded-2xl focus-visible:after:ring-2 focus-visible:after:ring-teal-500/60"
+                className="block truncate font-semibold text-fg outline-none after:absolute after:inset-0 after:rounded-2xl focus-visible:after:ring-2 focus-visible:after:ring-ring"
               >
                 {item.name}
               </Link>
-              <p className="flex items-center gap-2 truncate text-[13px] text-slate-500">
+              <p className="flex items-center gap-2 truncate text-[13px] text-muted">
                 {getCategoryMeta(item.category).label}
                 {item.needsReview && <NeedsReviewBadge />}
               </p>
@@ -46,14 +46,14 @@ export function SubscriptionGrid({ items, ...actions }: SubscriptionListProps) {
             <SubscriptionActionsMenu item={item} {...actions} className="relative z-10 -mr-1.5 -mt-1" />
           </div>
 
-          <p className="mt-6 text-2xl font-semibold tracking-tight tabular-nums text-slate-900">
+          <p className="mt-6 text-2xl font-semibold tracking-tight tabular-nums text-fg">
             {formatMoney(item.price, item.currency)}
-            <span className="ml-1 text-sm font-normal text-slate-400">
+            <span className="ml-1 text-sm font-normal text-muted">
               {FREQUENCY_SUFFIX[item.frequency]}
             </span>
           </p>
 
-          <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4 text-[13px] text-slate-500">
+          <div className="mt-4 flex items-center justify-between border-t border-border pt-4 text-[13px] text-muted">
             <span>{isRenewing(item) ? formatDate(item.nextPaymentDate) : 'Not renewing'}</span>
             <SubscriptionRenewal item={item} />
           </div>

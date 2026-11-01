@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 
 export const Dialog = DialogPrimitive.Root
 export const DialogTrigger = DialogPrimitive.Trigger
+export const DialogClose = DialogPrimitive.Close
 
 const contentVariants = cva('fixed z-50 border-border bg-surface-raised shadow-2xl shadow-black/40 outline-none', {
   variants: {
