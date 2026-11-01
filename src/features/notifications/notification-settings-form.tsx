@@ -111,7 +111,7 @@ export function NotificationSettingsForm({ settings }: { settings: NotificationS
       </div>
 
       <div className="flex justify-end">
-        <Button type="submit" variant="accent" disabled={!isDirty || update.isPending}>
+        <Button type="submit" variant="gradient" disabled={!isDirty || update.isPending}>
           {update.isPending ? 'Saving…' : 'Save settings'}
         </Button>
       </div>

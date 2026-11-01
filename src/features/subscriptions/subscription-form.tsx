@@ -146,7 +146,7 @@ export function SubscriptionForm({
           <Button asChild variant="ghost">
             <Link to={cancelHref}>Cancel</Link>
           </Button>
-          <Button type="submit" variant="accent" disabled={pending} className="sm:min-w-36">
+          <Button type="submit" variant="gradient" disabled={pending} className="sm:min-w-36">
             {pending ? 'Saving…' : submitLabel}
           </Button>
         </div>

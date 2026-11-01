@@ -40,7 +40,7 @@ export const CATEGORY_CONFIG: Record<Category, CategoryMeta> = {
     label: 'Education',
     icon: BookOpen,
     iconBg: 'bg-indigo-50 text-indigo-600',
-    accentColor: '#4f46e5',
+    accentColor: '#6366f1',
   },
   HEALTH: {
     label: 'Health & Fitness',

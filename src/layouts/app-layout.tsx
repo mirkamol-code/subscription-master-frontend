@@ -9,15 +9,20 @@ import {
   LogOut,
   Menu,
   Settings,
-  X,
   type LucideIcon,
 } from 'lucide-react'
-import * as Dialog from '@radix-ui/react-dialog'
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { BrandMark } from '@/components/common/brand-mark'
+import { Dialog, DialogCloseButton, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/features/auth/auth-context'
 import { CurrencySwitcherDropdown } from '@/features/currency/currency-switcher-dropdown'
 import { NotificationBell } from '@/features/notifications/notification-bell'
+import { ThemeToggle } from '@/features/theme/theme-toggle'
 import { useCurrentUser, useIsAdmin } from '@/hooks/use-current-user'
 import type { UserProfile } from '@/types/api'
 import { cn } from '@/lib/utils'
@@ -50,10 +55,10 @@ function SidebarNav({ isAdmin, onNavigate }: { isAdmin: boolean; onNavigate?: ()
             onClick={onNavigate}
             className={({ isActive }) =>
               cn(
-                'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors',
+                'relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring',
                 isActive
-                  ? 'bg-slate-900 text-white shadow-sm'
-                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900',
+                  ? 'bg-surface-raised text-fg before:absolute before:inset-y-2 before:-left-4 before:w-0.5 before:rounded-full before:bg-accent [&_svg]:text-accent'
+                  : 'text-muted hover:bg-fg/[0.04] hover:text-fg',
               )
             }
           >
@@ -75,7 +80,7 @@ function UserAvatar({ user }: { user: SignedInUser }) {
   return user.avatarUrl ? (
     <img src={user.avatarUrl} alt="" referrerPolicy="no-referrer" className="size-9 shrink-0 rounded-full object-cover" />
   ) : (
-    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-linear-to-br from-teal-400 to-emerald-600 text-sm font-semibold text-white">
+    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-(image:--gradient-brand) text-sm font-semibold text-white">
       {getUserName(user).charAt(0).toUpperCase() || 'U'}
     </span>
   )
@@ -83,42 +88,32 @@ function UserAvatar({ user }: { user: SignedInUser }) {
 
 function AccountMenu({ user, onLogout }: { user: SignedInUser; onLogout: () => void }) {
   return (
-    <DropdownMenu.Root>
-      <DropdownMenu.Trigger asChild>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
         <button
           type="button"
-          className="flex w-full items-center gap-3 rounded-xl p-2 text-left outline-none transition-colors hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-teal-500/60"
+          className="flex w-full items-center gap-3 rounded-xl p-2 text-left outline-none transition-colors hover:bg-fg/[0.04] focus-visible:ring-2 focus-visible:ring-ring data-[state=open]:bg-fg/[0.06]"
           aria-label="Account menu"
         >
           <UserAvatar user={user} />
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-medium text-slate-900">
+            <span className="block truncate text-sm font-medium text-fg">
               {getUserName(user)}
             </span>
-            <span className="block truncate text-xs text-slate-400">
+            <span className="block truncate text-xs text-muted">
               {user.displayName ? user.email : 'Personal account'}
             </span>
           </span>
-          <ChevronsUpDown className="size-4 shrink-0 text-slate-400" />
+          <ChevronsUpDown className="size-4 shrink-0 text-muted" />
         </button>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          side="top"
-          align="start"
-          sideOffset={8}
-          className="z-50 w-(--radix-dropdown-menu-trigger-width) min-w-52 rounded-xl border border-slate-200 bg-white p-1 shadow-xl animate-pop-in"
-        >
-          <DropdownMenu.Item
-            onSelect={onLogout}
-            className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-rose-600 outline-none data-highlighted:bg-rose-50"
-          >
-            <LogOut className="size-4" />
-            Sign out
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent side="top" align="start" className="w-(--radix-dropdown-menu-trigger-width) min-w-52">
+        <DropdownMenuItem isDestructive onSelect={onLogout}>
+          <LogOut />
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
 
@@ -137,10 +132,10 @@ function Sidebar({
     <div className="flex h-full flex-col gap-8 px-4 py-5">
       <Link to="/" onClick={onNavigate} className="flex items-center gap-2.5 px-2 outline-none">
         <BrandMark />
-        <span className="text-[15px] font-bold tracking-tight text-slate-900">Subscription Master</span>
+        <span className="text-[15px] font-bold tracking-tight text-fg">Subscription Master</span>
       </Link>
       <SidebarNav isAdmin={isAdmin} onNavigate={onNavigate} />
-      <div className="mt-auto border-t border-slate-200/70 pt-3">
+      <div className="mt-auto border-t border-border pt-3">
         <AccountMenu user={user} onLogout={onLogout} />
       </div>
     </div>
@@ -166,38 +161,34 @@ export function AppLayout() {
 
   return (
     <div className="min-h-screen">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-slate-200/70 bg-white lg:block">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-border bg-background lg:block">
         <Sidebar isAdmin={isAdmin} user={user} onLogout={handleLogout} />
       </aside>
 
-      <Dialog.Root open={mobileOpen} onOpenChange={setMobileOpen}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-50 bg-slate-950/30 backdrop-blur-[2px] animate-fade-in lg:hidden" />
-          <Dialog.Content className="fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl outline-none animate-slide-in-left lg:hidden">
-            <Dialog.Title className="sr-only">Navigation</Dialog.Title>
-            <Dialog.Description className="sr-only">Move between sections</Dialog.Description>
-            <Dialog.Close
-              className="absolute right-3 top-5 grid size-8 place-items-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-              aria-label="Close menu"
-            >
-              <X className="size-4" />
-            </Dialog.Close>
-            <Sidebar
-              isAdmin={isAdmin}
-              user={user}
-              onLogout={handleLogout}
-              onNavigate={() => setMobileOpen(false)}
-            />
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+      <Dialog open={mobileOpen} onOpenChange={setMobileOpen}>
+        <DialogContent
+          placement="left"
+          className="bg-background lg:hidden"
+          overlayClassName="lg:hidden"
+        >
+          <DialogTitle className="sr-only">Navigation</DialogTitle>
+          <DialogDescription className="sr-only">Move between sections</DialogDescription>
+          <DialogCloseButton className="absolute right-3 top-5" aria-label="Close menu" />
+          <Sidebar
+            isAdmin={isAdmin}
+            user={user}
+            onLogout={handleLogout}
+            onNavigate={() => setMobileOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
 
       <div className="flex min-h-screen flex-col lg:pl-64">
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-slate-200/60 bg-canvas/80 px-4 backdrop-blur-xl sm:px-8">
+        <header className="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-border bg-background/70 px-4 backdrop-blur-xl sm:px-8">
           <div className="flex items-center gap-2 lg:hidden">
             <button
               type="button"
-              className="grid size-9 place-items-center rounded-xl text-slate-600 hover:bg-slate-100"
+              className="grid size-9 place-items-center rounded-xl text-muted outline-none hover:bg-fg/[0.06] hover:text-fg focus-visible:ring-2 focus-visible:ring-ring"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
             >
@@ -205,16 +196,17 @@ export function AppLayout() {
             </button>
             <Link to="/" className="flex items-center gap-2">
               <BrandMark className="size-7" />
-              <span className="text-sm font-bold tracking-tight">Subscription Master</span>
+              <span className="text-sm font-bold tracking-tight text-fg">Subscription Master</span>
             </Link>
           </div>
           <div className="ml-auto flex items-center gap-2">
+            <ThemeToggle />
             <NotificationBell />
             <CurrencySwitcherDropdown />
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-8 sm:py-10">
+        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-8 sm:py-12">
           <Outlet />
         </main>
       </div>

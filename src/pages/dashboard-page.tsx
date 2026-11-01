@@ -263,7 +263,7 @@ function TrendChart({ months }: { months: MonthlyCost[] }) {
               aria-label={`${label}: ${formatMoney(values[index], displayCurrency)}`}
               className="group relative flex h-full flex-1 flex-col items-center justify-end gap-2"
             >
-              <span className="pointer-events-none absolute -top-1 z-10 whitespace-nowrap rounded-lg bg-slate-900 px-2 py-1 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+              <span className="pointer-events-none absolute -top-1 z-10 whitespace-nowrap rounded-lg bg-fg px-2 py-1 text-xs font-medium text-background opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
                 {formatMoney(values[index], displayCurrency)}
               </span>
               <div className="flex w-full max-w-14 flex-1 items-end">

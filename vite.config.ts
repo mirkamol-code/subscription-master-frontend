@@ -1,7 +1,18 @@
 import react from '@vitejs/plugin-react'
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig, loadEnv, type Plugin } from 'vite'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'node:path'
+import { THEME_BOOT_SCRIPT, THEME_COLORS } from './src/features/theme/resolve-theme.ts'
+
+function themeBootPlugin(): Plugin {
+  return {
+    name: 'theme-boot',
+    transformIndexHtml: () => [
+      { tag: 'meta', attrs: { name: 'theme-color', content: THEME_COLORS.dark }, injectTo: 'head' },
+      { tag: 'script', children: THEME_BOOT_SCRIPT, injectTo: 'head' },
+    ],
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -19,7 +30,7 @@ export default defineConfig(({ mode }) => {
     : undefined
 
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), themeBootPlugin()],
     resolve: {
       alias: { '@': path.resolve(import.meta.dirname, './src') },
     },

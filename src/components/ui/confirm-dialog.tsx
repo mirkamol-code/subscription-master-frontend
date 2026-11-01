@@ -26,16 +26,16 @@ export function ConfirmDialog({
   return (
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
       <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-[2px] animate-fade-in" />
-        <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-6 shadow-2xl outline-none">
+        <AlertDialog.Overlay className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm animate-fade-in" />
+        <AlertDialog.Content className="fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-surface-raised p-6 shadow-2xl outline-none">
           <div className="animate-pop-in">
-            <div className="grid size-11 place-items-center rounded-full bg-rose-50 text-rose-600">
+            <div className="grid size-11 place-items-center rounded-full bg-danger/10 text-danger">
               <Trash2 className="size-5" />
             </div>
-            <AlertDialog.Title className="mt-4 text-lg font-semibold text-slate-900">
+            <AlertDialog.Title className="mt-4 text-lg font-semibold text-fg">
               {title}
             </AlertDialog.Title>
-            <AlertDialog.Description className="mt-1.5 text-sm leading-relaxed text-slate-500">
+            <AlertDialog.Description className="mt-1.5 text-sm leading-relaxed text-muted">
               {description}
             </AlertDialog.Description>
             <div className="mt-6 grid grid-cols-2 gap-2.5">

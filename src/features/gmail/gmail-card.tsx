@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils'
 
 function GoogleLink({ label }: { label: string }) {
   return (
-    <Button asChild variant="accent" size="sm">
+    <Button asChild variant="gradient" size="sm">
       <a href={GOOGLE_LOGIN_URL}>{label}</a>
     </Button>
   )

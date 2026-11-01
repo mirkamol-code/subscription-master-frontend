@@ -1,11 +1,65 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #fafafa;
+  --surface: #ffffff;
+  --surface-raised: #f4f4f5;
+  --border: #e4e4e7;
+  --fg: #09090b;
+  --muted: #71717a;
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --accent-fg: #ffffff;
+  --ring: rgb(124 58 237 / 0.5);
+  --success: #059669;
+  --warning: #d97706;
+  --danger: #e11d48;
+  --hero: #0b0b12;
+  --gradient-brand: linear-gradient(135deg, #a78bfa 0%, #6366f1 100%);
+  color-scheme: light;
+}
+
+.dark {
+  --background: #09090b;
+  --surface: #111114;
+  --surface-raised: #18181c;
+  --border: rgb(255 255 255 / 0.08);
+  --fg: #fafafa;
+  --muted: #a1a1aa;
+  --accent: #8b5cf6;
+  --accent-hover: #7c3aed;
+  --accent-fg: #ffffff;
+  --ring: rgb(139 92 246 / 0.55);
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f43f5e;
+  --hero: #15151b;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-canvas: var(--background);
+  --color-ink: var(--hero);
+}
+
 @theme {
   --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
-  --color-canvas: #f6f7f9;
-  --color-ink: #0b1220;
 
   --animate-fade-in: fade-in 180ms ease-out both;
   --animate-pop-in: pop-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -35,8 +89,8 @@
 
 :root {
   font-family: var(--font-sans);
-  color: var(--color-ink);
-  background: var(--color-canvas);
+  color: var(--fg);
+  background: var(--background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -52,7 +106,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: var(--color-canvas);
+  background: var(--background);
 }
 
 button:not(:disabled),
@@ -65,8 +119,8 @@ button:disabled {
 }
 
 ::selection {
-  background: rgb(20 184 166 / 0.2);
-  color: var(--color-ink);
+  background: color-mix(in oklab, var(--accent) 30%, transparent);
+  color: var(--fg);
 }
 
 /* Hide native number spinners — amounts are typed, not clicked */
@@ -103,4 +157,67 @@ input[type="number"] {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+.text-gradient-brand {
+  background-image: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/*
+ * Migration bridge — remove once every page uses the semantic tokens above.
+ * Pages not yet migrated still use raw Tailwind palette classes. These overrides
+ * map the old teal brand to violet and make slate, white and pastel tints work in dark mode.
+ */
+:root {
+  --color-teal-50: var(--color-violet-50);
+  --color-teal-100: var(--color-violet-100);
+  --color-teal-200: var(--color-violet-200);
+  --color-teal-300: var(--color-violet-300);
+  --color-teal-400: var(--color-violet-400);
+  --color-teal-500: var(--color-violet-500);
+  --color-teal-600: var(--color-violet-600);
+  --color-teal-700: var(--color-violet-700);
+  --color-teal-800: var(--color-violet-800);
+  --color-teal-900: var(--color-violet-900);
+}
+
+.dark {
+  --color-slate-50: #141418;
+  --color-slate-100: #1c1c21;
+  --color-slate-200: #27272d;
+  --color-slate-300: #3a3a42;
+  --color-slate-400: #71717a;
+  --color-slate-500: #a1a1aa;
+  --color-slate-600: #c4c4cc;
+  --color-slate-700: #d4d4d8;
+  --color-slate-800: #e4e4e7;
+  --color-slate-900: #fafafa;
+
+  --color-teal-50: color-mix(in oklab, var(--color-violet-500) 12%, transparent);
+  --color-teal-600: var(--color-violet-500);
+  --color-teal-700: var(--color-violet-300);
+
+  --color-rose-50: color-mix(in oklab, var(--color-rose-500) 12%, transparent);
+  --color-rose-200: color-mix(in oklab, var(--color-rose-500) 35%, transparent);
+  --color-rose-700: var(--color-rose-300);
+  --color-amber-50: color-mix(in oklab, var(--color-amber-500) 12%, transparent);
+  --color-amber-100: color-mix(in oklab, var(--color-amber-500) 18%, transparent);
+  --color-amber-700: var(--color-amber-300);
+  --color-amber-800: var(--color-amber-200);
+  --color-amber-900: #fef3c7;
+  --color-emerald-50: color-mix(in oklab, var(--color-emerald-500) 12%, transparent);
+  --color-emerald-700: var(--color-emerald-300);
+  --color-purple-50: color-mix(in oklab, var(--color-purple-500) 14%, transparent);
+  --color-purple-600: var(--color-purple-400);
+  --color-blue-50: color-mix(in oklab, var(--color-blue-500) 14%, transparent);
+  --color-blue-600: var(--color-blue-400);
+  --color-indigo-50: color-mix(in oklab, var(--color-indigo-500) 14%, transparent);
+  --color-indigo-600: var(--color-indigo-400);
+}
+
+.dark .bg-white {
+  background-color: var(--surface);
 }

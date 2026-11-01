@@ -5,7 +5,7 @@ export function BrandMark({ className }: { className?: string }) {
     <span
       aria-hidden
       className={cn(
-        'grid size-8 shrink-0 place-items-center rounded-[10px] bg-linear-to-br from-teal-400 to-emerald-600 text-white shadow-sm shadow-emerald-600/30',
+        'grid size-8 shrink-0 place-items-center rounded-[10px] bg-(image:--gradient-brand) text-white shadow-md shadow-accent/30',
         className,
       )}
     >
