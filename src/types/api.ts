@@ -187,7 +187,7 @@ export interface BillingEmail {
 
 export interface AppNotification {
   id: number
-  type: 'PAYMENT_DUE' | 'BILLING_REQUIRED' | 'CANCELLED' | 'CANCELLATION_SCHEDULED' | 'REACTIVATED' | 'RETRACKED'
+  type: 'PAYMENT_DUE' | 'BILLING_REQUIRED' | 'CANCELLED' | 'CANCELLATION_SCHEDULED' | 'REACTIVATED' | 'RETRACKED' | 'ADMIN_PAYMENT_DIGEST'
   severity: 'INFO' | 'URGENT'
   title: string
   body: string

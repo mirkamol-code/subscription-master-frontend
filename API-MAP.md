@@ -32,6 +32,8 @@ This map reflects the OpenAPI document at `https://subscriptionmaster.app/api/v3
 | `PUT /admin/users/{id}/role` | `adminApi.changeRole` | `useChangeRole` | Admin user role control |
 | `GET /admin/analytics/merchants` | `adminApi.merchantAnalytics` | `useMerchantAnalytics` | Merchant analytics ranking and chart |
 | `GET /admin/analytics/categories` | `adminApi.categoryAnalytics` | `useCategoryAnalytics` | Merchant analytics category breakdown |
+| `GET /admin/payments/due` | `adminApi.duePayments` | `useDuePayments` | Payment calendar |
+| `GET /admin/payments/upcoming` | `adminApi.upcomingPayments` | `useUpcomingPayments` | Payment calendar upcoming list |
 | `GET /me/gmail` | `gmailApi.getConnection` | `useGmailConnection` | Dashboard Gmail card |
 | `POST /gmail/sync` | `gmailApi.requestSync` | `useRequestSync` | Dashboard Gmail card |
 | `GET /gmail/sync-status` | `gmailApi.getSyncStatus` | `useSyncStatus` (polls while running) | Dashboard Gmail card |

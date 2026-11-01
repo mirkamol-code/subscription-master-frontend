@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
   BarChart3,
+  CalendarClock,
   ChevronsUpDown,
   CreditCard,
   FileDown,
@@ -43,6 +44,7 @@ const navigation: NavItem[] = [
   { label: 'Settings', href: '/settings', icon: Settings },
   { label: 'Admin', href: '/admin', icon: ShieldCheck, adminOnly: true },
   { label: 'Merchant analytics', href: '/admin/analytics', icon: TrendingUp, adminOnly: true },
+  { label: 'Payment calendar', href: '/admin/payments', icon: CalendarClock, adminOnly: true },
   { label: 'Popular services', href: '/admin/usage', icon: BarChart3, adminOnly: true },
 ]
 

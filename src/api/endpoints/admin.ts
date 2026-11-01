@@ -10,9 +10,12 @@ import type {
   AdminUserRow,
   AnalyticsRange,
   CategoryAnalytics,
+  DuePaymentParams,
+  DuePayments,
   LoginEvent,
   MerchantAnalytics,
   MerchantOption,
+  UpcomingPayments,
 } from '@/features/admin/types'
 
 const HISTORY_PAGE_SIZE = 10
@@ -33,6 +36,9 @@ export const adminApi = {
   merchants: async () => (await api.get<MerchantOption[]>('/admin/merchants')).data,
   merchantAnalytics: async (range: AnalyticsRange, category?: Category) =>
     (await api.get<MerchantAnalytics[]>('/admin/analytics/merchants', { params: { range, category } })).data,
+  duePayments: async (params: DuePaymentParams) =>
+    (await api.get<DuePayments>('/admin/payments/due', { params })).data,
+  upcomingPayments: async () => (await api.get<UpcomingPayments>('/admin/payments/upcoming')).data,
   categoryAnalytics: async (range: AnalyticsRange) =>
     (await api.get<CategoryAnalytics[]>('/admin/analytics/categories', { params: { range } })).data,
 }

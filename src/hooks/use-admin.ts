@@ -1,6 +1,6 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, skipToken, useQuery } from '@tanstack/react-query'
 import { adminApi } from '@/api/endpoints/admin'
-import type { AdminUserListParams, AnalyticsRange } from '@/features/admin/types'
+import type { AdminUserListParams, AnalyticsRange, DuePaymentParams } from '@/features/admin/types'
 import type { Category } from '@/types/api'
 
 const ADMIN_STALE_MS = 60_000
@@ -78,6 +78,25 @@ export function useCategoryAnalytics(range: AnalyticsRange) {
     queryKey: ['admin', 'analytics', 'categories', range],
     queryFn: () => adminApi.categoryAnalytics(range),
     placeholderData: keepPreviousData,
+    retry: false,
+    staleTime: ADMIN_STALE_MS,
+  })
+}
+
+export function useDuePayments(params: DuePaymentParams | null) {
+  return useQuery({
+    queryKey: ['admin', 'payments', 'due', params],
+    queryFn: params ? () => adminApi.duePayments(params) : skipToken,
+    placeholderData: keepPreviousData,
+    retry: false,
+    staleTime: ADMIN_STALE_MS,
+  })
+}
+
+export function useUpcomingPayments() {
+  return useQuery({
+    queryKey: ['admin', 'payments', 'upcoming'],
+    queryFn: adminApi.upcomingPayments,
     retry: false,
     staleTime: ADMIN_STALE_MS,
   })

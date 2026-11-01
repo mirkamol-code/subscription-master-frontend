@@ -111,3 +111,41 @@ export interface CategoryAnalytics {
   sharePercent: number
   trackedSpendUzs: number
 }
+
+export type DueBucket = 'OVERDUE' | 'PASSED' | 'TODAY' | 'NEXT_3_DAYS' | 'NEXT_7_DAYS' | 'LATER'
+
+export interface PaymentDue {
+  subscriptionId: number
+  userId: number
+  userName: string
+  userEmail: string
+  merchant: string
+  merchantSlug: string | null
+  kind: 'PAYMENT' | 'ACCESS_END'
+  dueDate: string
+  amount: number | null
+  currency: Currency
+  amountUzs: number | null
+  status: SubscriptionStatus
+  bucket: DueBucket
+}
+
+export interface DuePayments {
+  today: string
+  timeZone: string
+  entries: PaymentDue[]
+}
+
+export interface UpcomingPayments extends DuePayments {
+  totalUzs: number
+  overdueTotalUzs: number
+}
+
+export interface DuePaymentParams {
+  from: string
+  to: string
+  merchant?: string
+  status?: SubscriptionStatus
+}
+
+export type VisibleRange = Pick<DuePaymentParams, 'from' | 'to'>
