@@ -5,8 +5,9 @@ import {
   AlertDialogDescription,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import type { MouseEvent } from 'react'
+import type { ComponentType, MouseEvent } from 'react'
 import { Trash2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
 function confirmWithoutClosing(event: MouseEvent<HTMLButtonElement>, onConfirm: () => void) {
@@ -23,6 +24,8 @@ interface ConfirmDialogProps {
   pendingLabel?: string
   onConfirm: () => void
   pending?: boolean
+  icon?: ComponentType<{ className?: string }>
+  isDestructive?: boolean
 }
 
 export function ConfirmDialog({
@@ -34,12 +37,19 @@ export function ConfirmDialog({
   pendingLabel = 'Working…',
   onConfirm,
   pending,
+  icon: Icon = Trash2,
+  isDestructive = true,
 }: ConfirmDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
-        <div className="grid size-11 place-items-center rounded-full bg-danger/10 text-danger">
-          <Trash2 className="size-5" />
+        <div
+          className={cn(
+            'grid size-11 place-items-center rounded-full',
+            isDestructive ? 'bg-danger/10 text-danger' : 'bg-accent/10 text-accent',
+          )}
+        >
+          <Icon className="size-5" />
         </div>
         <AlertDialogTitle>{title}</AlertDialogTitle>
         <AlertDialogDescription>{description}</AlertDialogDescription>
@@ -50,7 +60,7 @@ export function ConfirmDialog({
             </Button>
           </AlertDialogCancel>
           <Button
-            variant="destructive"
+            variant={isDestructive ? 'destructive' : 'default'}
             disabled={pending}
             onClick={(event) => confirmWithoutClosing(event, onConfirm)}
           >
