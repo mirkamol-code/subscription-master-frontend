@@ -85,3 +85,29 @@ export interface AdminUserListParams {
   page: number
   size: number
 }
+
+export const analyticsRanges = ['LAST_7_DAYS', 'LAST_30_DAYS', 'LAST_90_DAYS', 'ALL_TIME'] as const
+export type AnalyticsRange = (typeof analyticsRanges)[number]
+
+export interface MerchantAnalytics {
+  rank: number
+  slug: string
+  name: string
+  activeSubscribers: number
+  activeSubscriptions: number
+  sharePercent: number
+  newLast7Days: number
+  newLast30Days: number
+  cancelledInRange: number
+  trackedSpendUzs: number
+  averageSpendPerUserUzs: number | null
+  loginsPerUser: number | null
+}
+
+export interface CategoryAnalytics {
+  category: Category
+  activeSubscribers: number
+  activeSubscriptions: number
+  sharePercent: number
+  trackedSpendUzs: number
+}

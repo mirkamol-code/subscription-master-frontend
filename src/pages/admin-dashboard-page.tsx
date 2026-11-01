@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import { Users } from 'lucide-react'
 import { EmptyState } from '@/components/common/empty-state'
 import { ErrorState } from '@/components/common/error-state'
@@ -12,26 +11,14 @@ import { Pager } from '@/features/admin/pager'
 import { UserFilters, type UserFilterKey } from '@/features/admin/user-filters'
 import { DEFAULT_USER_SORT, readUserListFilters, toUserListParams } from '@/features/admin/user-list-query'
 import { UsersTable } from '@/features/admin/users-table'
+import { useSearchParamUpdater } from '@/features/admin/use-search-param-updater'
 import { useAdminUsers } from '@/hooks/use-admin'
 import { NotFoundPage } from '@/pages/not-found-page'
 
 export function AdminDashboardPage() {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const { searchParams, setSearchParams, updateParams } = useSearchParamUpdater()
   const filters = readUserListFilters(searchParams)
   const usersQuery = useAdminUsers(toUserListParams(filters))
-
-  const updateParams = (changes: Record<string, string>, replace = false) =>
-    setSearchParams(
-      (current) => {
-        const next = new URLSearchParams(current)
-        for (const [key, value] of Object.entries(changes)) {
-          if (value) next.set(key, value)
-          else next.delete(key)
-        }
-        return next
-      },
-      { replace },
-    )
 
   const changeFilter = (key: UserFilterKey, value: string) =>
     updateParams({ [key]: key === 'sort' && value === DEFAULT_USER_SORT ? '' : value, page: '' }, true)

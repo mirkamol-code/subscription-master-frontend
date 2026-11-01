@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { adminApi } from '@/api/endpoints/admin'
-import type { AdminUserListParams } from '@/features/admin/types'
+import type { AdminUserListParams, AnalyticsRange } from '@/features/admin/types'
+import type { Category } from '@/types/api'
 
 const ADMIN_STALE_MS = 60_000
 
@@ -59,5 +60,25 @@ export function useMerchantOptions() {
     queryFn: adminApi.merchants,
     retry: false,
     staleTime: 5 * ADMIN_STALE_MS,
+  })
+}
+
+export function useMerchantAnalytics(range: AnalyticsRange, category?: Category) {
+  return useQuery({
+    queryKey: ['admin', 'analytics', 'merchants', range, category ?? null],
+    queryFn: () => adminApi.merchantAnalytics(range, category),
+    placeholderData: keepPreviousData,
+    retry: false,
+    staleTime: ADMIN_STALE_MS,
+  })
+}
+
+export function useCategoryAnalytics(range: AnalyticsRange) {
+  return useQuery({
+    queryKey: ['admin', 'analytics', 'categories', range],
+    queryFn: () => adminApi.categoryAnalytics(range),
+    placeholderData: keepPreviousData,
+    retry: false,
+    staleTime: ADMIN_STALE_MS,
   })
 }

@@ -8,6 +8,9 @@ import { Skeleton } from '@/components/ui/skeleton'
 const AdminDashboardPage = lazy(() =>
   import('@/pages/admin-dashboard-page').then((m) => ({ default: m.AdminDashboardPage })),
 )
+const AdminAnalyticsPage = lazy(() =>
+  import('@/pages/admin-analytics-page').then((m) => ({ default: m.AdminAnalyticsPage })),
+)
 const AdminUserPage = lazy(() =>
   import('@/pages/admin-user-page').then((m) => ({ default: m.AdminUserPage })),
 )
@@ -71,6 +74,7 @@ export default function App() {
             <Route element={<AdminRoute />}>
               <Route path="admin" element={<AdminDashboardPage />} />
               <Route path="admin/users/:id" element={<AdminUserPage />} />
+              <Route path="admin/analytics" element={<AdminAnalyticsPage />} />
               <Route path="admin/usage" element={<AdminUsagePage />} />
             </Route>
           </Route>

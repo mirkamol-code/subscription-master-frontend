@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
   BarChart3,
-  ShieldCheck,
   ChevronsUpDown,
   CreditCard,
   FileDown,
@@ -10,6 +9,8 @@ import {
   LogOut,
   Menu,
   Settings,
+  ShieldCheck,
+  TrendingUp,
   type LucideIcon,
 } from 'lucide-react'
 import { BrandMark } from '@/components/common/brand-mark'
@@ -41,6 +42,7 @@ const navigation: NavItem[] = [
   { label: 'Reports', href: '/reports', icon: FileDown },
   { label: 'Settings', href: '/settings', icon: Settings },
   { label: 'Admin', href: '/admin', icon: ShieldCheck, adminOnly: true },
+  { label: 'Merchant analytics', href: '/admin/analytics', icon: TrendingUp, adminOnly: true },
   { label: 'Popular services', href: '/admin/usage', icon: BarChart3, adminOnly: true },
 ]
 

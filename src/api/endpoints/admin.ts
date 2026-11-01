@@ -1,5 +1,5 @@
 import { api } from '@/api/client'
-import type { Page } from '@/types/api'
+import type { Category, Page } from '@/types/api'
 import type {
   AdminOverview,
   AdminPayment,
@@ -8,7 +8,10 @@ import type {
   AdminUser,
   AdminUserListParams,
   AdminUserRow,
+  AnalyticsRange,
+  CategoryAnalytics,
   LoginEvent,
+  MerchantAnalytics,
   MerchantOption,
 } from '@/features/admin/types'
 
@@ -28,4 +31,8 @@ export const adminApi = {
   changeRole: async (id: number, role: AdminRole) =>
     (await api.put<AdminUser>(`/admin/users/${id}/role`, { role })).data,
   merchants: async () => (await api.get<MerchantOption[]>('/admin/merchants')).data,
+  merchantAnalytics: async (range: AnalyticsRange, category?: Category) =>
+    (await api.get<MerchantAnalytics[]>('/admin/analytics/merchants', { params: { range, category } })).data,
+  categoryAnalytics: async (range: AnalyticsRange) =>
+    (await api.get<CategoryAnalytics[]>('/admin/analytics/categories', { params: { range } })).data,
 }
