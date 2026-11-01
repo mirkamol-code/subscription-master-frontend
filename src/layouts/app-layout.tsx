@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
   BarChart3,
+  CalendarClock,
   ChevronsUpDown,
   CreditCard,
   FileDown,
@@ -9,6 +10,8 @@ import {
   LogOut,
   Menu,
   Settings,
+  ShieldCheck,
+  TrendingUp,
   type LucideIcon,
 } from 'lucide-react'
 import { BrandMark } from '@/components/common/brand-mark'
@@ -39,6 +42,9 @@ const navigation: NavItem[] = [
   { label: 'Subscriptions', href: '/subscriptions', icon: CreditCard },
   { label: 'Reports', href: '/reports', icon: FileDown },
   { label: 'Settings', href: '/settings', icon: Settings },
+  { label: 'Admin', href: '/admin', icon: ShieldCheck, adminOnly: true },
+  { label: 'Merchant analytics', href: '/admin/analytics', icon: TrendingUp, adminOnly: true },
+  { label: 'Payment calendar', href: '/admin/payments', icon: CalendarClock, adminOnly: true },
   { label: 'Popular services', href: '/admin/usage', icon: BarChart3, adminOnly: true },
 ]
 
@@ -51,7 +57,7 @@ function SidebarNav({ isAdmin, onNavigate }: { isAdmin: boolean; onNavigate?: ()
           <NavLink
             key={href}
             to={href}
-            end={href === '/'}
+            end={href === '/' || href === '/admin'}
             onClick={onNavigate}
             className={({ isActive }) =>
               cn(
