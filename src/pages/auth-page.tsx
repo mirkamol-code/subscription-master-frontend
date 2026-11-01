@@ -30,8 +30,8 @@ function Banner({ tone, children }: { tone: 'error' | 'warning'; children: React
       role="alert"
       className={
         tone === 'error'
-          ? 'rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700 animate-fade-in'
-          : 'rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 animate-fade-in'
+          ? 'rounded-xl border border-danger/20 bg-danger/10 px-4 py-3 text-sm text-danger animate-fade-in'
+          : 'rounded-xl border border-warning/20 bg-warning/10 px-4 py-3 text-sm text-warning animate-fade-in'
       }
     >
       {children}
@@ -45,10 +45,14 @@ export function AuthPage() {
   const hasSessionExpired = !!searchParams.get('expired')
 
   return (
-    <main className="grid min-h-screen bg-white lg:grid-cols-2">
-      <section className="relative hidden overflow-hidden bg-ink p-12 text-white lg:flex lg:flex-col">
-        <div aria-hidden className="pointer-events-none absolute -right-40 -top-40 size-[32rem] rounded-full bg-teal-500/20 blur-3xl" />
-        <div aria-hidden className="pointer-events-none absolute -bottom-48 -left-32 size-[28rem] rounded-full bg-emerald-400/10 blur-3xl" />
+    <main className="grid min-h-screen bg-background lg:grid-cols-2">
+      <section className="relative hidden overflow-hidden border-r border-border bg-ink p-12 text-white lg:flex lg:flex-col">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgb(255_255_255/0.04)_1px,transparent_1px),linear-gradient(to_bottom,rgb(255_255_255/0.04)_1px,transparent_1px)] bg-size-[48px_48px] mask-[radial-gradient(ellipse_at_center,black_30%,transparent_75%)]"
+        />
+        <div aria-hidden className="pointer-events-none absolute -right-32 -top-40 size-[34rem] rounded-full bg-violet-600/25 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute -bottom-48 -left-32 size-[28rem] rounded-full bg-indigo-500/15 blur-3xl" />
 
         <div className="relative flex items-center gap-2.5">
           <BrandMark />
@@ -56,21 +60,21 @@ export function AuthPage() {
         </div>
 
         <div className="relative my-auto max-w-md">
-          <h1 className="text-5xl font-bold leading-[1.1] tracking-tight">
+          <h1 className="text-5xl font-extrabold leading-[1.05] tracking-tight xl:text-6xl">
             All your subscriptions.
-            <span className="block bg-linear-to-r from-teal-300 to-emerald-200 bg-clip-text text-transparent">
+            <span className="text-gradient-brand block">
               One calm place.
             </span>
           </h1>
           <ul className="mt-12 space-y-6">
             {HIGHLIGHTS.map(({ icon: Icon, title, text }) => (
               <li key={title} className="flex gap-4">
-                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/5 ring-1 ring-white/10">
-                  <Icon className="size-[18px] text-teal-300" />
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/[0.04] ring-1 ring-white/10">
+                  <Icon className="size-[18px] text-violet-300" />
                 </span>
                 <span>
                   <span className="block font-medium">{title}</span>
-                  <span className="block text-sm text-slate-400">{text}</span>
+                  <span className="block text-sm text-zinc-400">{text}</span>
                 </span>
               </li>
             ))}
@@ -82,11 +86,11 @@ export function AuthPage() {
         <div className="w-full max-w-sm animate-slide-up">
           <div className="mb-10 flex items-center gap-2.5 lg:hidden">
             <BrandMark />
-            <span className="font-bold tracking-tight text-slate-900">Subscription Master</span>
+            <span className="font-bold tracking-tight text-fg">Subscription Master</span>
           </div>
 
-          <h2 className="text-2xl font-bold tracking-tight text-slate-900">Welcome</h2>
-          <p className="mt-2 text-sm text-slate-500">Sign in with Google to see your subscriptions.</p>
+          <h2 className="text-3xl font-extrabold tracking-tight text-fg">Welcome</h2>
+          <p className="mt-2 text-[15px] text-muted">Sign in with Google to see your subscriptions.</p>
 
           <div className="mt-6 space-y-3 empty:hidden">
             {isLoginFailed && <Banner tone="error">Google sign-in didn’t finish. Please try again.</Banner>}
@@ -95,14 +99,14 @@ export function AuthPage() {
             )}
           </div>
 
-          <Button asChild variant="outline" size="lg" className="mt-6 w-full">
+          <Button asChild variant="inverse" size="lg" className="mt-8 w-full">
             <a href={GOOGLE_LOGIN_URL}>
               <GoogleLogo />
               Continue with Google
             </a>
           </Button>
 
-          <p className="mt-6 text-center text-[13px] leading-relaxed text-slate-400">
+          <p className="mt-6 text-center text-[13px] leading-relaxed text-muted">
             Google will ask to let Subscription Master read your billing emails and send payment reminders from
             your Gmail.
           </p>

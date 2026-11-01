@@ -12,11 +12,11 @@ export function NotFoundPage({ embedded = false }: { embedded?: boolean }) {
       )}
     >
       <div>
-        <p className="bg-linear-to-br from-teal-500 to-emerald-600 bg-clip-text text-7xl font-bold tracking-tight text-transparent">
+        <p className="text-gradient-brand text-8xl font-extrabold tracking-tight">
           404
         </p>
-        <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-900">Page not found</h1>
-        <p className="mt-2 text-slate-500">This page doesn’t exist or may have moved.</p>
+        <h1 className="mt-4 text-2xl font-bold tracking-tight text-fg">Page not found</h1>
+        <p className="mt-2 text-muted">This page doesn’t exist or may have moved.</p>
         <Button asChild className="mt-8" variant="default">
           <Link to="/">Go to overview</Link>
         </Button>

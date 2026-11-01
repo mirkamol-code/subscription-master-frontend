@@ -1,8 +1,8 @@
 export type Tone = 'positive' | 'neutral' | 'warning' | 'danger'
 
 export const TONE_STYLES: Record<Tone, { text: string; dot: string; badge: string }> = {
-  positive: { text: 'text-slate-500', dot: 'bg-emerald-500', badge: 'bg-emerald-50 text-emerald-700' },
-  neutral: { text: 'text-slate-500', dot: 'bg-slate-400', badge: 'bg-slate-100 text-slate-600' },
-  warning: { text: 'text-amber-700', dot: 'bg-amber-500', badge: 'bg-amber-50 text-amber-700' },
-  danger: { text: 'text-rose-600', dot: 'bg-rose-500', badge: 'bg-rose-50 text-rose-700' },
+  positive: { text: 'text-muted', dot: 'bg-success', badge: 'bg-success/10 text-success' },
+  neutral: { text: 'text-muted', dot: 'bg-muted', badge: 'bg-fg/[0.06] text-muted' },
+  warning: { text: 'text-warning', dot: 'bg-warning', badge: 'bg-warning/10 text-warning' },
+  danger: { text: 'text-danger', dot: 'bg-danger', badge: 'bg-danger/10 text-danger' },
 }

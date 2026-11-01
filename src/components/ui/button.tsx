@@ -4,18 +4,20 @@ import type { ButtonHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-teal-500/60 focus-visible:ring-offset-2 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0',
+  'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
-        default: 'bg-slate-900 text-white shadow-xs hover:bg-slate-800',
-        accent:
-          'bg-teal-600 text-white shadow-sm shadow-teal-600/20 hover:bg-teal-500 hover:shadow-md hover:shadow-teal-600/25',
+        default:
+          'bg-accent text-accent-fg shadow-sm shadow-accent/20 hover:bg-accent-hover hover:shadow-md hover:shadow-accent/30',
+        gradient:
+          'bg-(image:--gradient-brand) text-white shadow-lg shadow-accent/25 hover:shadow-xl hover:shadow-accent/40 hover:brightness-110',
         outline:
-          'border border-slate-200 bg-white text-slate-700 shadow-2xs hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900',
-        ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
-        destructive: 'bg-rose-600 text-white shadow-xs hover:bg-rose-500',
-        subtle: 'bg-slate-100 text-slate-700 hover:bg-slate-200/80 hover:text-slate-900',
+          'border border-border bg-transparent text-fg hover:border-fg/20 hover:bg-surface-raised',
+        inverse: 'bg-fg text-background hover:bg-fg/90',
+        ghost: 'text-muted hover:bg-surface-raised hover:text-fg',
+        destructive: 'bg-danger text-white shadow-xs hover:brightness-110',
+        subtle: 'bg-surface-raised text-fg hover:bg-fg/10',
       },
       size: {
         default: 'h-10 px-4',

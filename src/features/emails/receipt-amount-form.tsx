@@ -86,7 +86,7 @@ export function ReceiptAmountForm({ subscriptionId, defaultCurrency, receipt, on
             Cancel
           </Button>
         </Dialog.Close>
-        <Button type="submit" variant="accent" disabled={confirmAmount.isPending}>
+        <Button type="submit" variant="gradient" disabled={confirmAmount.isPending}>
           {confirmAmount.isPending ? 'Saving…' : 'Record payment'}
         </Button>
       </div>

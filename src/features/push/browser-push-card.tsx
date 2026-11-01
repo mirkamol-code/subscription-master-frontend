@@ -35,7 +35,7 @@ export function BrowserPushCard() {
           </div>
         </div>
         {push.state.data === 'off' && (
-          <Button variant="accent" size="sm" onClick={push.turnOn} disabled={push.isChanging}>
+          <Button variant="gradient" size="sm" onClick={push.turnOn} disabled={push.isChanging}>
             {push.isChanging ? 'Turning on…' : 'Turn on'}
           </Button>
         )}

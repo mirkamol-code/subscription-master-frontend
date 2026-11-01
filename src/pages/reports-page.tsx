@@ -84,7 +84,7 @@ export function ReportsPage() {
                   <span className={cn('grid size-12 place-items-center rounded-2xl', option.iconClass)}>
                     <Icon className="size-6" />
                   </span>
-                  <span className="grid size-9 place-items-center rounded-full bg-slate-100 text-slate-500 transition-colors group-hover:bg-slate-900 group-hover:text-white">
+                  <span className="grid size-9 place-items-center rounded-full bg-fg/[0.06] text-muted transition-colors group-hover:bg-fg group-hover:text-background">
                     {isBusy ? <Loader2 className="size-4 animate-spin" /> : <Download className="size-4" />}
                   </span>
                 </span>

@@ -3,12 +3,12 @@ import { getStatusLabel } from '@/lib/labels'
 import { cn } from '@/lib/utils'
 import type { SubscriptionStatus } from '@/types/api'
 
-const neutralStyles = { badge: 'bg-slate-100 text-slate-500', dot: 'bg-slate-400' }
+const neutralStyles = { badge: 'bg-fg/[0.06] text-muted', dot: 'bg-muted' }
 
 const statusStyles: Record<SubscriptionStatus, { badge: string; dot: string }> = {
-  ACTIVE: { badge: 'bg-emerald-50 text-emerald-700', dot: 'bg-emerald-500' },
+  ACTIVE: { badge: 'bg-success/10 text-success', dot: 'bg-success' },
   CANCELLED: neutralStyles,
-  BILLING_REQUIRED: { badge: 'bg-rose-50 text-rose-700', dot: 'bg-rose-500' },
+  BILLING_REQUIRED: { badge: 'bg-danger/10 text-danger', dot: 'bg-danger' },
 }
 
 export function StatusBadge({
