@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { z } from 'zod'
 
 const accountOptionSchema = z.object({
@@ -22,6 +23,15 @@ export type AwaitingAccountEmail = z.infer<typeof awaitingAccountEmailSchema>
 
 export function parseAwaitingAccount(data: unknown): AwaitingAccountEmail[] {
   return z.array(awaitingAccountEmailSchema).parse(data)
+}
+
+export async function fetchAwaitingAccount(get: () => Promise<unknown>): Promise<AwaitingAccountEmail[]> {
+  try {
+    return parseAwaitingAccount(await get())
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) return []
+    throw error
+  }
 }
 
 export function labelAccountOption(option: AccountOption): string {

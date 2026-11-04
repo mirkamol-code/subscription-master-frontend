@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { labelAccountOption, parseAwaitingAccount } from '@/features/emails/awaiting-account'
+import { fetchAwaitingAccount, labelAccountOption, parseAwaitingAccount } from '@/features/emails/awaiting-account'
 
 const response = [
   {
@@ -54,5 +54,30 @@ describe('labelAccountOption', () => {
   it('says when an account has no customer ID', () => {
     // when / then
     expect(labelAccountOption({ subscriptionId: 43, name: 'Hetzner', customerReference: null })).toBe('Hetzner · no customer ID')
+  })
+})
+
+describe('fetchAwaitingAccount', () => {
+  const httpError = (status: number) => ({ isAxiosError: true, response: { status } })
+
+  it('treats a backend without the endpoint as nothing waiting', async () => {
+    // when
+    const emails = await fetchAwaitingAccount(() => Promise.reject(httpError(404)))
+
+    // then
+    expect(emails).toEqual([])
+  })
+
+  it('still reports other failures', async () => {
+    // when / then
+    await expect(fetchAwaitingAccount(() => Promise.reject(httpError(500)))).rejects.toMatchObject({ response: { status: 500 } })
+  })
+
+  it('parses the emails when the endpoint answers', async () => {
+    // when
+    const emails = await fetchAwaitingAccount(() => Promise.resolve(response))
+
+    // then
+    expect(emails.map((email) => email.emailId)).toEqual([31])
   })
 })
