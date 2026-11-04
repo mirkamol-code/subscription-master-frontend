@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { buildBrandLogos, getBrandLogo } from '@/lib/brand-logos'
 import type { BrandEntry } from '@/lib/brand-registry'
 
-function entry(changes: Partial<BrandEntry>): BrandEntry {
+function buildEntry(changes: Partial<BrandEntry>): BrandEntry {
   return {
     key: 'netflix',
     title: 'Netflix',
@@ -13,6 +13,7 @@ function entry(changes: Partial<BrandEntry>): BrandEntry {
     sha256: 'abc',
     tint: '#E50914',
     guidelines: '',
+    notes: '',
     ...changes,
   }
 }
@@ -22,7 +23,7 @@ const URLS = { 'netflix.svg': '/assets/netflix.svg', 'acme-notes.png': '/assets/
 describe('brand logos', () => {
   it('shows an approved logo with its tint', () => {
     // when
-    const logos = buildBrandLogos([entry({})], URLS)
+    const logos = buildBrandLogos([buildEntry({})], URLS)
 
     // then
     expect(logos.get('netflix')).toEqual({ src: '/assets/netflix.svg', title: 'Netflix', tint: '#E50914' })
@@ -31,7 +32,7 @@ describe('brand logos', () => {
   it('shows a full-colour logo when no tint is set, and the theme colour for "theme"', () => {
     // when
     const logos = buildBrandLogos(
-      [entry({ key: 'acme-notes', title: 'Acme Notes', file: 'acme-notes.png', tint: '' }), entry({ tint: 'theme' })],
+      [buildEntry({ key: 'acme-notes', title: 'Acme Notes', file: 'acme-notes.png', tint: '' }), buildEntry({ tint: 'theme' })],
       URLS,
     )
 
@@ -43,7 +44,7 @@ describe('brand logos', () => {
   it('hides pending or rejected logos and rows without a file', () => {
     // when
     const logos = buildBrandLogos(
-      [entry({ status: 'pending' }), entry({ key: 'spotify', file: 'spotify.svg' }), entry({ key: 'hetzner', status: 'rejected' })],
+      [buildEntry({ status: 'pending' }), buildEntry({ key: 'spotify', file: 'spotify.svg' }), buildEntry({ key: 'hetzner', status: 'rejected' })],
       URLS,
     )
 
@@ -56,5 +57,13 @@ describe('brand logos', () => {
     expect(getBrandLogo('netflix-mail-example')).toBeNull()
     expect(getBrandLogo('Netflix')).toBeNull()
     expect(getBrandLogo(null)).toBeNull()
+  })
+
+  it('shows no logo for a merchant listed twice', () => {
+    // when
+    const logos = buildBrandLogos([buildEntry({}), buildEntry({ status: 'rejected' })], URLS)
+
+    // then
+    expect(logos.has('netflix')).toBe(false)
   })
 })

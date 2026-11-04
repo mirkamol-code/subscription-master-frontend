@@ -31,7 +31,8 @@ You don't need to know the frontend code.
    `application.yml` (for example `netflix`, `youtube-premium`), or for unknown merchants the key shown by the API or the
    `subscriptions.merchant_key` column (for example `acme-notes`). It must match exactly.
 2. **Add or edit the row** in the Registry table below: key, title, status `approved` (after checking the rules above),
-   the source URL, and optionally a tint. Leave File, Added and SHA-256 as `—`; the command fills them in.
+   the source URL, optionally a tint, and a short note (for example who checked the guidelines). Never put a `|` in a
+   cell. Leave File, Added and SHA-256 as `—`; the command fills them in.
 3. **Run one command** in the frontend folder:
    - from the URL in the row: `npm run brand:add -- <merchant-key>`
    - from another URL: `npm run brand:add -- <merchant-key> https://example.com/logo.svg`
@@ -51,14 +52,14 @@ black logos in dark mode) only for one-colour icons.
 
 ## Registry
 
-| Key | Title | File | Status | Source | Added | SHA-256 | Tint | Guidelines |
-|---|---|---|---|---|---|---|---|---|
-| netflix | Netflix | netflix.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/netflix.svg | 2026-11-04 | 67dbc495988bd5667a09ed4f56e14db4070a44c7a74e297b146c229f70fd6f6e | #E50914 | https://brand.netflix.com/en/assets/logos |
-| spotify | Spotify | spotify.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/spotify.svg | 2026-11-04 | b9ec9bec7769c35643981586d6ea0d675aaf3871b32f8a291bcac7a87fff0bc1 | #1ED760 | https://developer.spotify.com/documentation/general/design-and-branding/#using-our-logo |
-| youtube-premium | YouTube | youtube.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/youtube.svg | 2026-11-04 | 5038808acbbc4e6edda16cbeb1cc6dec80e4e4ee4e227e039c41229fa222aa8c | #FF0000 | https://www.youtube.com/howyoutubeworks/resources/brand-resources/#logos-icons-and-colors |
-| anthropic | Claude | claude.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/claude.svg | 2026-11-04 | 2d6fda79eb18ddccca35b799eeb3cece0dfabc22520ce3b10abd25668df9fa93 | #D97757 | — |
-| notion | Notion | notion.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/notion.svg | 2026-11-04 | b17d2a2b592a06252efef522d5205f0c7a958f748d40df1011ed081417e42f85 | theme | — |
-| github | GitHub | github.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/github.svg | 2026-11-04 | 3bf8cceead820aec50d4ee825a3fd02c5a1cd6665cc9cf4cbf3d9c8861a204bb | theme | https://github.com/logos |
-| dropbox | Dropbox | dropbox.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/dropbox.svg | 2026-11-04 | 1c9ea4ac8e318f3f6a598568df1a38ece03b7bc52a3a72d48c9e760340d7aeec | #0061FF | — |
-| hetzner | Hetzner | hetzner.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/hetzner.svg | 2026-11-04 | df276671b4076812a5a4b46f4113b0c38f56109f6bd368d1a6f09915b67961b4 | #D50C2D | — |
-| apple-music | Apple Music | — | rejected | — | — | — | — | Apple's guidelines don't allow third-party use of Apple logos |
+| Key | Title | File | Status | Source | Added | SHA-256 | Tint | Guidelines | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| netflix | Netflix | netflix.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/netflix.svg | 2026-11-04 | 67dbc495988bd5667a09ed4f56e14db4070a44c7a74e297b146c229f70fd6f6e | #E50914 | https://brand.netflix.com/en/assets/logos | — |
+| spotify | Spotify | spotify.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/spotify.svg | 2026-11-04 | b9ec9bec7769c35643981586d6ea0d675aaf3871b32f8a291bcac7a87fff0bc1 | #1ED760 | https://developer.spotify.com/documentation/general/design-and-branding/#using-our-logo | — |
+| youtube-premium | YouTube | youtube.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/youtube.svg | 2026-11-04 | 5038808acbbc4e6edda16cbeb1cc6dec80e4e4ee4e227e039c41229fa222aa8c | #FF0000 | https://www.youtube.com/howyoutubeworks/resources/brand-resources/#logos-icons-and-colors | — |
+| anthropic | Claude | claude.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/claude.svg | 2026-11-04 | 2d6fda79eb18ddccca35b799eeb3cece0dfabc22520ce3b10abd25668df9fa93 | #D97757 | — | — |
+| notion | Notion | notion.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/notion.svg | 2026-11-04 | b17d2a2b592a06252efef522d5205f0c7a958f748d40df1011ed081417e42f85 | theme | — | — |
+| github | GitHub | github.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/github.svg | 2026-11-04 | 3bf8cceead820aec50d4ee825a3fd02c5a1cd6665cc9cf4cbf3d9c8861a204bb | theme | https://github.com/logos | — |
+| dropbox | Dropbox | dropbox.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/dropbox.svg | 2026-11-04 | 1c9ea4ac8e318f3f6a598568df1a38ece03b7bc52a3a72d48c9e760340d7aeec | #0061FF | — | — |
+| hetzner | Hetzner | hetzner.svg | pending | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/hetzner.svg | 2026-11-04 | df276671b4076812a5a4b46f4113b0c38f56109f6bd368d1a6f09915b67961b4 | #D50C2D | — | — |
+| apple-music | Apple Music | — | rejected | — | — | — | — | — | Apple's guidelines don't allow third-party use of Apple logos |

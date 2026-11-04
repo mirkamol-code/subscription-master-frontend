@@ -6,7 +6,7 @@ const CLEAN_SVG = readFileSync(new URL('../assets/brands/netflix.svg', import.me
 const PNG_BYTES = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0])
 const WEBP_BYTES = new TextEncoder().encode('RIFF\0\0\0\0WEBPVP8 ')
 
-function svg(inner: string) {
+function buildSvg(inner: string) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${inner}</svg>`
 }
 
@@ -30,17 +30,35 @@ describe('brand file safety', () => {
     ['<path d="data:text/html;base64,AAAA"/>', 'data: content'],
   ])('rejects SVG with %s', (inner, problem) => {
     // then
-    expect(findSvgProblems(svg(inner))).toContain(problem)
+    expect(findSvgProblems(buildSvg(inner))).toContain(problem)
+  })
+
+  it.each([
+    ['<set attributeName="href" to="https://evil.example"/>', 'animation'],
+    ['<animate attributeName="href" values="https://evil.example"/>', 'animation'],
+    ['<a href="&#106;avascript:alert(1)">x</a>', 'javascript: links'],
+    ['<path d="M0 0" fill="data&#58;x"/>', 'data: content'],
+    ['<style>.a{fill:u\\72l(https://evil.example)}</style>', 'CSS escapes'],
+    ['<use href=https://evil.example/x.svg#a />', 'external links'],
+    ['<![CDATA[<script>alert(1)</script>]]>', 'scripts'],
+  ])('rejects SVG that tries to slip past the checks with %s', (inner, problem) => {
+    // then
+    expect(findSvgProblems(buildSvg(inner))).toContain(problem)
+  })
+
+  it('rejects an onload handler written without a space', () => {
+    // then
+    expect(findSvgProblems('<svg/onload="alert(1)" xmlns="http://www.w3.org/2000/svg"></svg>')).toContain('event handlers')
   })
 
   it('rejects SVG that declares entities or a doctype', () => {
     // then
-    expect(findSvgProblems(`<!DOCTYPE svg [<!ENTITY x "y">]>${svg('')}`)).toContain('doctype or entities')
+    expect(findSvgProblems(`<!DOCTYPE svg [<!ENTITY x "y">]>${buildSvg('')}`)).toContain('doctype or entities')
   })
 
   it('allows links to its own fragments', () => {
     // then
-    expect(findSvgProblems(svg('<defs><path id="a" d="M0 0"/></defs><use href="#a"/>'))).toEqual([])
+    expect(findSvgProblems(buildSvg('<defs><path id="a" d="M0 0"/></defs><use href="#a"/>'))).toEqual([])
   })
 
   it('recognises PNG, WebP and SVG by their bytes, not their name', () => {
@@ -53,7 +71,7 @@ describe('brand file safety', () => {
 
   it('fails with a clear message for unsafe, unknown or oversized files', () => {
     // then
-    expect(() => checkLogoFile(new TextEncoder().encode(svg('<script>x</script>')))).toThrow(
+    expect(() => checkLogoFile(new TextEncoder().encode(buildSvg('<script>x</script>')))).toThrow(
       'The SVG is not safe to use: scripts.',
     )
     expect(() => checkLogoFile(new TextEncoder().encode('GIF89a'))).toThrow('Only SVG, PNG or WebP logos are allowed.')

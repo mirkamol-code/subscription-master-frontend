@@ -2,13 +2,19 @@ import { createHash } from 'node:crypto'
 import { readdirSync, readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { findSvgProblems } from './brand-file-safety.ts'
-import { isValidMerchantKey, parseBrandRegistry } from './brand-registry.ts'
+import { findRegistryProblems, isValidMerchantKey, parseBrandRegistry } from './brand-registry.ts'
 
 const BRANDS_DIR = new URL('../assets/brands/', import.meta.url)
-const ENTRIES = parseBrandRegistry(readFileSync(new URL('BRANDS.md', BRANDS_DIR), 'utf8'))
+const REGISTRY = readFileSync(new URL('BRANDS.md', BRANDS_DIR), 'utf8')
+const ENTRIES = parseBrandRegistry(REGISTRY)
 const LOGO_FILES = readdirSync(BRANDS_DIR).filter((name) => /\.(svg|png|webp)$/.test(name))
 
 describe('bundled brand logos', () => {
+  it('keeps BRANDS.md well formed', () => {
+    // then
+    expect(findRegistryProblems(REGISTRY)).toEqual([])
+  })
+
   it('records every logo file in BRANDS.md with a matching checksum', () => {
     // then
     for (const name of LOGO_FILES) {

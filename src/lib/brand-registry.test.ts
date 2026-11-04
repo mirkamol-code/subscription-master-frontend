@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  findRegistryProblems,
   isValidMerchantKey,
   parseBrandRegistry,
   requireApprovedEntry,
@@ -13,10 +14,10 @@ Some rules.
 
 ## Registry
 
-| Key | Title | File | Status | Source | Added | SHA-256 | Tint | Guidelines |
-|---|---|---|---|---|---|---|---|---|
-| netflix | Netflix | netflix.svg | approved | https://cdn.example.com/netflix.svg | 2026-11-04 | abc123 | #E50914 | https://brand.example.com |
-| acme-notes | Acme Notes | — | pending | https://acme.example/logo.png | — | — | — | — |
+| Key | Title | File | Status | Source | Added | SHA-256 | Tint | Guidelines | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| netflix | Netflix | netflix.svg | approved | https://cdn.example.com/netflix.svg | 2026-11-04 | abc123 | #E50914 | https://brand.example.com | Checked guidelines |
+| acme-notes | Acme Notes | — | pending | https://acme.example/logo.png | — | — | — | — | — |
 `
 
 describe('brand registry', () => {
@@ -36,6 +37,7 @@ describe('brand registry', () => {
         sha256: 'abc123',
         tint: '#E50914',
         guidelines: 'https://brand.example.com',
+        notes: 'Checked guidelines',
       },
       {
         key: 'acme-notes',
@@ -47,6 +49,7 @@ describe('brand registry', () => {
         sha256: '',
         tint: '',
         guidelines: '',
+        notes: '',
       },
     ])
   })
@@ -93,5 +96,26 @@ describe('brand registry', () => {
     expect(requireHttpsUrl('https://brand.example.com/logo.svg').hostname).toBe('brand.example.com')
     expect(() => requireHttpsUrl('http://brand.example.com/logo.svg')).toThrow('Logo URLs must use https://')
     expect(() => requireHttpsUrl('javascript:alert(1)')).toThrow('Logo URLs must use https://')
+  })
+
+  it('reports a cell containing | and a merchant listed twice', () => {
+    // given
+    const broken = `${MARKDOWN}| netflix | Netflix | netflix.svg | rejected | — | — | — | — | — | — |
+| hetzner | Hetzner | — | pending | https://a.example/x|y.svg | — | — | — | — | — |
+`
+
+    // when
+    const problems = findRegistryProblems(broken)
+
+    // then
+    expect(problems).toEqual([
+      'netflix appears more than once in BRANDS.md.',
+      'The hetzner row has 11 cells instead of 10. A "|" is not allowed inside a cell.',
+    ])
+  })
+
+  it('finds no problems in a well-formed registry', () => {
+    // then
+    expect(findRegistryProblems(MARKDOWN)).toEqual([])
   })
 })

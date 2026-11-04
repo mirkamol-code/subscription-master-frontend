@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { readFile, unlink, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { checkLogoFile, MAX_LOGO_BYTES } from '../src/lib/brand-file-safety.ts'
+import { checkLogoFile } from '../src/lib/brand-file-safety.ts'
 import {
   isValidMerchantKey,
   parseBrandRegistry,
@@ -9,29 +9,36 @@ import {
   requireHttpsUrl,
   updateBrandEntry,
 } from '../src/lib/brand-registry.ts'
+import { downloadLogo } from './brand-download.ts'
 
 const BRANDS_DIR = new URL('../src/assets/brands/', import.meta.url)
 const REGISTRY = new URL('BRANDS.md', BRANDS_DIR)
-const ALLOWED_CONTENT_TYPES = ['image/svg+xml', 'image/png', 'image/webp']
+const LOCAL_SOURCE_PREFIX = 'local file: '
+const LOGO_FILE_NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*\.(?:svg|png|webp)$/
 const USAGE = 'Usage: npm run brand:add -- <merchant-key> [https-url | local-file]'
 
-async function download(url: URL): Promise<Uint8Array> {
-  const response = await fetch(url, { redirect: 'follow' })
-  if (!response.ok) throw new Error(`Download failed: ${response.status} ${response.statusText}`)
-  if (new URL(response.url).protocol !== 'https:') throw new Error('Logo URLs must use https://, including redirects.')
-  const contentType = (response.headers.get('content-type') ?? '').split(';')[0].trim().toLowerCase()
-  if (!ALLOWED_CONTENT_TYPES.includes(contentType))
-    throw new Error(`The URL returned "${contentType || 'no content type'}"; only SVG, PNG or WebP logos are allowed.`)
-  if (Number(response.headers.get('content-length') ?? 0) > MAX_LOGO_BYTES) throw new Error('The logo is larger than 256 KB.')
-  return new Uint8Array(await response.arrayBuffer())
+function formatIsoDate(date: Date): string {
+  const pad = (value: number) => String(value).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
-async function readSource(source: string): Promise<{ bytes: Uint8Array; recordedSource: string }> {
+async function readSource(key: string, source: string): Promise<{ bytes: Uint8Array; recordedSource: string }> {
+  if (source.startsWith(LOCAL_SOURCE_PREFIX))
+    throw new Error(`${key}'s logo came from a local file. Pass the file again: npm run brand:add -- ${key} ./path/to/logo.png`)
   if (/^[a-z][a-z0-9+.-]*:/i.test(source)) {
     const url = requireHttpsUrl(source)
-    return { bytes: await download(url), recordedSource: url.href }
+    return { bytes: await downloadLogo(url), recordedSource: url.href }
   }
-  return { bytes: new Uint8Array(await readFile(source)), recordedSource: `local file: ${path.basename(source)}` }
+  return { bytes: new Uint8Array(await readFile(source)), recordedSource: LOCAL_SOURCE_PREFIX + path.basename(source) }
+}
+
+async function removePreviousFile(previousFile: string, newFile: string) {
+  if (!previousFile || previousFile === newFile || !LOGO_FILE_NAME.test(previousFile)) return
+  try {
+    await unlink(new URL(previousFile, BRANDS_DIR))
+  } catch (error) {
+    if ((error as { code?: string }).code !== 'ENOENT') throw error
+  }
 }
 
 async function addBrandLogo(key: string | undefined, sourceArgument: string | undefined) {
@@ -41,14 +48,14 @@ async function addBrandLogo(key: string | undefined, sourceArgument: string | un
   const entry = requireApprovedEntry(parseBrandRegistry(markdown), key)
   const source = sourceArgument ?? entry.source
   if (!source) throw new Error(`No source for ${key}. Put a URL in its BRANDS.md row or pass one. ${USAGE}`)
-  const { bytes, recordedSource } = await readSource(source)
+  const { bytes, recordedSource } = await readSource(key, source)
   const { type } = checkLogoFile(bytes)
   const fileName = `${key}.${type}`
-  await writeFile(new URL(fileName, BRANDS_DIR), bytes)
-  if (entry.file && entry.file !== fileName) await unlink(new URL(entry.file, BRANDS_DIR)).catch(() => undefined)
   const sha256 = createHash('sha256').update(bytes).digest('hex')
-  const added = new Date().toLocaleDateString('en-CA')
-  await writeFile(REGISTRY, updateBrandEntry(markdown, key, { file: fileName, source: recordedSource, added, sha256 }))
+  const updatedRegistry = updateBrandEntry(markdown, key, { file: fileName, source: recordedSource, added: formatIsoDate(new Date()), sha256 })
+  await writeFile(new URL(fileName, BRANDS_DIR), bytes)
+  await removePreviousFile(entry.file, fileName)
+  await writeFile(REGISTRY, updatedRegistry)
   console.log(`Saved src/assets/brands/${fileName} for ${key} (SHA-256 ${sha256}). Commit it with BRANDS.md.`)
 }
 
