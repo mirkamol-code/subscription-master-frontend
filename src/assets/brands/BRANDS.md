@@ -62,4 +62,7 @@ black logos in dark mode) only for one-colour icons.
 | github | GitHub | github.svg | approved | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/github.svg | 2026-11-04 | 3bf8cceead820aec50d4ee825a3fd02c5a1cd6665cc9cf4cbf3d9c8861a204bb | theme | https://github.com/logos | — |
 | dropbox | Dropbox | dropbox.svg | approved | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/dropbox.svg | 2026-11-04 | 1c9ea4ac8e318f3f6a598568df1a38ece03b7bc52a3a72d48c9e760340d7aeec | #0061FF | — | — |
 | hetzner | Hetzner | hetzner.svg | approved | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/hetzner.svg | 2026-11-04 | df276671b4076812a5a4b46f4113b0c38f56109f6bd368d1a6f09915b67961b4 | #D50C2D | — | — |
-| apple-music | Apple Music | — | approved | — | — | — | — | — | Apple's guidelines don't allow third-party use of Apple logos |
+| apple-music | Apple Music | — | rejected | — | — | — | — | — | Apple's guidelines don't allow third-party use of Apple logos |
+| skool | Skool | skool.png | approved | https://assets.skool.com/skool/8d5e2d4df1b645148f07ae0d9df14c51.png | 2026-11-05 | e4dfc339801aa21355b48ea3210306fedf368428beafe394aeb4007a4b40091b | — | — | Approved by owner, 2026-11-05; official skool.com app icon |
+| namecheap | Namecheap | namecheap.svg | approved | https://cdn.jsdelivr.net/npm/simple-icons@16.35.0/icons/namecheap.svg | 2026-11-05 | 627da072fe9ba357e5fd89eb829cb60448ba476ba3ad320d123495fc5ca9a5dc | #DE3723 | — | Approved by owner, 2026-11-05; Simple Icons (CC0) |
+| hackerai | HackerAI | hackerai.png | approved | https://hackerai.co/icon-512x512.png | 2026-11-05 | 77c277c68ba110a037b33f53ebbc098a3fa455019f96c47e1616e9645cee5e56 | — | — | Approved by owner, 2026-11-05; official hackerai.co icon |
