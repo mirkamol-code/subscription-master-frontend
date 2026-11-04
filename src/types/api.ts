@@ -46,7 +46,6 @@ export type ReviewReason = 'AMOUNT_UNREADABLE' | 'SIMILAR_INVOICES' | 'SIMILAR_I
 
 export interface Subscription extends Omit<SubscriptionRequest, 'price' | 'currency' | 'frequency'> {
   id: number
-  /** Null only for a free trial whose price after the trial is unknown. */
   price: number | null
   currency: Currency | null
   frequency: Frequency | null
@@ -64,7 +63,7 @@ export interface Subscription extends Omit<SubscriptionRequest, 'price' | 'curre
   planName: string | null
   billingPlatform: BillingPlatform | null
   paymentMethod: PaymentMethod | null
-  latestPriceChange?: PriceChange | null
+  latestPriceChange: PriceChange | null
 }
 
 export interface PriceChange {

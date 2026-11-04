@@ -4,7 +4,7 @@ import type { Currency, Frequency, Subscription } from '@/types/api'
 
 type PricedFields = Pick<Subscription, 'price' | 'currency' | 'frequency'>
 
-export type KnownPrice<T extends PricedFields> = T & { price: number; currency: Currency; frequency: Frequency }
+type KnownPrice<T extends PricedFields> = T & { price: number; currency: Currency; frequency: Frequency }
 
 export function hasKnownPrice<T extends PricedFields>(sub: T): sub is KnownPrice<T> {
   return sub.price !== null && sub.currency !== null && sub.frequency !== null

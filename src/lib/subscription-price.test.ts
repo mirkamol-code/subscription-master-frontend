@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatSubscriptionPrice, hasKnownPrice } from '@/features/subscriptions/subscription-price'
+import { formatSubscriptionPrice, hasKnownPrice } from '@/lib/subscription-price'
 
 describe('subscription price', () => {
   it('formats a known price with its cycle', () => {

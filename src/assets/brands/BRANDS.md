@@ -12,12 +12,6 @@ endorsement.
 | netflix | netflix.svg | https://brand.netflix.com/en/assets/logos |
 | spotify | spotify.svg | https://developer.spotify.com/documentation/general/design-and-branding/#using-our-logo |
 | youtube-premium | youtube.svg | https://www.youtube.com/howyoutubeworks/resources/brand-resources/#logos-icons-and-colors |
-| icloud | icloud.svg | none listed by Simple Icons |
-| apple-music | applemusic.svg | none listed by Simple Icons |
-| apple-tv | appletv.svg | none listed by Simple Icons |
-| apple-one | apple.svg | none listed by Simple Icons |
-| apple-arcade | applearcade.svg | none listed by Simple Icons |
-| apple-news | applenews.svg | none listed by Simple Icons |
 | anthropic | claude.svg | none listed by Simple Icons |
 | notion | notion.svg | none listed by Simple Icons |
 | github | github.svg | https://github.com/logos |
@@ -26,6 +20,12 @@ endorsement.
 
 These merchants have no Simple Icons logo and show their category icon instead: google-one, apple-fitness,
 amazon-prime, microsoft, adobe, openai, canva.
+
+Apple logos are left out on purpose. Apple's trademark guidelines don't allow third parties to use Apple logos to refer to
+Apple products, so icloud, apple-music, apple-tv, apple-one, apple-arcade and apple-news show their category icon.
+
+Brands marked "none listed by Simple Icons" have not had their own trademark guidelines reviewed. They need an owner's
+check before release; removing a row here switches that merchant back to its category icon.
 
 Adding a brand: use only a source with a clear licence, map it to the exact configured merchant key (never a similar
 name), and add a row here.

@@ -55,7 +55,7 @@ export function todayIsoDate(): string {
   return toIsoDate(new Date())
 }
 
-export function formatDate(value: string | undefined) {
+export function formatDate(value: string | null | undefined) {
   if (!value) return '—'
   const date = parseLocalDate(value)
   if (Number.isNaN(date.getTime())) return '—'

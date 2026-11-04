@@ -1,4 +1,3 @@
-import { formatSubscriptionPrice, hasKnownPrice } from '@/features/subscriptions/subscription-price'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -13,6 +12,7 @@ import { getCategoryMeta } from '@/lib/category-config'
 import { renewalDatesInMonth } from '@/lib/renewals'
 import { cn, formatMoney, parseLocalDate, toIsoDate, todayIsoDate } from '@/lib/utils'
 import type { Subscription } from '@/types/api'
+import { formatSubscriptionPrice, hasKnownPrice } from '@/lib/subscription-price'
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const MAX_CHIPS = 2

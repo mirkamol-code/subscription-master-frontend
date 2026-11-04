@@ -52,13 +52,13 @@ export interface AdminSubscription {
   id: number
   name: string
   merchant: string | null
-  price: number
-  currency: Currency
-  frequency: Frequency
+  price: number | null
+  currency: Currency | null
+  frequency: Frequency | null
   status: SubscriptionStatus
   category: Category
   startDate: string
-  nextPaymentDate: string
+  nextPaymentDate: string | null
   endsOn: string | null
   hidden: boolean
   deleted: boolean

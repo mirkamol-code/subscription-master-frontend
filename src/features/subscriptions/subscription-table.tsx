@@ -1,4 +1,3 @@
-import { formatSubscriptionPrice } from '@/features/subscriptions/subscription-price'
 import { Link, useNavigate } from 'react-router-dom'
 import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { NeedsReviewBadge } from '@/components/common/needs-review-badge'
@@ -10,6 +9,7 @@ import { getCategoryMeta } from '@/lib/category-config'
 import { FREQUENCY_LABEL } from '@/lib/labels'
 import { isRenewing } from '@/lib/renewals'
 import { formatDate } from '@/lib/utils'
+import { formatSubscriptionPrice } from '@/lib/subscription-price'
 
 export function SubscriptionTable({ items, ...actions }: SubscriptionListProps) {
   const navigate = useNavigate()
@@ -61,7 +61,7 @@ export function SubscriptionTable({ items, ...actions }: SubscriptionListProps) 
                 <td className="whitespace-nowrap px-4 py-3.5">
                   <div className="flex items-center gap-2">
                     {isRenewing(item) && (
-                      <span className="text-muted">{formatDate(item.nextPaymentDate ?? undefined)}</span>
+                      <span className="text-muted">{formatDate(item.nextPaymentDate)}</span>
                     )}
                     <SubscriptionRenewal item={item} />
                   </div>

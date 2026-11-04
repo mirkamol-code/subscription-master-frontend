@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getBrandLogo } from '@/features/subscriptions/brand-logos'
+import { getBrandLogo } from '@/lib/brand-logos'
 
 describe('getBrandLogo', () => {
   it('finds the reviewed logo for a known merchant key', () => {

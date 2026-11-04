@@ -1,5 +1,5 @@
 import { CategoryIcon } from '@/components/common/category-icon'
-import { getBrandLogo } from '@/features/subscriptions/brand-logos'
+import { getBrandLogo } from '@/lib/brand-logos'
 import { cn } from '@/lib/utils'
 import type { Category } from '@/types/api'
 
@@ -22,7 +22,6 @@ interface SubscriptionLogoProps {
   className?: string
 }
 
-/** The merchant's reviewed brand logo, or the category icon when there is none. */
 export function SubscriptionLogo({ merchantKey, category, size = 'md', className }: SubscriptionLogoProps) {
   const logo = getBrandLogo(merchantKey)
   if (!logo) return <CategoryIcon category={category} size={size} className={className} />

@@ -10,5 +10,5 @@ export function describePriceChange(change: PriceChange | null | undefined): str
     return `Price ${verb} from ${formatMoney(change.oldAmount, change.currency)} to ${formatMoney(change.newAmount, change.currency)}${when}.`
   }
   if (change.effectiveOn) return `A price change was announced, starting${when}. Check the email for details.`
-  return 'A price change was announced. Check the email for details.'
+  return null
 }

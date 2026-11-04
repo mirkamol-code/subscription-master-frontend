@@ -1,4 +1,3 @@
-import { formatSubscriptionPrice } from '@/features/subscriptions/subscription-price'
 import { Link } from 'react-router-dom'
 import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { ErrorState } from '@/components/common/error-state'
@@ -7,6 +6,7 @@ import { ReviewActions } from '@/features/subscriptions/review-actions'
 import { getReviewPrompt } from '@/features/subscriptions/review-prompt'
 import { useSubscriptionActions } from '@/features/subscriptions/use-subscription-actions'
 import { useAllSubscriptions } from '@/hooks/use-subscriptions'
+import { formatSubscriptionPrice } from '@/lib/subscription-price'
 
 export function NeedsReviewCard() {
   const subscriptions = useAllSubscriptions()

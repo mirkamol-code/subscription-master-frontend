@@ -30,12 +30,12 @@ describe('describePriceChange', () => {
     expect(note).toBe('Price changed from $19.99 to $22.99 on Oct 30, 2026.')
   })
 
-  it('does not invent details the email left out', () => {
+  it('shows nothing when the email gave no price or date', () => {
     // when
     const note = describePriceChange({ oldAmount: null, newAmount: null, currency: null, effectiveOn: null, source: 'NOTICE' })
 
     // then
-    expect(note).toBe('A price change was announced. Check the email for details.')
+    expect(note).toBeNull()
   })
 
   it('shows nothing when there is no price change', () => {

@@ -18,7 +18,7 @@ import { findReceiptAwaitingAmount } from '@/features/emails/receipt-awaiting-am
 import { useBillingEmails } from '@/features/emails/use-billing-emails'
 import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
 import { describeBilling } from '@/features/subscriptions/billing-description'
-import { formatSubscriptionPrice, hasKnownPrice } from '@/features/subscriptions/subscription-price'
+import { formatSubscriptionPrice, hasKnownPrice } from '@/lib/subscription-price'
 import { describePriceChange } from '@/features/subscriptions/price-change-note'
 import { ReviewActions } from '@/features/subscriptions/review-actions'
 import { getReviewPrompt } from '@/features/subscriptions/review-prompt'
