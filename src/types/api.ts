@@ -42,7 +42,7 @@ export interface PaymentMethod {
   cardLast4: string | null
 }
 
-export type ReviewReason = 'AMOUNT_UNREADABLE' | 'SIMILAR_INVOICES' | 'SIMILAR_INVOICES_REPEATED'
+export type ReviewReason = 'AMOUNT_UNREADABLE' | 'SIMILAR_INVOICES' | 'SIMILAR_INVOICES_REPEATED' | 'UNCONFIRMED_TRIAL'
 
 export interface Subscription extends Omit<SubscriptionRequest, 'price' | 'currency' | 'frequency'> {
   id: number

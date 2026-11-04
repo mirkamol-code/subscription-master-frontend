@@ -56,4 +56,18 @@ describe('getReviewPrompt', () => {
       action: 'CONFIRM_RECURRING',
     })
   })
+
+  it('asks to confirm or hide a free trial from a sender we do not know', () => {
+    // when
+    const prompt = getReviewPrompt({
+      reviewReason: 'UNCONFIRMED_TRIAL',
+      reviewNote: "Trial from a sender we don't know. Confirm it or hide it.",
+    })
+
+    // then
+    expect(prompt).toEqual({
+      message: "Trial from a sender we don't know. Confirm it or hide it.",
+      action: 'CONFIRM_RECURRING',
+    })
+  })
 })

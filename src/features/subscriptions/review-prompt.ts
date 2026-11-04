@@ -20,6 +20,7 @@ function chooseReviewAction(reason: Subscription['reviewReason']): ReviewAction 
       return 'ENTER_AMOUNT'
     case 'SIMILAR_INVOICES':
     case 'SIMILAR_INVOICES_REPEATED':
+    case 'UNCONFIRMED_TRIAL':
       return 'CONFIRM_RECURRING'
     default:
       return 'CONFIRM_GUESS'
