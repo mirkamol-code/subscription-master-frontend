@@ -5,6 +5,7 @@ import {
   Briefcase,
   Clapperboard,
   Layers,
+  Server,
   Sparkles,
   Wallet,
 } from 'lucide-react'
@@ -53,6 +54,12 @@ export const CATEGORY_CONFIG: Record<Category, CategoryMeta> = {
     icon: Wallet,
     iconBg: 'bg-amber-500/12 text-amber-600',
     accentColor: '#d97706',
+  },
+  INFRASTRUCTURE: {
+    label: 'Infrastructure',
+    icon: Server,
+    iconBg: 'bg-cyan-500/12 text-cyan-600',
+    accentColor: '#0891b2',
   },
   OTHER: {
     label: 'Other',

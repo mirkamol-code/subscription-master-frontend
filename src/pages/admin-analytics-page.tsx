@@ -16,7 +16,7 @@ import { RankHighlights } from '@/features/admin/rank-highlights'
 import { analyticsRanges, type AnalyticsRange } from '@/features/admin/types'
 import { useSearchParamUpdater } from '@/features/admin/use-search-param-updater'
 import { useMerchantAnalytics } from '@/hooks/use-admin'
-import { CATEGORY_CONFIG } from '@/lib/category-config'
+import { getCategoryMeta } from '@/lib/category-config'
 import { cn } from '@/lib/utils'
 import { categories, type Category } from '@/types/api'
 import { NotFoundPage } from '@/pages/not-found-page'
@@ -42,7 +42,7 @@ export function AdminAnalyticsPage() {
 
   const merchants = merchantQuery.data ?? []
   const extremes = findRankExtremes(merchants)
-  const shareScope = category ? `active ${CATEGORY_CONFIG[category].label} subscriptions` : 'active subscriptions'
+  const shareScope = category ? `active ${getCategoryMeta(category).label} subscriptions` : 'active subscriptions'
 
   return (
     <div className="space-y-6">
@@ -65,7 +65,7 @@ export function AdminAnalyticsPage() {
           <option value="">All categories</option>
           {categories.map((value) => (
             <option key={value} value={value}>
-              {CATEGORY_CONFIG[value].label}
+              {getCategoryMeta(value).label}
             </option>
           ))}
         </Select>

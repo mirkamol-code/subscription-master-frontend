@@ -8,6 +8,7 @@ export const categories = [
   'EDUCATION',
   'HEALTH',
   'FINANCE',
+  'INFRASTRUCTURE',
   'OTHER',
 ] as const
 
