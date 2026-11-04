@@ -17,6 +17,7 @@ import { ReceiptAmountDialog } from '@/features/emails/receipt-amount-dialog'
 import { findReceiptAwaitingAmount } from '@/features/emails/receipt-awaiting-amount'
 import { useBillingEmails } from '@/features/emails/use-billing-emails'
 import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
+import { describeBilling } from '@/features/subscriptions/billing-description'
 import { ReviewActions } from '@/features/subscriptions/review-actions'
 import { getReviewPrompt } from '@/features/subscriptions/review-prompt'
 import { StatusHistoryCard } from '@/features/subscriptions/status-history-card'
@@ -76,6 +77,12 @@ export function SubscriptionDetailPage() {
   }
 
   const item = query.data
+  const billing = describeBilling(item)
+  const billingDetails = [
+    billing.plan && `${billing.plan} plan`,
+    billing.billedThrough,
+    billing.paymentMethod && `Paid with ${billing.paymentMethod}`,
+  ].filter(Boolean)
 
   return (
     <div className="space-y-6">
@@ -95,6 +102,7 @@ export function SubscriptionDetailPage() {
               <p className="mt-1 text-sm text-muted">
                 {getCategoryMeta(item.category).label} · {FREQUENCY_LABEL[item.frequency]}
               </p>
+              {billingDetails.length > 0 && <p className="mt-1 text-sm text-muted">{billingDetails.join(' · ')}</p>}
             </div>
           </div>
 
