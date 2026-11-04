@@ -18,6 +18,7 @@ import { findReceiptAwaitingAmount } from '@/features/emails/receipt-awaiting-am
 import { useBillingEmails } from '@/features/emails/use-billing-emails'
 import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
 import { describeBilling } from '@/features/subscriptions/billing-description'
+import { describePriceChange } from '@/features/subscriptions/price-change-note'
 import { ReviewActions } from '@/features/subscriptions/review-actions'
 import { getReviewPrompt } from '@/features/subscriptions/review-prompt'
 import { StatusHistoryCard } from '@/features/subscriptions/status-history-card'
@@ -83,6 +84,7 @@ export function SubscriptionDetailPage() {
     billing.billedThrough,
     billing.paymentMethod && `Paid with ${billing.paymentMethod}`,
   ].filter(Boolean)
+  const priceChangeNote = describePriceChange(item.latestPriceChange)
 
   return (
     <div className="space-y-6">
@@ -103,6 +105,7 @@ export function SubscriptionDetailPage() {
                 {getCategoryMeta(item.category).label} · {FREQUENCY_LABEL[item.frequency]}
               </p>
               {billingDetails.length > 0 && <p className="mt-1 text-sm text-muted">{billingDetails.join(' · ')}</p>}
+              {priceChangeNote && <p className="mt-1 text-sm text-warning">{priceChangeNote}</p>}
             </div>
           </div>
 

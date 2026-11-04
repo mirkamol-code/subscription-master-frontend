@@ -59,6 +59,15 @@ export interface Subscription extends SubscriptionRequest {
   planName: string | null
   billingPlatform: BillingPlatform | null
   paymentMethod: PaymentMethod | null
+  latestPriceChange?: PriceChange | null
+}
+
+export interface PriceChange {
+  oldAmount: number | null
+  newAmount: number | null
+  currency: Currency | null
+  effectiveOn: string | null
+  source: 'NOTICE' | 'INVOICE'
 }
 
 export type StatusChangeReason =
