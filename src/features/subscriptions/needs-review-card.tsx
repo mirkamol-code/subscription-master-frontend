@@ -47,7 +47,7 @@ export function NeedsReviewCard() {
                   >
                     {item.name}
                   </Link>
-                  {prompt.action === 'ENTER_AMOUNT' && (
+                  {prompt.action !== 'CONFIRM_GUESS' && (
                     <span className="block truncate text-xs text-warning">{prompt.message}</span>
                   )}
                 </span>
@@ -56,13 +56,13 @@ export function NeedsReviewCard() {
                   <span className="text-muted">{FREQUENCY_SUFFIX[item.frequency]}</span>
                 </span>
                 <ReviewActions
-                    item={item}
-                    onConfirm={actions.confirmReview}
-                    isConfirming={actions.isConfirmingReview}
-                    onConfirmRecurring={actions.confirmRecurring}
-                    isConfirmingRecurring={actions.isConfirmingRecurring}
-                    onHide={actions.toggleHidden}
-                  />
+                  item={item}
+                  onConfirm={actions.confirmReview}
+                  isConfirming={actions.isConfirmingReview}
+                  onConfirmRecurring={actions.confirmRecurring}
+                  isConfirmingRecurring={actions.isConfirmingRecurring}
+                  onHide={actions.toggleHidden}
+                />
               </li>
             )
           })}

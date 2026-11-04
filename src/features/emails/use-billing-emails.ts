@@ -9,6 +9,23 @@ export const emailKeys = {
   all: ['emails'] as const,
   forSubscription: (subscriptionId: number) => [...emailKeys.all, 'subscription', subscriptionId] as const,
   content: (emailId: number, showImages: boolean) => [...emailKeys.all, 'content', emailId, showImages] as const,
+  awaitingAccount: () => [...emailKeys.all, 'awaiting-account'] as const,
+}
+
+export function useAwaitingAccount() {
+  return useQuery({ queryKey: emailKeys.awaitingAccount(), queryFn: emailsApi.listAwaitingAccount })
+}
+
+export function useAssignAccount() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ emailId, subscriptionId }: { emailId: number; subscriptionId: number }) =>
+      emailsApi.assignAccount(emailId, subscriptionId),
+    onSuccess: (data) => {
+      refreshSubscriptionData(queryClient, data)
+      void queryClient.invalidateQueries({ queryKey: emailKeys.all })
+    },
+  })
 }
 
 export function useBillingEmails(subscriptionId: number) {

@@ -12,6 +12,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useCurrency } from '@/features/currency/currency-context'
 import { CurrencyRateCard } from '@/features/currency/currency-rate-card'
 import { GmailCard } from '@/features/gmail/gmail-card'
+import { AwaitingAccountCard } from '@/features/emails/awaiting-account-card'
 import { NeedsReviewCard } from '@/features/subscriptions/needs-review-card'
 import { useMonthlyDynamics, useSummary } from '@/hooks/use-statistics'
 import { useSubscriptions } from '@/hooks/use-subscriptions'
@@ -52,6 +53,7 @@ export function DashboardPage() {
 
       <GmailCard />
       <NeedsReviewCard />
+      <AwaitingAccountCard />
 
       <SpendHero
         summary={summary.data}
