@@ -28,4 +28,32 @@ describe('getReviewPrompt', () => {
     // then
     expect(prompt).toEqual({ message: 'Something else to check.', action: 'CONFIRM_GUESS' })
   })
+
+  it('asks to confirm or hide a subscription found from two similar invoices', () => {
+    // when
+    const prompt = getReviewPrompt({
+      reviewReason: 'SIMILAR_INVOICES',
+      reviewNote: 'Two similar invoices found. Confirm this is a subscription or hide it.',
+    })
+
+    // then
+    expect(prompt).toEqual({
+      message: 'Two similar invoices found. Confirm this is a subscription or hide it.',
+      action: 'CONFIRM_RECURRING',
+    })
+  })
+
+  it('asks to confirm or hide a subscription found from three or more similar invoices', () => {
+    // when
+    const prompt = getReviewPrompt({
+      reviewReason: 'SIMILAR_INVOICES_REPEATED',
+      reviewNote: 'Three or more similar invoices found. Confirm this is a subscription or hide it.',
+    })
+
+    // then
+    expect(prompt).toEqual({
+      message: 'Three or more similar invoices found. Confirm this is a subscription or hide it.',
+      action: 'CONFIRM_RECURRING',
+    })
+  })
 })

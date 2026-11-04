@@ -159,6 +159,9 @@ export function SubscriptionDetailPage() {
             isConfirming={actions.isConfirmingReview}
             onEnterAmount={() => setReceiptToPrice(receiptAwaitingAmount ?? null)}
             canEnterAmount={!!receiptAwaitingAmount}
+            onConfirmRecurring={actions.confirmRecurring}
+            isConfirmingRecurring={actions.isConfirmingRecurring}
+            onHide={actions.toggleHidden}
           />
         </div>
       )}

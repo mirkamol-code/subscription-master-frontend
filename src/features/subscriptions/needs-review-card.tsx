@@ -55,7 +55,14 @@ export function NeedsReviewCard() {
                   {formatMoney(item.price, item.currency)}
                   <span className="text-muted">{FREQUENCY_SUFFIX[item.frequency]}</span>
                 </span>
-                <ReviewActions item={item} onConfirm={actions.confirmReview} isConfirming={actions.isConfirmingReview} />
+                <ReviewActions
+                    item={item}
+                    onConfirm={actions.confirmReview}
+                    isConfirming={actions.isConfirmingReview}
+                    onConfirmRecurring={actions.confirmRecurring}
+                    isConfirmingRecurring={actions.isConfirmingRecurring}
+                    onHide={actions.toggleHidden}
+                  />
               </li>
             )
           })}

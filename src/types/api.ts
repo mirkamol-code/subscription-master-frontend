@@ -33,13 +33,15 @@ export interface ReceiptAmountRequest {
   currency: Currency
 }
 
+export type ReviewReason = 'AMOUNT_UNREADABLE' | 'SIMILAR_INVOICES' | 'SIMILAR_INVOICES_REPEATED'
+
 export interface Subscription extends SubscriptionRequest {
   id: number
   nextPaymentDate: string
   version: number
   merchantKey: string | null
   needsReview: boolean
-  reviewReason: 'AMOUNT_UNREADABLE' | null
+  reviewReason: ReviewReason | null
   reviewNote: string | null
   hidden: boolean
   lastPaymentDate: string | null

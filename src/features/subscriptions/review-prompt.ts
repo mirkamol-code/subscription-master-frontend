@@ -1,6 +1,6 @@
 import type { Subscription } from '@/types/api'
 
-export type ReviewAction = 'ENTER_AMOUNT' | 'CONFIRM_GUESS'
+export type ReviewAction = 'ENTER_AMOUNT' | 'CONFIRM_GUESS' | 'CONFIRM_RECURRING'
 
 export interface ReviewPrompt {
   message: string
@@ -11,6 +11,17 @@ const GUESSED_DETAILS_MESSAGE = 'We guessed the amount, currency or billing cycl
 
 export function getReviewPrompt(subscription: Pick<Subscription, 'reviewReason' | 'reviewNote'>): ReviewPrompt {
   const message = subscription.reviewNote ?? GUESSED_DETAILS_MESSAGE
-  const action = subscription.reviewReason === 'AMOUNT_UNREADABLE' ? 'ENTER_AMOUNT' : 'CONFIRM_GUESS'
-  return { message, action }
+  return { message, action: chooseReviewAction(subscription.reviewReason) }
+}
+
+function chooseReviewAction(reason: Subscription['reviewReason']): ReviewAction {
+  switch (reason) {
+    case 'AMOUNT_UNREADABLE':
+      return 'ENTER_AMOUNT'
+    case 'SIMILAR_INVOICES':
+    case 'SIMILAR_INVOICES_REPEATED':
+      return 'CONFIRM_RECURRING'
+    default:
+      return 'CONFIRM_GUESS'
+  }
 }
