@@ -28,10 +28,11 @@ export function SubscriptionLogo({ merchantKey, category, size = 'md', className
   const mask = `url("${logo.src}") center / contain no-repeat`
   return (
     <div aria-hidden className={cn('grid shrink-0 place-items-center bg-fg/[0.06] text-fg', tileSizes[size], className)}>
-      <span
-        className={markSizes[size]}
-        style={{ backgroundColor: logo.color, mask, WebkitMask: mask }}
-      />
+      {logo.tint ? (
+        <span className={markSizes[size]} style={{ backgroundColor: logo.tint, mask, WebkitMask: mask }} />
+      ) : (
+        <img src={logo.src} alt="" className={cn('object-contain', markSizes[size])} />
+      )}
     </div>
   )
 }
