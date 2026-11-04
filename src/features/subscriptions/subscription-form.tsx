@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { ReactNode } from 'react'
-import { useForm, useWatch, type UseFormRegisterReturn } from 'react-hook-form'
+import { useForm, useWatch, type UseFormRegisterReturn, type DefaultValues } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { CategoryIcon } from '@/components/common/category-icon'
 import { StatusBadge } from '@/components/common/status-badge'
@@ -16,11 +16,12 @@ import {
   categories,
   currencies,
   frequencies,
+  type Subscription,
   type SubscriptionRequest,
 } from '@/types/api'
 
 interface SubscriptionFormProps {
-  initialValues: SubscriptionRequest
+  initialValues: SubscriptionRequest | Subscription
   /** May resolve to the server's per-field messages, which are shown under each field. */
   onSubmit: (values: SubscriptionValues) => Promise<Record<string, string> | void>
   pending: boolean
@@ -29,9 +30,9 @@ interface SubscriptionFormProps {
   serverError?: string
 }
 
-function toFormValues(initial: SubscriptionRequest): SubscriptionValues {
+function toFormValues(initial: SubscriptionRequest | Subscription): DefaultValues<SubscriptionValues> {
   const { name, price, currency, frequency, status, category, startDate } = initial
-  return { name, price, currency, frequency, status, category, startDate }
+  return { name, price: price ?? undefined, currency: currency ?? undefined, frequency: frequency ?? undefined, status, category, startDate }
 }
 
 export function SubscriptionForm({

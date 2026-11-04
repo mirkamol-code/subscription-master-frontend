@@ -1,3 +1,4 @@
+import { formatSubscriptionPrice } from '@/features/subscriptions/subscription-price'
 import { Link } from 'react-router-dom'
 import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { ErrorState } from '@/components/common/error-state'
@@ -6,8 +7,6 @@ import { ReviewActions } from '@/features/subscriptions/review-actions'
 import { getReviewPrompt } from '@/features/subscriptions/review-prompt'
 import { useSubscriptionActions } from '@/features/subscriptions/use-subscription-actions'
 import { useAllSubscriptions } from '@/hooks/use-subscriptions'
-import { FREQUENCY_SUFFIX } from '@/lib/labels'
-import { formatMoney } from '@/lib/utils'
 
 export function NeedsReviewCard() {
   const subscriptions = useAllSubscriptions()
@@ -52,8 +51,7 @@ export function NeedsReviewCard() {
                   )}
                 </span>
                 <span className="text-sm tabular-nums text-muted">
-                  {formatMoney(item.price, item.currency)}
-                  <span className="text-muted">{FREQUENCY_SUFFIX[item.frequency]}</span>
+                  {formatSubscriptionPrice(item)}
                 </span>
                 <ReviewActions
                   item={item}

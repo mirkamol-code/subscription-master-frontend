@@ -14,7 +14,7 @@ export const categories = [
 
 export type Currency = (typeof currencies)[number]
 export type Frequency = (typeof frequencies)[number]
-export type SubscriptionStatus = (typeof subscriptionStatuses)[number]
+export type SubscriptionStatus = (typeof subscriptionStatuses)[number] | 'TRIAL'
 export type Category = (typeof categories)[number]
 
 export interface SubscriptionRequest {
@@ -44,9 +44,14 @@ export interface PaymentMethod {
 
 export type ReviewReason = 'AMOUNT_UNREADABLE' | 'SIMILAR_INVOICES' | 'SIMILAR_INVOICES_REPEATED'
 
-export interface Subscription extends SubscriptionRequest {
+export interface Subscription extends Omit<SubscriptionRequest, 'price' | 'currency' | 'frequency'> {
   id: number
-  nextPaymentDate: string
+  /** Null only for a free trial whose price after the trial is unknown. */
+  price: number | null
+  currency: Currency | null
+  frequency: Frequency | null
+  nextPaymentDate: string | null
+  trialEndsOn: string | null
   version: number
   merchantKey: string | null
   needsReview: boolean
@@ -210,7 +215,7 @@ export interface BillingEmail {
 
 export interface AppNotification {
   id: number
-  type: 'PAYMENT_DUE' | 'BILLING_REQUIRED' | 'CANCELLED' | 'CANCELLATION_SCHEDULED' | 'REACTIVATED' | 'RETRACKED' | 'ADMIN_PAYMENT_DIGEST'
+  type: 'PAYMENT_DUE' | 'TRIAL_ENDING' | 'BILLING_REQUIRED' | 'CANCELLED' | 'CANCELLATION_SCHEDULED' | 'REACTIVATED' | 'RETRACKED' | 'ADMIN_PAYMENT_DIGEST'
   severity: 'INFO' | 'URGENT'
   title: string
   body: string

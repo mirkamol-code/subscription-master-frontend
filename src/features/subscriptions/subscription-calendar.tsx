@@ -1,3 +1,4 @@
+import { formatSubscriptionPrice, hasKnownPrice } from '@/features/subscriptions/subscription-price'
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -41,6 +42,7 @@ export function SubscriptionCalendar() {
   const charges = useMemo<Charge[]>(
     () =>
       (query.data ?? [])
+        .filter(hasKnownPrice)
         .flatMap((subscription) =>
           renewalDatesInMonth(subscription, cursor.year, cursor.month).map((date) => ({
             date,
@@ -151,7 +153,7 @@ export function SubscriptionCalendar() {
                       <Link
                         key={subscription.id}
                         to={`/subscriptions/${subscription.id}`}
-                        title={`${subscription.name} · ${formatMoney(subscription.price, subscription.currency)}`}
+                        title={`${subscription.name} · ${formatSubscriptionPrice(subscription)}`}
                         className="block truncate rounded-md px-1.5 py-0.5 text-[11px] font-medium transition-opacity hover:opacity-75"
                         style={{ backgroundColor: `${color}14`, color }}
                       >

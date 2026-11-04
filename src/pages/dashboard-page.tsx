@@ -1,3 +1,4 @@
+import { formatSubscriptionPrice } from '@/features/subscriptions/subscription-price'
 import { Link } from 'react-router-dom'
 import { ArrowRight, CalendarCheck, PieChart, TrendingUp } from 'lucide-react'
 import { SubscriptionLogo } from '@/components/common/subscription-logo'
@@ -224,7 +225,7 @@ function SpendHero({
           <HeroStat
             className="order-last col-span-2 sm:order-none sm:col-span-1"
             label="Next up"
-            value={nextPayment ? formatDate(nextPayment.nextPaymentDate).replace(/, \d{4}$/, '') : '—'}
+            value={nextPayment ? formatDate(nextPayment.nextPaymentDate ?? undefined).replace(/, \d{4}$/, '') : '—'}
             hint={nextPayment?.name}
           />
           <HeroStat
@@ -364,13 +365,13 @@ function UpcomingRow({ item }: { item: Subscription }) {
         <SubscriptionLogo merchantKey={item.merchantKey} category={item.category} />
         <div className="min-w-0 flex-1">
           <p className="truncate font-medium text-fg">{item.name}</p>
-          <p className="text-[13px] text-muted">{formatDate(item.nextPaymentDate)}</p>
+          <p className="text-[13px] text-muted">{formatDate(item.nextPaymentDate ?? undefined)}</p>
         </div>
         <div className="flex flex-col items-end gap-1">
           <span className="font-semibold tabular-nums text-fg">
-            {formatMoney(item.price, item.currency)}
+            {formatSubscriptionPrice(item)}
           </span>
-          <RenewalPill date={item.nextPaymentDate} />
+          {item.nextPaymentDate && <RenewalPill date={item.nextPaymentDate} />}
         </div>
       </Link>
     </li>

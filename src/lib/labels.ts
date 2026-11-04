@@ -1,6 +1,7 @@
 import type { Currency, Frequency, SubscriptionStatus } from '@/types/api'
 
 export const STATUS_LABEL: Record<SubscriptionStatus, string> = {
+  TRIAL: 'Free trial',
   ACTIVE: 'Active',
   CANCELLED: 'Cancelled',
   BILLING_REQUIRED: 'Billing required',

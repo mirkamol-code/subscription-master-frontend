@@ -3,7 +3,7 @@ import { parseLocalDate, toIsoDate } from '@/lib/utils'
 
 /** Only active subscriptions renew, and not when a cancellation ends access by the next payment. */
 export function isRenewing(sub: Pick<Subscription, 'status' | 'endsOn' | 'nextPaymentDate'>): boolean {
-  return sub.status === 'ACTIVE' && (!sub.endsOn || sub.endsOn > sub.nextPaymentDate)
+  return sub.status === 'ACTIVE' && (!sub.endsOn || !sub.nextPaymentDate || sub.endsOn > sub.nextPaymentDate)
 }
 
 function daysInMonth(year: number, month: number) {

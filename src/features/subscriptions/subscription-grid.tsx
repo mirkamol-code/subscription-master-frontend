@@ -1,3 +1,4 @@
+import { formatSubscriptionPrice } from '@/features/subscriptions/subscription-price'
 import { Link } from 'react-router-dom'
 import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { NeedsReviewBadge } from '@/components/common/needs-review-badge'
@@ -7,9 +8,8 @@ import {
 } from '@/features/subscriptions/subscription-actions-menu'
 import { SubscriptionRenewal } from '@/features/subscriptions/subscription-renewal'
 import { getCategoryMeta } from '@/lib/category-config'
-import { FREQUENCY_SUFFIX } from '@/lib/labels'
 import { isRenewing } from '@/lib/renewals'
-import { cn, formatDate, formatMoney } from '@/lib/utils'
+import { cn, formatDate } from '@/lib/utils'
 import type { Subscription } from '@/types/api'
 
 export interface SubscriptionListProps extends SubscriptionItemActions {
@@ -47,14 +47,11 @@ export function SubscriptionGrid({ items, ...actions }: SubscriptionListProps) {
           </div>
 
           <p className="mt-6 text-2xl font-semibold tracking-tight tabular-nums text-fg">
-            {formatMoney(item.price, item.currency)}
-            <span className="ml-1 text-sm font-normal text-muted">
-              {FREQUENCY_SUFFIX[item.frequency]}
-            </span>
+            {formatSubscriptionPrice(item)}
           </p>
 
           <div className="mt-4 flex items-center justify-between border-t border-border pt-4 text-[13px] text-muted">
-            <span>{isRenewing(item) ? formatDate(item.nextPaymentDate) : 'Not renewing'}</span>
+            <span>{isRenewing(item) ? formatDate(item.nextPaymentDate ?? undefined) : item.status === 'TRIAL' ? 'Free trial' : 'Not renewing'}</span>
             <SubscriptionRenewal item={item} />
           </div>
         </li>

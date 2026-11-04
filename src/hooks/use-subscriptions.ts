@@ -1,3 +1,4 @@
+import { hasKnownPrice } from '@/features/subscriptions/subscription-price'
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import axios from 'axios'
 import { subscriptionsApi } from '@/api/endpoints/subscriptions'
@@ -97,8 +98,11 @@ export function useChangeSubscriptionStatus() {
 export function useConfirmGuessedDetails() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, name, price, currency, frequency, status, category, startDate, version }: Subscription) =>
-      subscriptionsApi.update(id, { name, price, currency, frequency, status, category, startDate, version }),
+    mutationFn: (subscription: Subscription) => {
+      if (!hasKnownPrice(subscription)) throw new Error('Add the price before confirming this subscription.')
+      const { id, name, price, currency, frequency, status, category, startDate, version } = subscription
+      return subscriptionsApi.update(id, { name, price, currency, frequency, status, category, startDate, version })
+    },
     onSuccess: (data) => refreshSubscriptionData(queryClient, data),
     onError: (error) => {
       if (axios.isAxiosError(error) && error.response?.status === 409) refreshSubscriptionData(queryClient)
