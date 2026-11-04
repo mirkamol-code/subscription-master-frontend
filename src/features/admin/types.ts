@@ -41,6 +41,9 @@ export interface LoginEvent {
   occurredAt: string
   ip: string | null
   userAgent: string | null
+  device?: string | null
+  browser?: string | null
+  os?: string | null
 }
 
 export interface AdminSubscription {
