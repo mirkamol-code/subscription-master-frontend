@@ -84,6 +84,28 @@ export function resolveLoginClient(
   return { device, browser, os, summary }
 }
 
+export function formatLocation(city?: string | null, country?: string | null): string | null {
+  const cleanCity = city?.trim()
+  const cleanCountry = country?.trim()
+
+  const hasCity = !!cleanCity && cleanCity !== 'Unknown'
+  const hasCountry = !!cleanCountry && cleanCountry !== 'Unknown'
+
+  if (hasCity && hasCountry) {
+    if (cleanCity === 'Localhost' || cleanCity === 'Local Network') {
+      return cleanCity
+    }
+    return `${cleanCity}, ${cleanCountry}`
+  }
+  if (hasCity) {
+    return cleanCity
+  }
+  if (hasCountry) {
+    return cleanCountry
+  }
+  return null
+}
+
 export function getDeviceIcon(device: DeviceType): LucideIcon {
   switch (device) {
     case 'Mobile':

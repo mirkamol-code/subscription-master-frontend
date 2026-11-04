@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getDeviceIcon, resolveLoginClient } from '@/features/admin/login-client'
+import { formatLocation, getDeviceIcon, resolveLoginClient } from '@/features/admin/login-client'
 import { Globe, Laptop, Smartphone, Tablet } from 'lucide-react'
 
 describe('resolveLoginClient', () => {
@@ -78,6 +78,27 @@ describe('resolveLoginClient', () => {
     })
 
     expect(client.summary).toBe('Firefox')
+  })
+})
+
+describe('formatLocation', () => {
+  it('formats city and country', () => {
+    expect(formatLocation('Tashkent', 'Uzbekistan')).toBe('Tashkent, Uzbekistan')
+  })
+
+  it('formats Localhost and Local Network cleanly', () => {
+    expect(formatLocation('Localhost', 'Local')).toBe('Localhost')
+    expect(formatLocation('Local Network', 'Local')).toBe('Local Network')
+  })
+
+  it('handles single present field', () => {
+    expect(formatLocation('Tashkent', null)).toBe('Tashkent')
+    expect(formatLocation(null, 'Uzbekistan')).toBe('Uzbekistan')
+  })
+
+  it('returns null for unknown or null locations', () => {
+    expect(formatLocation(null, null)).toBeNull()
+    expect(formatLocation('Unknown', 'Unknown')).toBeNull()
   })
 })
 

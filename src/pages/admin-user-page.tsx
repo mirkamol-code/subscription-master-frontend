@@ -11,7 +11,7 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { isForbiddenOrMissing } from '@/features/admin/admin-access-error'
 import { formatDateTime } from '@/features/admin/format-date-time'
-import { getDeviceIcon, resolveLoginClient } from '@/features/admin/login-client'
+import { formatLocation, getDeviceIcon, resolveLoginClient } from '@/features/admin/login-client'
 import { Pager } from '@/features/admin/pager'
 import { RoleBadge } from '@/features/admin/role-badge'
 import { RoleControl } from '@/features/admin/role-control'
@@ -46,6 +46,7 @@ function LoginHistoryCard({ userId }: { userId: number }) {
             {query.data.content.map((login) => {
               const client = resolveLoginClient(login)
               const DeviceIcon = getDeviceIcon(client.device)
+              const location = formatLocation(login.city, login.country)
               return (
                 <li
                   key={login.id}
@@ -62,6 +63,12 @@ function LoginHistoryCard({ userId }: { userId: number }) {
                     )}
                   </div>
                   <div className="truncate text-[13px] text-muted">
+                    {location && (
+                      <>
+                        <span className="font-medium text-fg/80">{location}</span>
+                        <span className="mx-1.5">·</span>
+                      </>
+                    )}
                     <span>{login.ip ?? 'Unknown IP'}</span>
                     <span className="mx-1.5">·</span>
                     <span>{client.summary}</span>

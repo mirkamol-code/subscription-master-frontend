@@ -44,6 +44,8 @@ export interface LoginEvent {
   device?: string | null
   browser?: string | null
   os?: string | null
+  city?: string | null
+  country?: string | null
 }
 
 export interface AdminSubscription {
