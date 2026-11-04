@@ -11,6 +11,7 @@ import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { isForbiddenOrMissing } from '@/features/admin/admin-access-error'
 import { formatDateTime } from '@/features/admin/format-date-time'
+import { formatLocation, getDeviceIcon, resolveLoginClient } from '@/features/admin/login-client'
 import { Pager } from '@/features/admin/pager'
 import { RoleBadge } from '@/features/admin/role-badge'
 import { RoleControl } from '@/features/admin/role-control'
@@ -42,14 +43,39 @@ function LoginHistoryCard({ userId }: { userId: number }) {
       ) : (
         <div className="space-y-4 p-6 pt-4">
           <ul className="divide-y divide-border text-sm">
-            {query.data.content.map((login) => (
-              <li key={login.id} className="flex flex-col gap-0.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                <span className="font-medium text-fg">{formatDateTime(login.occurredAt)}</span>
-                <span className="truncate text-[13px] text-muted" title={login.userAgent ?? undefined}>
-                  {login.ip ?? 'Unknown IP'} · {login.userAgent ?? 'Unknown browser'}
-                </span>
-              </li>
-            ))}
+            {query.data.content.map((login) => {
+              const client = resolveLoginClient(login)
+              const DeviceIcon = getDeviceIcon(client.device)
+              const location = formatLocation(login.city, login.country)
+              return (
+                <li
+                  key={login.id}
+                  className="flex flex-col gap-1.5 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+                  title={login.userAgent ?? undefined}
+                >
+                  <div className="flex items-center gap-2">
+                    <DeviceIcon className="size-4 shrink-0 text-muted" aria-hidden="true" />
+                    <span className="font-medium text-fg">{formatDateTime(login.occurredAt)}</span>
+                    {client.device !== 'Unknown' && (
+                      <Badge className="bg-fg/[0.06] text-muted text-xs font-normal">
+                        {client.device}
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="truncate text-[13px] text-muted">
+                    {location && (
+                      <>
+                        <span className="font-medium text-fg/80">{location}</span>
+                        <span className="mx-1.5">·</span>
+                      </>
+                    )}
+                    <span>{login.ip ?? 'Unknown IP'}</span>
+                    <span className="mx-1.5">·</span>
+                    <span>{client.summary}</span>
+                  </div>
+                </li>
+              )
+            })}
           </ul>
           <Pager page={query.data} label="Login history pages" onPageChange={setPage} />
         </div>
