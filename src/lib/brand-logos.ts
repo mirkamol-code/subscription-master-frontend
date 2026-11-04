@@ -1,32 +1,42 @@
-import claude from '@/assets/brands/claude.svg'
-import dropbox from '@/assets/brands/dropbox.svg'
-import github from '@/assets/brands/github.svg'
-import hetzner from '@/assets/brands/hetzner.svg'
-import netflix from '@/assets/brands/netflix.svg'
-import notion from '@/assets/brands/notion.svg'
-import spotify from '@/assets/brands/spotify.svg'
-import youtube from '@/assets/brands/youtube.svg'
+import registryMarkdown from '@/assets/brands/BRANDS.md?raw'
+import { parseBrandRegistry, type BrandEntry } from '@/lib/brand-registry'
 
 export interface BrandLogo {
   src: string
   title: string
-  color: string
+  tint: string | null
 }
 
-const THEME_COLOR = 'currentColor'
+const THEME_TINT = 'theme'
 
-const BRAND_LOGOS: Readonly<Record<string, BrandLogo>> = {
-  netflix: { src: netflix, title: 'Netflix', color: '#E50914' },
-  spotify: { src: spotify, title: 'Spotify', color: '#1ED760' },
-  'youtube-premium': { src: youtube, title: 'YouTube', color: '#FF0000' },
-  anthropic: { src: claude, title: 'Claude', color: '#D97757' },
-  notion: { src: notion, title: 'Notion', color: THEME_COLOR },
-  github: { src: github, title: 'GitHub', color: THEME_COLOR },
-  dropbox: { src: dropbox, title: 'Dropbox', color: '#0061FF' },
-  hetzner: { src: hetzner, title: 'Hetzner', color: '#D50C2D' },
+const BUNDLED_FILES = import.meta.glob('@/assets/brands/*.{svg,png,webp}', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+}) as Record<string, string>
+
+function indexByFileName(files: Record<string, string>): Record<string, string> {
+  return Object.fromEntries(Object.entries(files).map(([path, url]) => [path.slice(path.lastIndexOf('/') + 1), url]))
 }
+
+function resolveTint(tint: string): string | null {
+  if (!tint) return null
+  return tint === THEME_TINT ? 'currentColor' : tint
+}
+
+export function buildBrandLogos(entries: readonly BrandEntry[], urlsByFile: Record<string, string>): Map<string, BrandLogo> {
+  const logos = new Map<string, BrandLogo>()
+  const keys = entries.map((entry) => entry.key)
+  for (const entry of entries) {
+    if (keys.indexOf(entry.key) !== keys.lastIndexOf(entry.key)) continue
+    const src = entry.file ? urlsByFile[entry.file] : undefined
+    if (entry.status === 'approved' && src) logos.set(entry.key, { src, title: entry.title, tint: resolveTint(entry.tint) })
+  }
+  return logos
+}
+
+const LOGOS = buildBrandLogos(parseBrandRegistry(registryMarkdown), indexByFileName(BUNDLED_FILES))
 
 export function getBrandLogo(merchantKey: string | null | undefined): BrandLogo | null {
-  if (!merchantKey || !Object.hasOwn(BRAND_LOGOS, merchantKey)) return null
-  return BRAND_LOGOS[merchantKey]
+  return (merchantKey && LOGOS.get(merchantKey)) || null
 }
