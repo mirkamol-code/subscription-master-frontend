@@ -2,11 +2,15 @@ import { useState, type ComponentType } from 'react'
 import { Download, FileSpreadsheet, FileText, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { getApiError } from '@/api/client'
+import type { ReportFormat } from '@/api/endpoints/reports'
+import { downloadAnnualReport } from '@/features/reports/download-report'
 import {
-  downloadAnnualReport,
-  ExchangeRatesUnavailableError,
-  type ReportFormat,
-} from '@/features/reports/annual-report'
+  canDownloadReport,
+  REPORT_COLUMNS,
+  selectAllReportColumns,
+  toggleReportColumn,
+  type ReportColumnKey,
+} from '@/features/reports/report-columns'
 import { PageHeader } from '@/components/common/page-header'
 import { cn } from '@/lib/utils'
 
@@ -38,18 +42,18 @@ const REPORT_OPTIONS: ReportOption[] = [
   },
 ]
 
-const INCLUDED = ['Service name & category', 'Status & billing cycle', 'Price & yearly cost', 'Start & next payment dates']
-
 export function ReportsPage() {
   const [downloading, setDownloading] = useState<ReportFormat | null>(null)
+  const [columns, setColumns] = useState<ReportColumnKey[]>(selectAllReportColumns)
+  const canDownload = canDownloadReport(columns)
 
   const download = async (format: ReportFormat) => {
     setDownloading(format)
     try {
-      await downloadAnnualReport(format)
+      await downloadAnnualReport(format, columns)
       toast.success('Your report is downloading')
     } catch (error) {
-      toast.error(error instanceof ExchangeRatesUnavailableError ? error.message : getApiError(error))
+      toast.error(getApiError(error))
     } finally {
       setDownloading(null)
     }
@@ -71,13 +75,14 @@ export function ReportsPage() {
               key={option.format}
               type="button"
               onClick={() => void download(option.format)}
-              disabled={downloading !== null}
+              disabled={downloading !== null || !canDownload}
               aria-busy={isBusy}
               className={cn(
                 'group flex flex-col rounded-2xl border border-border bg-surface p-6 text-left outline-none transition-all duration-200',
                 'hover:-translate-y-0.5 hover:border-fg/20 hover:shadow-lg hover:shadow-black/5 focus-visible:ring-2 focus-visible:ring-ring',
-                'disabled:translate-y-0 disabled:cursor-wait disabled:shadow-none',
-                downloading !== null && !isBusy && 'opacity-60',
+                'disabled:translate-y-0 disabled:shadow-none',
+                downloading !== null ? 'disabled:cursor-wait' : 'disabled:cursor-not-allowed',
+                (!canDownload || (downloading !== null && !isBusy)) && 'opacity-60',
               )}
             >
                 <span className="flex w-full items-start justify-between">
@@ -98,19 +103,30 @@ export function ReportsPage() {
         })}
       </div>
 
-      <section>
-        <h2 className="text-sm font-medium text-fg">What’s included</h2>
-        <ul className="mt-3 flex flex-wrap gap-2">
-          {INCLUDED.map((item) => (
-            <li key={item} className="rounded-full bg-surface px-3 py-1.5 text-[13px] text-muted ring-1 ring-border">
-              {item}
-            </li>
+      <fieldset>
+        <legend className="text-sm font-medium text-fg">Columns to include</legend>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {REPORT_COLUMNS.map((column) => (
+            <label
+              key={column.key}
+              className="flex cursor-pointer items-center gap-2 rounded-full bg-surface px-3 py-1.5 text-[13px] text-muted ring-1 ring-border has-[:checked]:text-fg"
+            >
+              <input
+                type="checkbox"
+                checked={columns.includes(column.key)}
+                onChange={() => setColumns((selected) => toggleReportColumn(selected, column.key))}
+                className="size-3.5 accent-fg"
+              />
+              {column.label}
+            </label>
           ))}
-        </ul>
-        <p className="mt-4 text-[13px] text-muted">
-          Amounts are shown in each subscription’s own currency, with a yearly total in Uzbek som.
+        </div>
+        <p className="mt-4 text-[13px] text-muted" role={canDownload ? undefined : 'alert'}>
+          {canDownload
+            ? 'Amounts are shown in each subscription’s own currency, with a yearly total in Uzbek som.'
+            : 'Choose at least one column to download a report.'}
         </p>
-      </section>
+      </fieldset>
     </div>
   )
 }

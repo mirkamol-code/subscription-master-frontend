@@ -6,7 +6,7 @@ export const subscriptionSchema = z.object({
   price: z.number({ error: 'Enter a valid price' }).min(0.01, 'Price must be at least 0.01'),
   currency: z.enum(currencies),
   frequency: z.enum(frequencies),
-  status: z.enum(subscriptionStatuses),
+  status: z.enum([...subscriptionStatuses, 'TRIAL']),
   category: z.enum(categories),
   startDate: z.string().min(1, 'Start date is required'),
 })

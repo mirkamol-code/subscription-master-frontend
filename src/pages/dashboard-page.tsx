@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, CalendarCheck, PieChart, TrendingUp } from 'lucide-react'
-import { CategoryIcon } from '@/components/common/category-icon'
+import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { EmptyState } from '@/components/common/empty-state'
 import { ErrorState } from '@/components/common/error-state'
 import { HeroBackdrop } from '@/components/common/hero-backdrop'
@@ -19,6 +19,8 @@ import { useSubscriptions } from '@/hooks/use-subscriptions'
 import { getCategoryMeta } from '@/lib/category-config'
 import { cn, formatCompactMoney, formatDate, formatMonthLabel, formatMoney } from '@/lib/utils'
 import type { Currency, MonthlyCost, SpendingSummary, Subscription } from '@/types/api'
+import { isRenewing } from '@/lib/renewals'
+import { formatSubscriptionPrice } from '@/lib/subscription-price'
 
 const TREND_MONTHS = 6
 const UPCOMING_COUNT = 5
@@ -33,12 +35,13 @@ function greeting() {
 export function DashboardPage() {
   const summary = useSummary()
   const dynamics = useMonthlyDynamics(TREND_MONTHS)
-  const upcoming = useSubscriptions({
+  const subscriptions = useSubscriptions({
     status: 'ACTIVE',
     page: 0,
     size: UPCOMING_COUNT,
     sort: ['nextPaymentDate,ASC'],
   })
+  const upcomingItems = (subscriptions.data?.content ?? []).filter(isRenewing)
 
   return (
     <div className="space-y-8">
@@ -60,8 +63,8 @@ export function DashboardPage() {
         loading={summary.isLoading}
         failed={summary.isError}
         onRetry={() => void summary.refetch()}
-        activeCount={upcoming.data?.totalElements}
-        nextPayment={upcoming.data?.content[0]}
+        activeCount={subscriptions.data?.totalElements}
+        nextPayment={upcomingItems[0]}
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -132,17 +135,17 @@ export function DashboardPage() {
             </Button>
           </CardHeader>
           <CardContent className="px-3 pb-3 pt-4">
-            {upcoming.isLoading ? (
+            {subscriptions.isLoading ? (
               <div className="space-y-2 px-3">
                 {[0, 1, 2].map((n) => (
                   <Skeleton key={n} className="h-14" />
                 ))}
               </div>
-            ) : upcoming.isError ? (
-              <ErrorState bare error={upcoming.error} onRetry={() => void upcoming.refetch()} />
-            ) : upcoming.data?.content.length ? (
+            ) : subscriptions.isError ? (
+              <ErrorState bare error={subscriptions.error} onRetry={() => void subscriptions.refetch()} />
+            ) : upcomingItems.length ? (
               <ul>
-                {upcoming.data.content.map((item) => (
+                {upcomingItems.map((item) => (
                   <UpcomingRow key={item.id} item={item} />
                 ))}
               </ul>
@@ -361,16 +364,16 @@ function UpcomingRow({ item }: { item: Subscription }) {
         to={`/subscriptions/${item.id}`}
         className="flex items-center gap-3 rounded-xl px-3 py-3 outline-none transition-colors hover:bg-fg/[0.04] focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <CategoryIcon category={item.category} />
+        <SubscriptionLogo merchantKey={item.merchantKey} category={item.category} />
         <div className="min-w-0 flex-1">
           <p className="truncate font-medium text-fg">{item.name}</p>
           <p className="text-[13px] text-muted">{formatDate(item.nextPaymentDate)}</p>
         </div>
         <div className="flex flex-col items-end gap-1">
           <span className="font-semibold tabular-nums text-fg">
-            {formatMoney(item.price, item.currency)}
+            {formatSubscriptionPrice(item)}
           </span>
-          <RenewalPill date={item.nextPaymentDate} />
+          {item.nextPaymentDate && <RenewalPill date={item.nextPaymentDate} />}
         </div>
       </Link>
     </li>

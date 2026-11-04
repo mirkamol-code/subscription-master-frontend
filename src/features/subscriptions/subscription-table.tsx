@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { CategoryIcon } from '@/components/common/category-icon'
+import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { NeedsReviewBadge } from '@/components/common/needs-review-badge'
 import { Card } from '@/components/ui/card'
 import { SubscriptionActionsMenu } from '@/features/subscriptions/subscription-actions-menu'
@@ -8,7 +8,8 @@ import { SubscriptionRenewal } from '@/features/subscriptions/subscription-renew
 import { getCategoryMeta } from '@/lib/category-config'
 import { FREQUENCY_LABEL } from '@/lib/labels'
 import { isRenewing } from '@/lib/renewals'
-import { formatDate, formatMoney } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
+import { formatSubscriptionPrice } from '@/lib/subscription-price'
 
 export function SubscriptionTable({ items, ...actions }: SubscriptionListProps) {
   const navigate = useNavigate()
@@ -37,7 +38,7 @@ export function SubscriptionTable({ items, ...actions }: SubscriptionListProps) 
               >
                 <td className="px-6 py-3.5">
                   <div className="flex items-center gap-3">
-                    <CategoryIcon category={item.category} size="sm" />
+                    <SubscriptionLogo merchantKey={item.merchantKey} category={item.category} size="sm" />
                     <div className="min-w-0">
                       <Link
                         to={`/subscriptions/${item.id}`}
@@ -53,9 +54,9 @@ export function SubscriptionTable({ items, ...actions }: SubscriptionListProps) 
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3.5 text-muted">{FREQUENCY_LABEL[item.frequency]}</td>
+                <td className="px-4 py-3.5 text-muted">{item.frequency ? FREQUENCY_LABEL[item.frequency] : '—'}</td>
                 <td className="whitespace-nowrap px-4 py-3.5 text-right font-semibold tabular-nums text-fg">
-                  {formatMoney(item.price, item.currency)}
+                  {formatSubscriptionPrice(item)}
                 </td>
                 <td className="whitespace-nowrap px-4 py-3.5">
                   <div className="flex items-center gap-2">

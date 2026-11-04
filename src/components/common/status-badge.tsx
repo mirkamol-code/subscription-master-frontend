@@ -6,6 +6,7 @@ import type { SubscriptionStatus } from '@/types/api'
 const neutralStyles = { badge: 'bg-fg/[0.06] text-muted', dot: 'bg-muted' }
 
 const statusStyles: Record<SubscriptionStatus, { badge: string; dot: string }> = {
+  TRIAL: { badge: 'bg-accent/10 text-accent', dot: 'bg-accent' },
   ACTIVE: { badge: 'bg-success/10 text-success', dot: 'bg-success' },
   CANCELLED: neutralStyles,
   BILLING_REQUIRED: { badge: 'bg-danger/10 text-danger', dot: 'bg-danger' },

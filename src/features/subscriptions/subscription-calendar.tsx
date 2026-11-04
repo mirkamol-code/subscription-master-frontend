@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { CategoryIcon } from '@/components/common/category-icon'
+import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { ErrorState } from '@/components/common/error-state'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -12,6 +12,7 @@ import { getCategoryMeta } from '@/lib/category-config'
 import { renewalDatesInMonth } from '@/lib/renewals'
 import { cn, formatMoney, parseLocalDate, toIsoDate, todayIsoDate } from '@/lib/utils'
 import type { Subscription } from '@/types/api'
+import { formatSubscriptionPrice, hasKnownPrice } from '@/lib/subscription-price'
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const MAX_CHIPS = 2
@@ -41,6 +42,7 @@ export function SubscriptionCalendar() {
   const charges = useMemo<Charge[]>(
     () =>
       (query.data ?? [])
+        .filter(hasKnownPrice)
         .flatMap((subscription) =>
           renewalDatesInMonth(subscription, cursor.year, cursor.month).map((date) => ({
             date,
@@ -151,7 +153,7 @@ export function SubscriptionCalendar() {
                       <Link
                         key={subscription.id}
                         to={`/subscriptions/${subscription.id}`}
-                        title={`${subscription.name} · ${formatMoney(subscription.price, subscription.currency)}`}
+                        title={`${subscription.name} · ${formatSubscriptionPrice(subscription)}`}
                         className="block truncate rounded-md px-1.5 py-0.5 text-[11px] font-medium transition-opacity hover:opacity-75"
                         style={{ backgroundColor: `${color}14`, color }}
                       >
@@ -211,7 +213,7 @@ export function SubscriptionCalendar() {
                       date < today && 'opacity-50',
                     )}
                   >
-                    <CategoryIcon category={subscription.category} size="sm" />
+                    <SubscriptionLogo merchantKey={subscription.merchantKey} category={subscription.category} size="sm" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-fg">{subscription.name}</p>
                       <p className="text-xs text-muted">

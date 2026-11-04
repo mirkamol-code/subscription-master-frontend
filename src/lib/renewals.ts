@@ -1,9 +1,9 @@
 import type { Subscription } from '@/types/api'
 import { parseLocalDate, toIsoDate } from '@/lib/utils'
 
-/** Only active subscriptions renew; cancelled and billing-required ones have no upcoming payment. */
-export function isRenewing(sub: Pick<Subscription, 'status'>): boolean {
-  return sub.status === 'ACTIVE'
+/** Only active subscriptions renew, and not when a cancellation ends access by the next payment. */
+export function isRenewing(sub: Pick<Subscription, 'status' | 'endsOn' | 'nextPaymentDate'>): boolean {
+  return sub.status === 'ACTIVE' && (!sub.endsOn || !sub.nextPaymentDate || sub.endsOn > sub.nextPaymentDate)
 }
 
 function daysInMonth(year: number, month: number) {
@@ -36,7 +36,7 @@ export function renewalDatesInMonth(sub: Subscription, year: number, month: numb
   const dates: string[] = []
   for (let k = 0; ; k++) {
     const date = nthRenewal(anchor, sub.frequency, k)
-    if (date > monthEnd) break
+    if (date > monthEnd || (sub.endsOn && toIsoDate(date) >= sub.endsOn)) break
     if (date >= monthStart) dates.push(toIsoDate(date))
   }
   return dates

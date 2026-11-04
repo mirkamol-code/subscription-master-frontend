@@ -5,7 +5,7 @@ import type { Subscription } from '@/types/api'
 
 /** Active subscriptions show when they renew; the rest show their status instead. */
 export function SubscriptionRenewal({ item }: { item: Subscription }) {
-  return isRenewing(item) ? (
+  return isRenewing(item) && item.nextPaymentDate ? (
     <RenewalPill date={item.nextPaymentDate} />
   ) : (
     <StatusBadge status={item.status} />

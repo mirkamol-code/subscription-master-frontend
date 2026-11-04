@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { isForbiddenOrMissing } from '@/features/admin/admin-access-error'
+import { formatSubscriptionPrice } from '@/lib/subscription-price'
 import { formatDateTime } from '@/features/admin/format-date-time'
 import { formatLocation, getDeviceIcon, resolveLoginClient } from '@/features/admin/login-client'
 import { Pager } from '@/features/admin/pager'
@@ -22,7 +23,6 @@ import {
   useAdminUserPayments,
   useAdminUserSubscriptions,
 } from '@/hooks/use-admin'
-import { FREQUENCY_SUFFIX } from '@/lib/labels'
 import { formatDate, formatMoney } from '@/lib/utils'
 import { NotFoundPage } from '@/pages/not-found-page'
 
@@ -100,7 +100,7 @@ function SubscriptionsCard({ userId }: { userId: number }) {
               <div className="min-w-0">
                 <p className="truncate font-medium text-fg">{subscription.name}</p>
                 <p className="text-[13px] text-muted">
-                  {formatMoney(subscription.price, subscription.currency)}{FREQUENCY_SUFFIX[subscription.frequency]} · next {formatDate(subscription.nextPaymentDate)}
+                  {formatSubscriptionPrice(subscription)} · next {formatDate(subscription.nextPaymentDate)}
                   {subscription.endsOn && ` · access ends ${formatDate(subscription.endsOn)}`}
                 </p>
               </div>

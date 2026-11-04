@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Pencil, Receipt, Trash2, TriangleAlert } from 'lucide-react'
-import { CategoryIcon } from '@/components/common/category-icon'
+import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { NeedsReviewBadge } from '@/components/common/needs-review-badge'
 import { ErrorState } from '@/components/common/error-state'
 import { RenewalPill } from '@/components/common/renewal-pill'
@@ -18,6 +18,8 @@ import { findReceiptAwaitingAmount } from '@/features/emails/receipt-awaiting-am
 import { useBillingEmails } from '@/features/emails/use-billing-emails'
 import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
 import { describeBilling } from '@/features/subscriptions/billing-description'
+import { formatSubscriptionPrice, hasKnownPrice } from '@/lib/subscription-price'
+import { describePriceChange } from '@/features/subscriptions/price-change-note'
 import { ReviewActions } from '@/features/subscriptions/review-actions'
 import { getReviewPrompt } from '@/features/subscriptions/review-prompt'
 import { StatusHistoryCard } from '@/features/subscriptions/status-history-card'
@@ -83,6 +85,7 @@ export function SubscriptionDetailPage() {
     billing.billedThrough,
     billing.paymentMethod && `Paid with ${billing.paymentMethod}`,
   ].filter(Boolean)
+  const priceChangeNote = describePriceChange(item.latestPriceChange)
 
   return (
     <div className="space-y-6">
@@ -91,7 +94,7 @@ export function SubscriptionDetailPage() {
       <Card className="overflow-hidden">
         <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
           <div className="flex min-w-0 items-center gap-4">
-            <CategoryIcon category={item.category} size="lg" />
+            <SubscriptionLogo merchantKey={item.merchantKey} category={item.category} size="lg" />
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="truncate text-2xl font-bold tracking-tight text-fg">{item.name}</h1>
@@ -100,9 +103,10 @@ export function SubscriptionDetailPage() {
                 {item.hidden && <span className="text-xs font-medium text-muted">Hidden</span>}
               </div>
               <p className="mt-1 text-sm text-muted">
-                {getCategoryMeta(item.category).label} · {FREQUENCY_LABEL[item.frequency]}
+                {[getCategoryMeta(item.category).label, item.frequency && FREQUENCY_LABEL[item.frequency]].filter(Boolean).join(' · ')}
               </p>
               {billingDetails.length > 0 && <p className="mt-1 text-sm text-muted">{billingDetails.join(' · ')}</p>}
+              {priceChangeNote && <p className="mt-1 text-sm text-warning">{priceChangeNote}</p>}
             </div>
           </div>
 
@@ -142,12 +146,18 @@ export function SubscriptionDetailPage() {
         </div>
 
         <dl className="grid grid-cols-2 gap-px border-t border-border bg-fg/[0.06] sm:grid-cols-4">
-          <Stat label="Price" value={formatMoney(item.price, item.currency)} hint={FREQUENCY_SUFFIX[item.frequency]} />
-          <Stat
-            label="Per month"
-            value={formatMoney(getMonthlyEquivalent(item.price, item.frequency), item.currency)}
-          />
-          <Stat label="Per year" value={formatMoney(getAnnualizedCost(item.price, item.frequency), item.currency)} />
+          {hasKnownPrice(item) && item.status !== 'TRIAL' ? (
+            <>
+              <Stat label="Price" value={formatMoney(item.price, item.currency)} hint={FREQUENCY_SUFFIX[item.frequency]} />
+              <Stat
+                label="Per month"
+                value={formatMoney(getMonthlyEquivalent(item.price, item.frequency), item.currency)}
+              />
+              <Stat label="Per year" value={formatMoney(getAnnualizedCost(item.price, item.frequency), item.currency)} />
+            </>
+          ) : (
+            <Stat label="Price" value={formatSubscriptionPrice(item)} />
+          )}
           <Stat label="Since" value={formatDate(item.startDate)} />
         </dl>
       </Card>
@@ -183,7 +193,7 @@ export function SubscriptionDetailPage() {
 
       <ReceiptAmountDialog
         subscriptionId={item.id}
-        defaultCurrency={item.currency}
+        defaultCurrency={item.currency ?? 'USD'}
         receipt={receiptToPrice}
         onClose={() => setReceiptToPrice(null)}
       />
@@ -207,24 +217,26 @@ function Stat({ label, value, hint }: { label: string; value: string; hint?: str
 function NextPaymentCard({ subscription }: { subscription: Subscription }) {
   const { displayCurrency, convertToDisplay } = useCurrency()
   const showConverted = subscription.currency !== displayCurrency
+  const nextDate = subscription.nextPaymentDate
+  const priced = hasKnownPrice(subscription) ? subscription : null
 
   return (
     <Card className="dark relative overflow-hidden border-white/10 bg-hero p-6 text-white shadow-xl shadow-accent/15">
       <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 size-56 rounded-full bg-violet-600/30 blur-3xl" />
       <div className="relative">
         <p className="text-sm text-white/60">Next payment</p>
-        {isRenewing(subscription) ? (
+        {isRenewing(subscription) && nextDate && priced ? (
           <>
-            <p className="mt-2 text-3xl font-bold tracking-tight">{formatDate(subscription.nextPaymentDate)}</p>
-            <RenewalPill date={subscription.nextPaymentDate} className="mt-3" />
+            <p className="mt-2 text-3xl font-bold tracking-tight">{formatDate(nextDate)}</p>
+            <RenewalPill date={nextDate} className="mt-3" />
             <div className="mt-6 border-t border-white/10 pt-4">
               <p className="text-sm text-white/60">Amount</p>
               <p className="mt-1 text-xl font-semibold tabular-nums">
-                {formatMoney(subscription.price, subscription.currency)}
+                {formatMoney(priced.price, priced.currency)}
               </p>
               {showConverted && (
                 <p className="text-sm tabular-nums text-white/60">
-                  ≈ {formatMoney(convertToDisplay(subscription.price, subscription.currency), displayCurrency)}
+                  ≈ {formatMoney(convertToDisplay(priced.price, priced.currency), displayCurrency)}
                 </p>
               )}
             </div>
@@ -238,6 +250,14 @@ function NextPaymentCard({ subscription }: { subscription: Subscription }) {
 }
 
 function describeNoNextPayment(subscription: Subscription) {
+  if (subscription.status === 'TRIAL') {
+    const ends = subscription.trialEndsOn ? `ends ${formatDate(subscription.trialEndsOn)}` : 'end date unknown'
+    const cancelled = subscription.endsOn ? ' (cancelled)' : ''
+    const after = hasKnownPrice(subscription)
+      ? `Then ${formatMoney(subscription.price, subscription.currency)}${FREQUENCY_SUFFIX[subscription.frequency]}.`
+      : 'Price after the trial is unknown.'
+    return `Free trial — ${ends}${cancelled}. ${after}`
+  }
   if (subscription.status === 'BILLING_REQUIRED') {
     return `Billing required — check your latest payment to ${subscription.name}.`
   }
