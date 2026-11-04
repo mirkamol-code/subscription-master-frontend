@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { CategoryIcon } from '@/components/common/category-icon'
+import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { ErrorState } from '@/components/common/error-state'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -211,7 +211,7 @@ export function SubscriptionCalendar() {
                       date < today && 'opacity-50',
                     )}
                   >
-                    <CategoryIcon category={subscription.category} size="sm" />
+                    <SubscriptionLogo merchantKey={subscription.merchantKey} category={subscription.category} size="sm" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-fg">{subscription.name}</p>
                       <p className="text-xs text-muted">

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Pencil, Receipt, Trash2, TriangleAlert } from 'lucide-react'
-import { CategoryIcon } from '@/components/common/category-icon'
+import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { NeedsReviewBadge } from '@/components/common/needs-review-badge'
 import { ErrorState } from '@/components/common/error-state'
 import { RenewalPill } from '@/components/common/renewal-pill'
@@ -93,7 +93,7 @@ export function SubscriptionDetailPage() {
       <Card className="overflow-hidden">
         <div className="flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
           <div className="flex min-w-0 items-center gap-4">
-            <CategoryIcon category={item.category} size="lg" />
+            <SubscriptionLogo merchantKey={item.merchantKey} category={item.category} size="lg" />
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="truncate text-2xl font-bold tracking-tight text-fg">{item.name}</h1>

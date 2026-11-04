@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { CategoryIcon } from '@/components/common/category-icon'
+import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { NeedsReviewBadge } from '@/components/common/needs-review-badge'
 import { Card } from '@/components/ui/card'
 import { SubscriptionActionsMenu } from '@/features/subscriptions/subscription-actions-menu'
@@ -37,7 +37,7 @@ export function SubscriptionTable({ items, ...actions }: SubscriptionListProps) 
               >
                 <td className="px-6 py-3.5">
                   <div className="flex items-center gap-3">
-                    <CategoryIcon category={item.category} size="sm" />
+                    <SubscriptionLogo merchantKey={item.merchantKey} category={item.category} size="sm" />
                     <div className="min-w-0">
                       <Link
                         to={`/subscriptions/${item.id}`}

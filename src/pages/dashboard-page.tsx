@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, CalendarCheck, PieChart, TrendingUp } from 'lucide-react'
-import { CategoryIcon } from '@/components/common/category-icon'
+import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { EmptyState } from '@/components/common/empty-state'
 import { ErrorState } from '@/components/common/error-state'
 import { HeroBackdrop } from '@/components/common/hero-backdrop'
@@ -361,7 +361,7 @@ function UpcomingRow({ item }: { item: Subscription }) {
         to={`/subscriptions/${item.id}`}
         className="flex items-center gap-3 rounded-xl px-3 py-3 outline-none transition-colors hover:bg-fg/[0.04] focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <CategoryIcon category={item.category} />
+        <SubscriptionLogo merchantKey={item.merchantKey} category={item.category} />
         <div className="min-w-0 flex-1">
           <p className="truncate font-medium text-fg">{item.name}</p>
           <p className="text-[13px] text-muted">{formatDate(item.nextPaymentDate)}</p>

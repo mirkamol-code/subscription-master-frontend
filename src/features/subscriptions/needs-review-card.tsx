@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { CategoryIcon } from '@/components/common/category-icon'
+import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { ErrorState } from '@/components/common/error-state'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ReviewActions } from '@/features/subscriptions/review-actions'
@@ -39,7 +39,7 @@ export function NeedsReviewCard() {
             const prompt = getReviewPrompt(item)
             return (
               <li key={item.id} className="flex flex-wrap items-center gap-3 px-3 py-3">
-                <CategoryIcon category={item.category} size="sm" />
+                <SubscriptionLogo merchantKey={item.merchantKey} category={item.category} size="sm" />
                 <span className="min-w-0 flex-1">
                   <Link
                     to={`/subscriptions/${item.id}`}

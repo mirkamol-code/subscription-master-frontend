@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { CategoryIcon } from '@/components/common/category-icon'
+import { SubscriptionLogo } from '@/components/common/subscription-logo'
 import { NeedsReviewBadge } from '@/components/common/needs-review-badge'
 import {
   SubscriptionActionsMenu,
@@ -30,7 +30,7 @@ export function SubscriptionGrid({ items, ...actions }: SubscriptionListProps) {
           )}
         >
           <div className="flex items-start gap-3">
-            <CategoryIcon category={item.category} />
+            <SubscriptionLogo merchantKey={item.merchantKey} category={item.category} />
             <div className="min-w-0 flex-1">
               <Link
                 to={`/subscriptions/${item.id}`}
