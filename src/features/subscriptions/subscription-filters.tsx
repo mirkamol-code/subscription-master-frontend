@@ -3,7 +3,7 @@ import { Search, SlidersHorizontal, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DebouncedInput } from '@/components/ui/debounced-input'
 import { Select } from '@/components/ui/input'
-import { CATEGORY_CONFIG } from '@/lib/category-config'
+import { getCategoryMeta } from '@/lib/category-config'
 import { STATUS_LABEL } from '@/lib/labels'
 import { cn } from '@/lib/utils'
 import { categories, currencies, subscriptionStatuses } from '@/types/api'
@@ -107,7 +107,7 @@ export function SubscriptionFilters({ values, onChange, onClear }: SubscriptionF
             <option value="">All categories</option>
             {categories.map((category) => (
               <option key={category} value={category}>
-                {CATEGORY_CONFIG[category].label}
+                {getCategoryMeta(category).label}
               </option>
             ))}
           </Select>

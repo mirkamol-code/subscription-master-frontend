@@ -9,10 +9,37 @@ interface ReviewActionsProps {
   isConfirming: boolean
   onEnterAmount?: () => void
   canEnterAmount?: boolean
+  onConfirmRecurring: (item: Subscription) => void
+  isConfirmingRecurring: boolean
+  onHide: (item: Subscription) => void
 }
 
-export function ReviewActions({ item, onConfirm, isConfirming, onEnterAmount, canEnterAmount = true }: ReviewActionsProps) {
-  if (getReviewPrompt(item).action === 'ENTER_AMOUNT') {
+export function ReviewActions({
+  item,
+  onConfirm,
+  isConfirming,
+  onEnterAmount,
+  canEnterAmount = true,
+  onConfirmRecurring,
+  isConfirmingRecurring,
+  onHide,
+}: ReviewActionsProps) {
+  const { action } = getReviewPrompt(item)
+
+  if (action === 'CONFIRM_RECURRING') {
+    return (
+      <div className="flex shrink-0 gap-2">
+        <Button size="sm" variant="outline" onClick={() => onConfirmRecurring(item)} disabled={isConfirmingRecurring}>
+          {isConfirmingRecurring ? 'Saving…' : 'Confirm subscription'}
+        </Button>
+        <Button size="sm" variant="ghost" onClick={() => onHide(item)}>
+          Hide
+        </Button>
+      </div>
+    )
+  }
+
+  if (action === 'ENTER_AMOUNT') {
     return (
       <div className="flex shrink-0 gap-2">
         {onEnterAmount ? (

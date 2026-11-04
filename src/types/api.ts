@@ -8,6 +8,7 @@ export const categories = [
   'EDUCATION',
   'HEALTH',
   'FINANCE',
+  'INFRASTRUCTURE',
   'OTHER',
 ] as const
 
@@ -33,18 +34,31 @@ export interface ReceiptAmountRequest {
   currency: Currency
 }
 
+export type BillingPlatform = 'APPLE' | 'GOOGLE_PLAY' | 'PAYPAL'
+
+export interface PaymentMethod {
+  type: 'CARD' | 'PAYPAL'
+  cardBrand: string | null
+  cardLast4: string | null
+}
+
+export type ReviewReason = 'AMOUNT_UNREADABLE' | 'SIMILAR_INVOICES' | 'SIMILAR_INVOICES_REPEATED'
+
 export interface Subscription extends SubscriptionRequest {
   id: number
   nextPaymentDate: string
   version: number
   merchantKey: string | null
   needsReview: boolean
-  reviewReason: 'AMOUNT_UNREADABLE' | null
+  reviewReason: ReviewReason | null
   reviewNote: string | null
   hidden: boolean
   lastPaymentDate: string | null
   logoDomain: string | null
   endsOn: string | null
+  planName: string | null
+  billingPlatform: BillingPlatform | null
+  paymentMethod: PaymentMethod | null
 }
 
 export type StatusChangeReason =

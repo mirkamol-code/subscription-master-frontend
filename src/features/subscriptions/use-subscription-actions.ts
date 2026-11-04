@@ -4,6 +4,7 @@ import { getApiError } from '@/api/client'
 import {
   useChangeSubscriptionStatus,
   useConfirmGuessedDetails,
+  useConfirmRecurring,
   useDeleteSubscription,
   useSetSubscriptionHidden,
 } from '@/hooks/use-subscriptions'
@@ -18,6 +19,7 @@ export function useSubscriptionActions(options?: { onDeleted?: (item: Subscripti
   const deleteMutation = useDeleteSubscription()
   const hiddenMutation = useSetSubscriptionHidden()
   const reviewMutation = useConfirmGuessedDetails()
+  const recurringMutation = useConfirmRecurring()
 
   const changeStatus = async (item: Subscription, status: UserStatus) => {
     try {
@@ -32,6 +34,15 @@ export function useSubscriptionActions(options?: { onDeleted?: (item: Subscripti
     try {
       await reviewMutation.mutateAsync(item)
       toast.success(`${item.name} confirmed`)
+    } catch (error) {
+      toast.error(getApiError(error))
+    }
+  }
+
+  const confirmRecurring = async (item: Subscription) => {
+    try {
+      await recurringMutation.mutateAsync(item.id)
+      toast.success(`${item.name} confirmed as a subscription`)
     } catch (error) {
       toast.error(getApiError(error))
     }
@@ -70,6 +81,8 @@ export function useSubscriptionActions(options?: { onDeleted?: (item: Subscripti
     toggleHidden: (item: Subscription) => void setHidden(item, !item.hidden),
     confirmReview: (item: Subscription) => void confirmReview(item),
     isConfirmingReview: reviewMutation.isPending,
+    confirmRecurring: (item: Subscription) => void confirmRecurring(item),
+    isConfirmingRecurring: recurringMutation.isPending,
     requestDelete: setDeleteTarget,
     deleteDialog: {
       open: deleteTarget !== null,

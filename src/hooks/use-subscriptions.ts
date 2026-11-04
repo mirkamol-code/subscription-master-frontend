@@ -106,6 +106,14 @@ export function useConfirmGuessedDetails() {
   })
 }
 
+export function useConfirmRecurring() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: number) => subscriptionsApi.confirmRecurring(id),
+    onSuccess: (data) => refreshSubscriptionData(queryClient, data),
+  })
+}
+
 export function useSetSubscriptionHidden() {
   const queryClient = useQueryClient()
   return useMutation({

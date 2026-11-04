@@ -7,7 +7,7 @@ import { StatusBadge } from '@/components/common/status-badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input, Select } from '@/components/ui/input'
-import { CATEGORY_CONFIG, getCategoryMeta } from '@/lib/category-config'
+import { getCategoryMeta } from '@/lib/category-config'
 import { getStatusChoices } from '@/features/subscriptions/status-choices'
 import { CURRENCY_META, FREQUENCY_LABEL, FREQUENCY_SUFFIX, getStatusLabel } from '@/lib/labels'
 import { formatDate, formatMoney, getAnnualizedCost } from '@/lib/utils'
@@ -118,7 +118,7 @@ export function SubscriptionForm({
           <p className="mb-3 text-sm font-medium text-fg">Category</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {categories.map((category) => {
-              const meta = CATEGORY_CONFIG[category]
+              const meta = getCategoryMeta(category)
               const Icon = meta.icon
               return (
                 <label key={category} className="cursor-pointer">

@@ -7,7 +7,7 @@ import { MagnitudeBarChart } from '@/features/admin/magnitude-bar-chart'
 import { formatShare } from '@/features/admin/merchant-ranking'
 import type { AnalyticsRange } from '@/features/admin/types'
 import { useCategoryAnalytics } from '@/hooks/use-admin'
-import { CATEGORY_CONFIG } from '@/lib/category-config'
+import { getCategoryMeta } from '@/lib/category-config'
 import { cn, formatMoney } from '@/lib/utils'
 
 interface CategoryBreakdownProps {
@@ -40,7 +40,7 @@ export function CategoryBreakdown({ range }: CategoryBreakdownProps) {
             <MagnitudeBarChart
               ariaLabel="Active subscribers per category"
               bars={categories.map((row) => ({
-                label: CATEGORY_CONFIG[row.category].label,
+                label: getCategoryMeta(row.category).label,
                 value: row.activeSubscribers,
                 summary: `${row.activeSubscribers} active subscribers · ${formatShare(row.sharePercent)} of active subscriptions`,
               }))}
@@ -58,7 +58,7 @@ export function CategoryBreakdown({ range }: CategoryBreakdownProps) {
               <tbody className="divide-y divide-border">
                 {categories.map((row) => (
                   <tr key={row.category}>
-                    <td className="py-1.5 text-fg">{CATEGORY_CONFIG[row.category].label}</td>
+                    <td className="py-1.5 text-fg">{getCategoryMeta(row.category).label}</td>
                     <td className="py-1.5 text-right">{row.activeSubscribers}</td>
                     <td className="py-1.5 text-right">{formatShare(row.sharePercent)}</td>
                     <td className="whitespace-nowrap py-1.5 text-right">{formatMoney(row.trackedSpendUzs)}</td>
