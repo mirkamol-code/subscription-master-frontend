@@ -51,6 +51,7 @@ export interface Subscription extends Omit<SubscriptionRequest, 'price' | 'curre
   frequency: Frequency | null
   nextPaymentDate: string | null
   trialEndsOn: string | null
+  trialEndEstimated: boolean
   version: number
   merchantKey: string | null
   needsReview: boolean

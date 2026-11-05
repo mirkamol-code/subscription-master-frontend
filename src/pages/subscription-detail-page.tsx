@@ -20,6 +20,7 @@ import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
 import { describeBilling } from '@/features/subscriptions/billing-description'
 import { formatSubscriptionPrice, hasKnownPrice } from '@/lib/subscription-price'
 import { describePriceChange } from '@/features/subscriptions/price-change-note'
+import { describeTrialEnd } from '@/lib/trial-end'
 import { ReviewActions } from '@/features/subscriptions/review-actions'
 import { getReviewPrompt } from '@/features/subscriptions/review-prompt'
 import { StatusHistoryCard } from '@/features/subscriptions/status-history-card'
@@ -251,7 +252,7 @@ function NextPaymentCard({ subscription }: { subscription: Subscription }) {
 
 function describeNoNextPayment(subscription: Subscription) {
   if (subscription.status === 'TRIAL') {
-    const ends = subscription.trialEndsOn ? `ends ${formatDate(subscription.trialEndsOn)}` : 'end date unknown'
+    const ends = describeTrialEnd(subscription).replace(/^Trial /, '')
     const cancelled = subscription.endsOn ? ' (cancelled)' : ''
     const after = hasKnownPrice(subscription)
       ? `Then ${formatMoney(subscription.price, subscription.currency)}${FREQUENCY_SUFFIX[subscription.frequency]}.`
