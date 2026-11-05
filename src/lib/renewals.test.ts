@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { isRenewing, renewalDatesInMonth } from '@/lib/renewals'
+import { isRenewing, renewalDatesInMonth, trialEndsInMonth } from '@/lib/renewals'
 import type { Subscription } from '@/types/api'
 
 const MONTHLY: Pick<Subscription, 'status' | 'endsOn' | 'nextPaymentDate' | 'frequency'> = {
@@ -42,5 +42,30 @@ describe('renewalDatesInMonth', () => {
 
     // then
     expect(dates).toEqual([])
+  })
+})
+
+describe('trialEndsInMonth', () => {
+  const trial = (changes: Partial<Subscription>) =>
+    ({ id: 1, status: 'TRIAL', trialEndsOn: '2026-11-18', trialEndEstimated: false, ...changes }) as Subscription
+
+  it('marks the day a trial ends, and whether that day is estimated', () => {
+    // when
+    const ends = trialEndsInMonth([trial({ trialEndEstimated: true })], 2026, 10)
+
+    // then
+    expect(ends).toEqual([{ date: '2026-11-18', subscription: trial({ trialEndEstimated: true }), estimated: true }])
+  })
+
+  it('leaves out other months, paid subscriptions and trials without an end date', () => {
+    // when
+    const ends = trialEndsInMonth(
+      [trial({ trialEndsOn: '2026-12-02' }), trial({ status: 'ACTIVE' }), trial({ trialEndsOn: null })],
+      2026,
+      10,
+    )
+
+    // then
+    expect(ends).toEqual([])
   })
 })

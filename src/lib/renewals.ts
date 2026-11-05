@@ -41,3 +41,17 @@ export function renewalDatesInMonth(sub: Subscription, year: number, month: numb
   }
   return dates
 }
+
+export interface TrialEnd {
+  date: string
+  subscription: Subscription
+  estimated: boolean
+}
+
+export function trialEndsInMonth(subs: readonly Subscription[], year: number, month: number): TrialEnd[] {
+  const monthPrefix = toIsoDate(new Date(year, month, 1)).slice(0, 7)
+  return subs
+    .filter((sub) => sub.status === 'TRIAL' && sub.trialEndsOn?.startsWith(monthPrefix))
+    .map((sub) => ({ date: sub.trialEndsOn as string, subscription: sub, estimated: sub.trialEndEstimated }))
+}
+
