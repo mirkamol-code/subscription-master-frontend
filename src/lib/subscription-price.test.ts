@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatSubscriptionPrice, hasKnownPrice } from '@/lib/subscription-price'
+import { describeTrialPrice, formatSubscriptionPrice, hasKnownPrice } from '@/lib/subscription-price'
 
 describe('subscription price', () => {
   it('formats a known price with its cycle', () => {
@@ -10,12 +10,12 @@ describe('subscription price', () => {
     expect(text).toBe('$22.99/mo')
   })
 
-  it('says a free trial has no charge yet when its later price is unknown', () => {
+  it('shows only "Free" for a trial whose later price is unknown', () => {
     // when
     const text = formatSubscriptionPrice({ price: null, currency: null, frequency: null, status: 'TRIAL' })
 
     // then
-    expect(text).toBe('Free trial · price after trial unknown')
+    expect(text).toBe('Free')
   })
 
   it('shows the price after the trial when the email stated it', () => {
@@ -23,7 +23,23 @@ describe('subscription price', () => {
     const text = formatSubscriptionPrice({ price: 15.49, currency: 'USD', frequency: 'MONTHLY', status: 'TRIAL' })
 
     // then
-    expect(text).toBe('Free trial · then $15.49/mo')
+    expect(text).toBe('Free · then $15.49/mo')
+  })
+
+  it('splits a trial price into a headline and the later price when it is known', () => {
+    // when
+    const price = describeTrialPrice({ price: 15.49, currency: 'USD', frequency: 'MONTHLY' })
+
+    // then
+    expect(price).toEqual({ headline: 'Free', laterPrice: '$15.49/mo' })
+  })
+
+  it('has no later price and never shows $0 when it is unknown', () => {
+    // when
+    const price = describeTrialPrice({ price: null, currency: null, frequency: null })
+
+    // then
+    expect(price).toEqual({ headline: 'Free', laterPrice: null })
   })
 
   it('only treats a price as known when amount, currency and cycle are all present', () => {

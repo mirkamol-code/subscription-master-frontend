@@ -18,7 +18,7 @@ import { findReceiptAwaitingAmount } from '@/features/emails/receipt-awaiting-am
 import { useBillingEmails } from '@/features/emails/use-billing-emails'
 import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
 import { describeBilling } from '@/features/subscriptions/billing-description'
-import { formatSubscriptionPrice, hasKnownPrice } from '@/lib/subscription-price'
+import { describeTrialPrice, formatSubscriptionPrice, hasKnownPrice } from '@/lib/subscription-price'
 import { describePriceChange } from '@/features/subscriptions/price-change-note'
 import { describeTrialEnd } from '@/lib/trial-end'
 import { ReviewActions } from '@/features/subscriptions/review-actions'
@@ -87,6 +87,7 @@ export function SubscriptionDetailPage() {
     billing.paymentMethod && `Paid with ${billing.paymentMethod}`,
   ].filter(Boolean)
   const priceChangeNote = describePriceChange(item.latestPriceChange)
+  const trialPrice = describeTrialPrice(item)
 
   return (
     <div className="space-y-6">
@@ -157,7 +158,11 @@ export function SubscriptionDetailPage() {
               <Stat label="Per year" value={formatMoney(getAnnualizedCost(item.price, item.frequency), item.currency)} />
             </>
           ) : (
-            <Stat label="Price" value={formatSubscriptionPrice(item)} />
+            <Stat
+              label="Price"
+              value={item.status === 'TRIAL' ? trialPrice.headline : formatSubscriptionPrice(item)}
+              hint={item.status === 'TRIAL' && trialPrice.laterPrice ? ` · then ${trialPrice.laterPrice}` : undefined}
+            />
           )}
           <Stat label="Since" value={formatDate(item.startDate)} />
         </dl>
@@ -254,10 +259,9 @@ function describeNoNextPayment(subscription: Subscription) {
   if (subscription.status === 'TRIAL') {
     const ends = describeTrialEnd(subscription)
     const cancelled = subscription.endsOn ? ' (cancelled)' : ''
-    const after = hasKnownPrice(subscription)
-      ? `Then ${formatMoney(subscription.price, subscription.currency)}${FREQUENCY_SUFFIX[subscription.frequency]}.`
-      : 'Price after the trial is unknown.'
-    return `Free trial — ${ends}${cancelled}. ${after}`
+    const { laterPrice } = describeTrialPrice(subscription)
+    const after = laterPrice ? ` Then ${laterPrice}.` : ''
+    return `Free trial — ${ends}${cancelled}.${after}`
   }
   if (subscription.status === 'BILLING_REQUIRED') {
     return `Billing required — check your latest payment to ${subscription.name}.`

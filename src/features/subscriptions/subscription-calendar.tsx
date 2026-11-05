@@ -9,8 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useCurrency } from '@/features/currency/currency-context'
 import { useAllSubscriptions } from '@/hooks/use-subscriptions'
 import { getCategoryMeta } from '@/lib/category-config'
-import { renewalDatesInMonth } from '@/lib/renewals'
-import { cn, formatMoney, parseLocalDate, toIsoDate, todayIsoDate } from '@/lib/utils'
+import { renewalDatesInMonth, trialEndsInMonth, type TrialEnd } from '@/lib/renewals'
+import { cn, formatDate, formatMoney, parseLocalDate, toIsoDate, todayIsoDate } from '@/lib/utils'
 import type { Subscription } from '@/types/api'
 import { formatSubscriptionPrice, hasKnownPrice } from '@/lib/subscription-price'
 
@@ -53,6 +53,17 @@ export function SubscriptionCalendar() {
         .sort((a, b) => a.date.localeCompare(b.date) || b.amount - a.amount),
     [query.data, cursor, convertToDisplay],
   )
+
+  const trialEnds = useMemo(
+    () => trialEndsInMonth(query.data ?? [], cursor.year, cursor.month).sort((a, b) => a.date.localeCompare(b.date)),
+    [query.data, cursor],
+  )
+
+  const trialEndsByDate = useMemo(() => {
+    const map = new Map<string, TrialEnd[]>()
+    for (const end of trialEnds) map.set(end.date, [...(map.get(end.date) ?? []), end])
+    return map
+  }, [trialEnds])
 
   const chargesByDate = useMemo(() => {
     const map = new Map<string, Charge[]>()
@@ -114,6 +125,7 @@ export function SubscriptionCalendar() {
         <div className="grid grid-cols-7">
           {buildMonthGrid(cursor.year, cursor.month).map(({ iso, day, inMonth }, index) => {
             const dayCharges = chargesByDate.get(iso) ?? []
+            const dayTrialEnds = trialEndsByDate.get(iso) ?? []
             const isToday = iso === today
             return (
               <div
@@ -143,6 +155,9 @@ export function SubscriptionCalendar() {
                       style={{ backgroundColor: getCategoryMeta(subscription.category).accentColor }}
                     />
                   ))}
+                  {dayTrialEnds.map(({ subscription }) => (
+                    <span key={`trial-${subscription.id}`} className="size-1.5 rounded-full border border-muted" />
+                  ))}
                 </div>
 
                 {/* Larger screens: named chips */}
@@ -161,9 +176,19 @@ export function SubscriptionCalendar() {
                       </Link>
                     )
                   })}
-                  {dayCharges.length > MAX_CHIPS && (
+                  {dayTrialEnds.slice(0, Math.max(0, MAX_CHIPS - dayCharges.length)).map(({ subscription, estimated }) => (
+                    <Link
+                      key={`trial-${subscription.id}`}
+                      to={`/subscriptions/${subscription.id}`}
+                      title={`${subscription.name} · free trial ends ${estimated ? 'around ' : ''}${formatDate(iso)}${subscription.endsOn ? ' (cancelled)' : ''}`}
+                      className="block truncate rounded-md border border-dashed border-border px-1.5 py-0.5 text-[11px] font-medium text-muted transition-opacity hover:opacity-75"
+                    >
+                      {subscription.name} · trial ends
+                    </Link>
+                  ))}
+                  {dayCharges.length + dayTrialEnds.length > MAX_CHIPS && (
                     <span className="block px-1.5 text-[11px] text-muted">
-                      +{dayCharges.length - MAX_CHIPS} more
+                      +{dayCharges.length + dayTrialEnds.length - MAX_CHIPS} more
                     </span>
                   )}
                 </div>
@@ -187,6 +212,34 @@ export function SubscriptionCalendar() {
             {charges.length} {charges.length === 1 ? 'payment' : 'payments'}
           </p>
         </Card>
+
+        {trialEnds.length > 0 && (
+          <Card className="overflow-hidden">
+            <h3 className="px-5 pt-5 text-[13px] font-medium text-muted">Trials ending</h3>
+            <ul className="divide-y divide-border px-2 py-2">
+              {trialEnds.map(({ date, subscription, estimated }) => (
+                <li key={`trial-${subscription.id}`}>
+                  <Link
+                    to={`/subscriptions/${subscription.id}`}
+                    className={cn(
+                      'flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-fg/[0.06]',
+                      date < today && 'opacity-50',
+                    )}
+                  >
+                    <SubscriptionLogo merchantKey={subscription.merchantKey} category={subscription.category} size="sm" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-fg">{subscription.name}</p>
+                      <p className="text-xs text-muted">
+                        {parseLocalDate(date).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })}
+                      </p>
+                    </div>
+                    <span className="text-xs text-muted">{estimated ? 'ends around' : 'ends'}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        )}
 
         <Card className="overflow-hidden">
           <h3 className="px-5 pt-5 text-[13px] font-medium text-muted">Upcoming payments</h3>
