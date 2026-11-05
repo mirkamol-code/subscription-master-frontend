@@ -64,5 +64,5 @@ export function SubscriptionGrid({ items, ...actions }: SubscriptionListProps) {
 function describeNextCharge(item: Subscription) {
   if (isRenewing(item)) return formatDate(item.nextPaymentDate)
   if (item.status !== 'TRIAL') return 'Not renewing'
-  return item.trialEndsOn ? describeTrialEnd(item) : 'Free trial'
+  return item.trialEndsOn ? `Trial ${describeTrialEnd(item)}` : 'Free trial'
 }

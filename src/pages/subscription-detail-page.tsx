@@ -252,7 +252,7 @@ function NextPaymentCard({ subscription }: { subscription: Subscription }) {
 
 function describeNoNextPayment(subscription: Subscription) {
   if (subscription.status === 'TRIAL') {
-    const ends = describeTrialEnd(subscription).replace(/^Trial /, '')
+    const ends = describeTrialEnd(subscription)
     const cancelled = subscription.endsOn ? ' (cancelled)' : ''
     const after = hasKnownPrice(subscription)
       ? `Then ${formatMoney(subscription.price, subscription.currency)}${FREQUENCY_SUFFIX[subscription.frequency]}.`
