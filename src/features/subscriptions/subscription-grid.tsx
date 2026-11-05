@@ -11,7 +11,7 @@ import { isRenewing } from '@/lib/renewals'
 import { describeTrialEnd } from '@/lib/trial-end'
 import { cn, formatDate } from '@/lib/utils'
 import type { Subscription } from '@/types/api'
-import { formatSubscriptionPrice } from '@/lib/subscription-price'
+import { describeTrialPrice, formatSubscriptionPrice } from '@/lib/subscription-price'
 
 export interface SubscriptionListProps extends SubscriptionItemActions {
   items: Subscription[]
@@ -47,9 +47,13 @@ export function SubscriptionGrid({ items, ...actions }: SubscriptionListProps) {
             <SubscriptionActionsMenu item={item} {...actions} className="relative z-10 -mr-1.5 -mt-1" />
           </div>
 
-          <p className="mt-6 text-2xl font-semibold tracking-tight tabular-nums text-fg">
-            {formatSubscriptionPrice(item)}
-          </p>
+          {item.status === 'TRIAL' ? (
+            <TrialPriceHeadline item={item} />
+          ) : (
+            <p className="mt-6 text-2xl font-semibold tracking-tight tabular-nums text-fg">
+              {formatSubscriptionPrice(item)}
+            </p>
+          )}
 
           <div className="mt-4 flex items-center justify-between border-t border-border pt-4 text-[13px] text-muted">
             <span>{describeNextCharge(item)}</span>
@@ -66,3 +70,14 @@ function describeNextCharge(item: Subscription) {
   if (item.status !== 'TRIAL') return 'Not renewing'
   return item.trialEndsOn ? `Trial ${describeTrialEnd(item)}` : 'Free trial'
 }
+
+function TrialPriceHeadline({ item }: { item: Subscription }) {
+  const { headline, caption } = describeTrialPrice(item)
+  return (
+    <div className="mt-6">
+      <p className="text-2xl font-semibold tracking-tight text-fg">{headline}</p>
+      {caption && <p className="mt-0.5 text-sm tabular-nums text-muted">{caption}</p>}
+    </div>
+  )
+}
+

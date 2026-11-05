@@ -18,7 +18,7 @@ import { findReceiptAwaitingAmount } from '@/features/emails/receipt-awaiting-am
 import { useBillingEmails } from '@/features/emails/use-billing-emails'
 import { HiddenToggleLabel } from '@/features/subscriptions/hidden-toggle-label'
 import { describeBilling } from '@/features/subscriptions/billing-description'
-import { formatSubscriptionPrice, hasKnownPrice } from '@/lib/subscription-price'
+import { describeTrialPrice, formatSubscriptionPrice, hasKnownPrice } from '@/lib/subscription-price'
 import { describePriceChange } from '@/features/subscriptions/price-change-note'
 import { describeTrialEnd } from '@/lib/trial-end'
 import { ReviewActions } from '@/features/subscriptions/review-actions'
@@ -157,7 +157,11 @@ export function SubscriptionDetailPage() {
               <Stat label="Per year" value={formatMoney(getAnnualizedCost(item.price, item.frequency), item.currency)} />
             </>
           ) : (
-            <Stat label="Price" value={formatSubscriptionPrice(item)} />
+            <Stat
+              label="Price"
+              value={item.status === 'TRIAL' ? describeTrialPrice(item).headline : formatSubscriptionPrice(item)}
+              hint={item.status === 'TRIAL' && describeTrialPrice(item).caption ? ` · ${describeTrialPrice(item).caption}` : undefined}
+            />
           )}
           <Stat label="Since" value={formatDate(item.startDate)} />
         </dl>
@@ -254,10 +258,9 @@ function describeNoNextPayment(subscription: Subscription) {
   if (subscription.status === 'TRIAL') {
     const ends = describeTrialEnd(subscription)
     const cancelled = subscription.endsOn ? ' (cancelled)' : ''
-    const after = hasKnownPrice(subscription)
-      ? `Then ${formatMoney(subscription.price, subscription.currency)}${FREQUENCY_SUFFIX[subscription.frequency]}.`
-      : 'Price after the trial is unknown.'
-    return `Free trial — ${ends}${cancelled}. ${after}`
+    const { caption } = describeTrialPrice(subscription)
+    const after = caption ? ` ${caption.charAt(0).toUpperCase()}${caption.slice(1)}.` : ''
+    return `Free trial — ${ends}${cancelled}.${after}`
   }
   if (subscription.status === 'BILLING_REQUIRED') {
     return `Billing required — check your latest payment to ${subscription.name}.`
