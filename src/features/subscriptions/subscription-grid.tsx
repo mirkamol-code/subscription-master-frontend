@@ -8,6 +8,7 @@ import {
 import { SubscriptionRenewal } from '@/features/subscriptions/subscription-renewal'
 import { getCategoryMeta } from '@/lib/category-config'
 import { isRenewing } from '@/lib/renewals'
+import { describeTrialEnd } from '@/lib/trial-end'
 import { cn, formatDate } from '@/lib/utils'
 import type { Subscription } from '@/types/api'
 import { formatSubscriptionPrice } from '@/lib/subscription-price'
@@ -63,5 +64,5 @@ export function SubscriptionGrid({ items, ...actions }: SubscriptionListProps) {
 function describeNextCharge(item: Subscription) {
   if (isRenewing(item)) return formatDate(item.nextPaymentDate)
   if (item.status !== 'TRIAL') return 'Not renewing'
-  return item.trialEndsOn ? `Trial ends ${formatDate(item.trialEndsOn)}` : 'Free trial'
+  return item.trialEndsOn ? `Trial ${describeTrialEnd(item)}` : 'Free trial'
 }
