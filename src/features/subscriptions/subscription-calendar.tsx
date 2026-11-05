@@ -176,19 +176,19 @@ export function SubscriptionCalendar() {
                       </Link>
                     )
                   })}
-                  {dayTrialEnds.map(({ subscription, estimated }) => (
+                  {dayTrialEnds.slice(0, Math.max(0, MAX_CHIPS - dayCharges.length)).map(({ subscription, estimated }) => (
                     <Link
                       key={`trial-${subscription.id}`}
                       to={`/subscriptions/${subscription.id}`}
-                      title={`${subscription.name} · free trial ends ${estimated ? 'around ' : ''}${formatDate(iso)}`}
+                      title={`${subscription.name} · free trial ends ${estimated ? 'around ' : ''}${formatDate(iso)}${subscription.endsOn ? ' (cancelled)' : ''}`}
                       className="block truncate rounded-md border border-dashed border-border px-1.5 py-0.5 text-[11px] font-medium text-muted transition-opacity hover:opacity-75"
                     >
                       {subscription.name} · trial ends
                     </Link>
                   ))}
-                  {dayCharges.length > MAX_CHIPS && (
+                  {dayCharges.length + dayTrialEnds.length > MAX_CHIPS && (
                     <span className="block px-1.5 text-[11px] text-muted">
-                      +{dayCharges.length - MAX_CHIPS} more
+                      +{dayCharges.length + dayTrialEnds.length - MAX_CHIPS} more
                     </span>
                   )}
                 </div>

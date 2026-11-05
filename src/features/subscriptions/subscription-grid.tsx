@@ -71,13 +71,16 @@ function describeNextCharge(item: Subscription) {
   return item.trialEndsOn ? `Trial ${describeTrialEnd(item)}` : 'Free trial'
 }
 
-function TrialPriceHeadline({ item }: { item: Subscription }) {
-  const { headline, caption } = describeTrialPrice(item)
+interface TrialPriceHeadlineProps {
+  item: Subscription
+}
+
+function TrialPriceHeadline({ item }: TrialPriceHeadlineProps) {
+  const { headline, laterPrice } = describeTrialPrice(item)
   return (
     <div className="mt-6">
       <p className="text-2xl font-semibold tracking-tight text-fg">{headline}</p>
-      {caption && <p className="mt-0.5 text-sm tabular-nums text-muted">{caption}</p>}
+      {laterPrice && <p className="mt-0.5 text-sm tabular-nums text-muted">then {laterPrice}</p>}
     </div>
   )
 }
-

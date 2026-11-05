@@ -8,7 +8,7 @@ type KnownPrice<T extends PricedFields> = T & { price: number; currency: Currenc
 
 export interface TrialPrice {
   headline: string
-  caption: string | null
+  laterPrice: string | null
 }
 
 const TRIAL_HEADLINE = 'Free'
@@ -22,12 +22,11 @@ function formatKnownPrice(sub: PricedFields): string | null {
 }
 
 export function describeTrialPrice(sub: PricedFields): TrialPrice {
-  const later = formatKnownPrice(sub)
-  return { headline: TRIAL_HEADLINE, caption: later ? `then ${later}` : null }
+  return { headline: TRIAL_HEADLINE, laterPrice: formatKnownPrice(sub) }
 }
 
 export function formatSubscriptionPrice(sub: PricedFields & Pick<Subscription, 'status'>): string {
   if (sub.status !== 'TRIAL') return formatKnownPrice(sub) ?? '—'
-  const { headline, caption } = describeTrialPrice(sub)
-  return caption ? `${headline}, ${caption}` : headline
+  const { headline, laterPrice } = describeTrialPrice(sub)
+  return laterPrice ? `${headline} · then ${laterPrice}` : headline
 }

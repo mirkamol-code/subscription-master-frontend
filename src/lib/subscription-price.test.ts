@@ -23,23 +23,23 @@ describe('subscription price', () => {
     const text = formatSubscriptionPrice({ price: 15.49, currency: 'USD', frequency: 'MONTHLY', status: 'TRIAL' })
 
     // then
-    expect(text).toBe('Free, then $15.49/mo')
+    expect(text).toBe('Free · then $15.49/mo')
   })
 
-  it('splits a trial price into a headline and a "then" caption when the later price is known', () => {
+  it('splits a trial price into a headline and the later price when it is known', () => {
     // when
     const price = describeTrialPrice({ price: 15.49, currency: 'USD', frequency: 'MONTHLY' })
 
     // then
-    expect(price).toEqual({ headline: 'Free', caption: 'then $15.49/mo' })
+    expect(price).toEqual({ headline: 'Free', laterPrice: '$15.49/mo' })
   })
 
-  it('has no caption and never shows $0 when the later price is unknown', () => {
+  it('has no later price and never shows $0 when it is unknown', () => {
     // when
     const price = describeTrialPrice({ price: null, currency: null, frequency: null })
 
     // then
-    expect(price).toEqual({ headline: 'Free', caption: null })
+    expect(price).toEqual({ headline: 'Free', laterPrice: null })
   })
 
   it('only treats a price as known when amount, currency and cycle are all present', () => {

@@ -87,6 +87,7 @@ export function SubscriptionDetailPage() {
     billing.paymentMethod && `Paid with ${billing.paymentMethod}`,
   ].filter(Boolean)
   const priceChangeNote = describePriceChange(item.latestPriceChange)
+  const trialPrice = describeTrialPrice(item)
 
   return (
     <div className="space-y-6">
@@ -159,8 +160,8 @@ export function SubscriptionDetailPage() {
           ) : (
             <Stat
               label="Price"
-              value={item.status === 'TRIAL' ? describeTrialPrice(item).headline : formatSubscriptionPrice(item)}
-              hint={item.status === 'TRIAL' && describeTrialPrice(item).caption ? ` · ${describeTrialPrice(item).caption}` : undefined}
+              value={item.status === 'TRIAL' ? trialPrice.headline : formatSubscriptionPrice(item)}
+              hint={item.status === 'TRIAL' && trialPrice.laterPrice ? ` · then ${trialPrice.laterPrice}` : undefined}
             />
           )}
           <Stat label="Since" value={formatDate(item.startDate)} />
@@ -258,8 +259,8 @@ function describeNoNextPayment(subscription: Subscription) {
   if (subscription.status === 'TRIAL') {
     const ends = describeTrialEnd(subscription)
     const cancelled = subscription.endsOn ? ' (cancelled)' : ''
-    const { caption } = describeTrialPrice(subscription)
-    const after = caption ? ` ${caption.charAt(0).toUpperCase()}${caption.slice(1)}.` : ''
+    const { laterPrice } = describeTrialPrice(subscription)
+    const after = laterPrice ? ` Then ${laterPrice}.` : ''
     return `Free trial — ${ends}${cancelled}.${after}`
   }
   if (subscription.status === 'BILLING_REQUIRED') {
