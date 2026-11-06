@@ -15,6 +15,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { BrandMark } from '@/components/common/brand-mark'
+import { SiteFooter } from '@/components/common/site-footer'
 import { Dialog, DialogCloseButton, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import {
   DropdownMenu,
@@ -215,6 +216,8 @@ export function AppLayout() {
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 sm:px-8 sm:py-12">
           <Outlet />
         </main>
+
+        <SiteFooter className="border-t border-border px-4 py-6" />
       </div>
     </div>
   )

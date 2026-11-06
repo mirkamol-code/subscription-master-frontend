@@ -4,6 +4,7 @@ import { CalendarClock, Globe2, Mail, PieChart } from 'lucide-react'
 import { GOOGLE_LOGIN_URL } from '@/api/endpoints/auth'
 import { BrandMark } from '@/components/common/brand-mark'
 import { HeroBackdrop } from '@/components/common/hero-backdrop'
+import { SiteFooter } from '@/components/common/site-footer'
 import { Button } from '@/components/ui/button'
 import { hasLoginFailed } from '@/features/auth/login-callback'
 
@@ -106,6 +107,8 @@ export function AuthPage() {
             Google will ask to let Subscription Master read your billing emails and send payment reminders from
             your Gmail.
           </p>
+
+          <SiteFooter className="mt-10" />
         </div>
       </section>
     </main>
