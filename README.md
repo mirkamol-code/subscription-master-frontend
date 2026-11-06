@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/lockup-dark.svg" />
+  <img src="docs/brand/lockup-light.svg" alt="Subscription Master" width="360" />
+</picture>
+
 # Subscription Master frontend
 
 Production-oriented React client for the deployed Subscription Master API.
