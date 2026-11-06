@@ -21,7 +21,7 @@ export function SiteFooter({ className }: SiteFooterProps) {
           Terms of Service
         </Link>
         <a href={`mailto:${CONTACT_EMAIL}`} className={linkClassName}>
-          Contact
+          {CONTACT_EMAIL}
         </a>
       </nav>
     </footer>
