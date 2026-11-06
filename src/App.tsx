@@ -29,6 +29,9 @@ const AuthCallbackPage = lazy(() =>
 const DashboardPage = lazy(() =>
   import('@/pages/dashboard-page').then((m) => ({ default: m.DashboardPage })),
 )
+const LandingPage = lazy(() =>
+  import('@/pages/landing-page').then((m) => ({ default: m.LandingPage })),
+)
 const NotFoundPage = lazy(() =>
   import('@/pages/not-found-page').then((m) => ({ default: m.NotFoundPage })),
 )
@@ -74,7 +77,7 @@ export default function App() {
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
-        <Route element={<ProtectedRoute />}>
+        <Route element={<ProtectedRoute signedOutLanding={<LandingPage />} />}>
           <Route element={<AppLayout />}>
             <Route index element={<DashboardPage />} />
             <Route path="subscriptions" element={<SubscriptionsPage />} />
