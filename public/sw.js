@@ -38,7 +38,7 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(payload.title || DEFAULT_TITLE, {
       body: payload.body || '',
-      icon: '/favicon.svg',
+      icon: '/icon-192.png',
       data: { url: toAppUrl(payload.url || '/') },
       requireInteraction: payload.severity === 'URGENT',
     }),
