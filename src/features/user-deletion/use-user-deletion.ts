@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { userApi } from '@/api/endpoints/user'
 import { useAuth } from '@/features/auth/auth-context'
-
-const GOOGLE_PERMISSIONS_URL = 'https://myaccount.google.com/permissions'
+import { GOOGLE_PERMISSIONS_URL } from '@/features/legal/legal-constants'
 
 function useEndSession() {
   const { logout } = useAuth()

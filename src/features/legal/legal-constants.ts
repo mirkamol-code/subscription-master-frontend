@@ -1,0 +1,5 @@
+export const APP_NAME = 'Subscription Master'
+export const CONTACT_EMAIL = 'hteg9188@gmail.com'
+export const LAST_UPDATED = 'November 6, 2026'
+export const GOOGLE_PERMISSIONS_URL = 'https://myaccount.google.com/permissions'
+export const GOOGLE_USER_DATA_POLICY_URL = 'https://developers.google.com/terms/api-services-user-data-policy'

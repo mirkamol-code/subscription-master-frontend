@@ -32,6 +32,9 @@ const DashboardPage = lazy(() =>
 const NotFoundPage = lazy(() =>
   import('@/pages/not-found-page').then((m) => ({ default: m.NotFoundPage })),
 )
+const PrivacyPage = lazy(() =>
+  import('@/pages/privacy-page').then((m) => ({ default: m.PrivacyPage })),
+)
 const ReportsPage = lazy(() =>
   import('@/pages/reports-page').then((m) => ({ default: m.ReportsPage })),
 )
@@ -46,6 +49,9 @@ const SubscriptionFormPage = lazy(() =>
 )
 const SubscriptionsPage = lazy(() =>
   import('@/pages/subscriptions-page').then((m) => ({ default: m.SubscriptionsPage })),
+)
+const TermsPage = lazy(() =>
+  import('@/pages/terms-page').then((m) => ({ default: m.TermsPage })),
 )
 
 function PageFallback() {
@@ -66,6 +72,8 @@ export default function App() {
         </Route>
         <Route path="/register" element={<Navigate to="/login" replace />} />
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route index element={<DashboardPage />} />
