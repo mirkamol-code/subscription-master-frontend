@@ -5,23 +5,55 @@
 
 # Subscription Master frontend
 
-Production-oriented React client for the deployed Subscription Master API.
+[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+React + TypeScript client for [Subscription Master](https://github.com/mirkamol-code/subscription-master), which finds subscriptions and free trials in a user's Gmail, tracks their status and reminds them before a charge. The backend README explains how the system works and how to self-host it.
+
+Official hosted instance: [subscriptionmaster.app](https://subscriptionmaster.app)
 
 ## Run locally
 
-1. Copy `.env.example` to `.env`. The included `/api` configuration routes local browser requests through Vite because the deployed API currently rejects CORS preflights from localhost.
-2. Run `npm install`.
-3. Run `npm run dev`.
+**Prerequisites:** Node.js 22 and a running backend (see the backend's [Run and test locally](https://github.com/mirkamol-code/subscription-master#run-and-test-locally)).
 
-## Available screens
+```bash
+cp .env.example .env
+npm install
+npm run dev
+```
 
-- Login and registration backed by `/auth/*`
-- Dashboard using summary, monthly dynamics, and active subscription data
-- Paginated subscription list with API-supported status, currency, price, and sort filters
-- Subscription details, create, edit, and delete flows
-- Authenticated annual CSV and XLSX downloads
-- Admin service usage with a dedicated permission-denied state
+Vite serves the app on `http://localhost:5173` and proxies `/api` to `VITE_API_PROXY_TARGET` (your local backend on `http://localhost:8080` by default).
 
-The Axios client handles bearer tokens, one-at-a-time token refresh, session expiration, API errors, and authenticated file downloads. No frontend screen relies on fabricated backend fields or metrics.
+## Scripts
 
-For a separately hosted production frontend, its web server must proxy `/api` to the backend, or the backend must allow that frontend origin through CORS. `VITE_API_BASE_URL` can then be changed to the permitted public API URL.
+| Command | What it does |
+|---|---|
+| `npm run dev` | Development server with hot reload |
+| `npm run lint` | oxlint |
+| `npm test` | Vitest |
+| `npm run build` | Type-check (`tsc -b`) and production build into `dist/` |
+
+## Screens
+
+- Landing page, Google sign-in and the OAuth callback
+- Dashboard, subscription list and subscription details
+- Source emails and invoice PDFs, fetched live from Gmail
+- Notifications, Web Push and reminder settings
+- Spending reports with CSV and XLSX downloads
+- Settings: Gmail connection, currency, theme and account deletion
+- Admin pages (users, payments, analytics, usage) for ADMIN users
+- Privacy policy and terms
+
+## Deploying your own copy
+
+The browser calls the API at `VITE_API_BASE_URL` (default `/api`), so the web server in front of the app must proxy `/api` to your backend, or the backend must allow your frontend's origin.
+
+- `Dockerfile` + `nginx.conf` build a static nginx image.
+- `vercel.json` is the official instance's Vercel config; change the `/api` rewrite destination to your backend.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md). Report security problems privately as described in [SECURITY.md](SECURITY.md).
+
+## License
+
+[MIT](LICENSE) © 2026 Mirkamol
